@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(asioz)
+project(aliens)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall")
 
@@ -38,16 +38,16 @@ set(LIB_SRC
 
 )
 
-add_library(asiozcommon ${LIB_SRC})
+add_library(alienscommon ${LIB_SRC})
 # set(ALL_LIBS ${COMMON_LIBS})
-set(ALL_LIBS asiozcommon ${COMMON_LIBS})
+set(ALL_LIBS alienscommon ${COMMON_LIBS})
 
 
 
 add_executable(runner
     ${SRC}/main.cpp
 )
-add_dependencies(runner asiozcommon)
+add_dependencies(runner alienscommon)
 target_link_libraries(runner
     ${ALL_LIBS}
 )
@@ -73,7 +73,7 @@ add_executable(tester
     ${TEST_SRC}
     ${TEST_DIR}/run_tests.cpp
 )
-add_dependencies(tester asiozcommon)
+add_dependencies(tester alienscommon)
 target_link_libraries(tester
     gmock
     ${ALL_LIBS}
