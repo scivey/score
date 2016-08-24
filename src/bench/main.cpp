@@ -59,7 +59,7 @@ class FixedBuffer {
 
 static void BM_NoReservation(benchmark::State& state) {
   while (state.KeepRunning()) {
-    std::vector<int> instance;
+    std::vector<float> nums;
     int j = 0;
     for (size_t i = 0; i < kNIter; i++) {
       instance.push_back(j);
@@ -114,6 +114,27 @@ static void BM_LinkedList(benchmark::State& state) {
 
 BENCHMARK(BM_LinkedList);
 
+float Q_rsqrt( float number )
+{
+  long i;
+  float x2, y;
+  const float threehalfs = 1.5F;
 
+  x2 = number * 0.5F;
+  y  = number;
+  i  = * ( long * ) &y;                       // evil floating point bit level hacking
+  i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
+  y  = * ( float * ) &i;
+  y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+//  y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+  return y;
+}
+
+static void BM_QuickSqrt(benchmark::State &state) {
+  while (state.KeepRunning()) {
+    state.
+  }
+}
 
 BENCHMARK_MAIN();
