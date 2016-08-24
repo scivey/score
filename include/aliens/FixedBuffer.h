@@ -36,6 +36,15 @@ class FixedBuffer {
   std::string copyToString() {
     return detail::buffToString(body(), currentLen());
   }
+  void fillWith(const std::string &text) {
+    if (text.size() == 0) {
+      data_[0] = '\0';
+    } else {
+      auto nbytes = std::min(NBytes-1, text.size());
+      memcpy((void*) data_, (void*) text.c_str(), nbytes);
+      data_[nbytes] = '\0';
+    }
+  }
 };
 
 using Buffer = FixedBuffer<1024>;

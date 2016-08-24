@@ -9,127 +9,92 @@
 #include <boost/asio.hpp>
 #include "aliens/FixedBuffer.h"
 #include "aliens/tcp/TCPAcceptServer.h"
-#include "aliens/tcp/TCPServerSession.h"
+#include "aliens/tcp/TCPSocket.h"
 #include "aliens/tcp/TCPServer.h"
+#include "aliens/tcp/TCPClient.h"
 #include "aliens/async/IOService.h"
 #include "aliens/memory.h"
+#include "aliens/tcp/EchoServer.h"
 
 using namespace std;
 using asio_tcp = boost::asio::ip::tcp;
 using aliens::Buffer;
+using aliens::io::SocketAddr;
+
 using aliens::tcp::TCPAcceptServer;
-using aliens::tcp::TCPServerSession;
+using aliens::tcp::TCPSocket;
+using aliens::tcp::TCPClient;
+
 using aliens::async::IOService;
 using aliens::tcp::TCPServer;
+using aliens::tcp::EchoServer;
 
 
-// class SessionHandlerFactory {
-//  public:
-//   virtual TCPServerSession::EventHandler* getHandler() = 0;
-// };
-
-
-class EchoSessionHandler: public TCPServerSession::EventHandler {
+class EchoClientHandler: public TCPSocket::EventHandler {
  protected:
-  std::atomic<bool> running_ {true};
-  std::atomic<size_t> counter_ {0};
-  void setRunning(bool isRunning) {
-    running_.store(isRunning);
-  }
+  std::vector<std::string> messages_;
  public:
-  void onWriteSuccess(size_t nr) override {
-    LOG(INFO) << "onWriteSuccess! " << nr;
-    if (running_.load()) {
-      read(aliens::makeUnique<Buffer>());
-    }
-  }
-  void onReadSuccess(std::unique_ptr<Buffer> buff) override {
-    LOG(INFO) << "onReadSuccess!";
-    auto msg = buff->copyToString();
-    LOG(INFO) << "onReadSuccess!\t\t" << msg;
-    if (counter_.fetch_add(1) >= 4) {
-      close();
-    } else {
-      write(std::move(buff));
-    }
-  }
+  EchoClientHandler(const std::vector<std::string> messages)
+    : messages_(messages) {}
 
-  void onWriteError(boost::system::error_code ec, size_t nr) override {
-    LOG(INFO) << "onWriteError! " << ec;
+
+  void maybeWrite() {
+    if (messages_.empty()) {
+      LOG(INFO) << "out of messages!!";
+    } else {
+      auto msg = messages_.back();
+      messages_.pop_back();
+      LOG(INFO) << "going to send: '" << msg << "'";
+      auto toSend = aliens::makeUnique<Buffer>();
+      toSend->fillWith(msg);
+      write(std::move(toSend));
+    }
   }
-  void onReadError(boost::system::error_code ec) override {
-    LOG(INFO) << "onReadError! " << ec;
+  void onConnectSuccess() override {
+    LOG(INFO) << "onConnectSuccess..";
+    maybeWrite();
   }
-  void onConnected() override {
+  void onConnectError(boost::system::error_code ec) override {
+    LOG(INFO) << "onConnectError '" << ec << "'";
+  }
+  void onWriteSuccess(size_t nr) override {
+    LOG(INFO) << "onWriteSuccess : " << nr;
     read(aliens::makeUnique<Buffer>());
   }
-  void onBeforeClose() override {
-    LOG(INFO) << "onBeforeClose";
+  void onWriteError(boost::system::error_code ec, size_t nr) override {
+    LOG(INFO) << "onWriteError : " << ec << " [" << nr << "]";
+  }
+  void onReadSuccess(std::unique_ptr<Buffer> buff) override {
+    LOG(INFO) << "onReadSuccess!!! '" << buff->copyToString() << "'";
+    if (messages_.empty()) {
+      LOG(INFO) << "out of messages!!";
+    } else {
+      auto msg = messages_.back();
+      messages_.pop_back();
+      LOG(INFO) << "going to send: '" << msg << "'";
+      auto toSend = aliens::makeUnique<Buffer>();
+      toSend->fillWith(msg);
+      write(std::move(toSend));
+    }
+  }
+  void onReadError(boost::system::error_code ec) override {
+    LOG(INFO) << "onReadError...";
   }
   void onAfterClose() override {
-    LOG(INFO) << "onAfterClose";
+    LOG(INFO) << "onAfterClose.";
   }
 };
-
-
-class EchoSessionHandlerFactory : public TCPServerSession::EventHandlerFactory {
- public:
-  TCPServerSession::EventHandler* getHandler() override {
-    return new EchoSessionHandler;
-  }
-};
-
-
-// class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
-//  protected:
-//   SessionHandlerFactory* sessionHandlerFactory_ {nullptr};
-//  public:
-//   HandlerFactoryAcceptHandler(SessionHandlerFactory *factory)
-//     : sessionHandlerFactory_(factory) {}
-//   void onAcceptSuccess(asio_tcp::socket&& sock) override {
-//     LOG(INFO) << "onAcceptSuccess!";
-//     // obviously this needs memory management.
-//     auto session = std::make_shared<TCPServerSession>(
-//       std::move(sock), sessionHandlerFactory_->getHandler()
-//     );
-//     session->setDoneCallback([session]() {
-//       LOG(INFO) << "DONE CALLBACK!";
-//     });
-//     session->start();
-//   }
-//   void onAcceptError(boost::system::error_code ec) override {
-//     LOG(INFO) << "onAcceptError: " << ec;
-//   }
-//   void onStarted() override {
-//     LOG(INFO) << "onStarted!";
-//     startAccepting();
-//   }
-// };
-
-
 
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  short portNo = 5099;
-  thread serverThread([portNo]() {
+  short portNo = 5017;
+  auto ioService = new IOService;
+  thread serverThread([portNo, ioService]() {
     try {
-      auto ioService = new IOService;
-      auto echoFactory = std::make_shared<EchoSessionHandlerFactory>();
-      auto server = std::make_shared<TCPServer>(
-        ioService, echoFactory
-      );
+      auto server = std::make_shared<EchoServer>(ioService);
       server->listen(portNo);
-      // auto handler = new HandlerFactoryAcceptHandler(
-      //   new EchoSessionHandlerFactory
-      // );
-      // auto server = std::make_shared<TCPAcceptServer>(
-      //   ioService, handler, asio_tcp::endpoint(asio_tcp::v4(), portNo)
-      // );
       ioService->run();
-      // for (size_t i =0; i < 500; i++) {
-      //   this_thread::sleep_for(chrono::milliseconds(10));
-      // }
     } catch (std::exception &ex) {
       LOG(INFO) << "err! " << ex.what();
     } catch (...) {
@@ -137,6 +102,18 @@ int main() {
       LOG(INFO) << "BAD!";
     }
   });
+  this_thread::sleep_for(chrono::milliseconds(50));
+  thread clientThread([portNo, ioService]() {
+      SocketAddr addr;
+      addr.host = "localhost";
+      addr.port = portNo;
+      std::vector<std::string> messages {
+        "one", "two", "three", "four", "five"
+      };
+      auto client = std::make_shared<TCPClient>(ioService, new EchoClientHandler(messages), addr);
+      client->start();
+  });
   serverThread.join();
+  clientThread.join();
   LOG(INFO) << "end";
 }

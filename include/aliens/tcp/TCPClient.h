@@ -1,30 +1,29 @@
 #pragma once
 
-#include "aliens/async/IOService.h"
+#include <memory>
 #include <boost/asio.hpp>
+#include "aliens/async/IOService.h"
+#include "aliens/FixedBuffer.h"
+#include "aliens/tcp/TCPSocket.h"
+#include "aliens/io/SocketAddr.h"
 
 namespace aliens { namespace tcp {
 
-class TCPClient {
+class TCPClient: public std::enable_shared_from_this<TCPClient> {
  public:
-
+  using EventHandler = TCPSocket::EventHandler;
  protected:
+  using asio_tcp = boost::asio::ip::tcp;
   async::IOService *ioService_ {nullptr};
-  EventHandler *handler_;
-
+  EventHandler *handler_ {nullptr};
+  io::SocketAddr socketAddr_;
+  std::shared_ptr<TCPSocket> socket_ {nullptr};
  public:
-  TCPServer(async::IOService *ioService, std::shared_ptr<SessionHandlerFactory> sessionFact)
-    : ioService_(ioService), sessionHandlerFactory_(sessionFact) {}
-  void listen(short portNo) {
-    auto handler = new SessionHandlerFactoryAcceptHandler(sessionHandlerFactory_.get());
-    acceptServer_.reset(new TCPAcceptServer(
-      ioService_, handler, boost::asio::ip::tcp::endpoint(
-        boost::asio::ip::tcp::v4(), portNo
-      )
-    ));
-    acceptServer_->start();
+  TCPClient(async::IOService* ioService, EventHandler *handler, const io::SocketAddr &socketAddr)
+    : ioService_(ioService), handler_(handler), socketAddr_(socketAddr) {}
+  void start() {
+    socket_ = TCPSocket::connect(ioService_, handler_, socketAddr_);
   }
-
 };
 
 }} // aliens::tcp

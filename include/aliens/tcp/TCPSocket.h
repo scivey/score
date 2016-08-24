@@ -6,23 +6,23 @@
 #include "aliens/FixedBuffer.h"
 #include "aliens/async/EventHandlerBase.h"
 #include "aliens/async/VoidCallback.h"
-
 #include "aliens/Maybe.h"
+#include "aliens/io/SocketAddr.h"
+#include "aliens/async/IOService.h"
 
 namespace aliens { namespace tcp {
 
-class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
+class TCPSocket : public std::enable_shared_from_this<TCPSocket> {
  public:
 
   using error_code = boost::system::error_code;
   using asio_tcp = boost::asio::ip::tcp;
 
-  class EventHandler: public async::EventHandlerBase<TCPServerSession> {
+  class EventHandler: public async::EventHandlerBase<TCPSocket> {
    public:
     operator bool() const {
       return hasParent();
     }
-
     virtual void read(std::unique_ptr<Buffer> buff) {
       CHECK(hasParent());
       parent_->readInto(std::move(buff));
@@ -36,13 +36,13 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
       parent_->close();
     }
 
-    virtual void beforeSessionDestroyed() {}
     virtual void onBeforeClose() {}
     virtual void onAfterClose() {}
 
     virtual void onWriteSuccess(size_t nr) = 0;
     virtual void onWriteError(error_code ec, size_t nr) = 0;
-    virtual void onConnected() = 0;
+    virtual void onConnectSuccess() = 0;
+    virtual void onConnectError(error_code ec) = 0;
     virtual void onReadSuccess(std::unique_ptr<Buffer>) = 0;
     virtual void onReadError(error_code ec) = 0;
   };
@@ -54,32 +54,29 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
     virtual EventHandler* getHandler() = 0;
   };
 
-
-
   enum class Status {
     OPEN = 1, CLOSED = 2
   };
 
  protected:
   asio_tcp::socket socket_;
-  // Buffer buff_;
   EventHandler *handler_ {nullptr};
   Status status_ {Status::OPEN};
   Maybe<async::VoidCallback> onFinished_;
  public:
-  TCPServerSession(asio_tcp::socket &&socket, EventHandler *handler)
+  TCPSocket(asio_tcp::socket &&socket, EventHandler *handler)
     : socket_(std::move(socket)), handler_(handler) {}
+
+  TCPSocket(async::IOService *ioService, EventHandler *handler)
+    : socket_(ioService->getBoostService()), handler_(handler) {}
 
   void start() {
     handler_->setParent(this);
-    handler_->onConnected();
+    handler_->onConnectSuccess();
   }
 
-  ~TCPServerSession() {
-    LOG(INFO) << "~TCPServerSession()";
-    if (handler_) {
-      handler_->beforeSessionDestroyed();
-    }
+  ~TCPSocket() {
+    LOG(INFO) << "~TCPSocket()";
   }
 
   template<typename TCallable>
@@ -141,6 +138,31 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
     if (onFinished_.hasValue()) {
       onFinished_.value().invoke();
     }
+  }
+
+ protected:
+  void doConnect(async::IOService *service, const io::SocketAddr &addr) {
+    asio_tcp::resolver resolver(service->getBoostService());
+    asio_tcp::resolver::iterator endpointIter = resolver.resolve({addr.host.c_str(), "5017"});
+    auto self = shared_from_this();
+    boost::asio::async_connect(socket_, endpointIter,
+      [this, self](boost::system::error_code ec, asio_tcp::resolver::iterator) {
+        if (ec) {
+          handler_->onConnectError(ec);
+        } else {
+          handler_->onConnectSuccess();
+        }
+      }
+    );
+  }
+
+ public:
+  static std::shared_ptr<TCPSocket> connect(async::IOService* service,
+      EventHandler *handler, const io::SocketAddr &addr) {
+    auto result = std::make_shared<TCPSocket>(service, handler);
+    handler->setParent(result.get());
+    result->doConnect(service, addr);
+    return result;
   }
 };
 
