@@ -1,6 +1,6 @@
 #pragma once
 
-namespace asioz {
+namespace aliens {
 
 template<typename T>
 class SingletonWrapper {
@@ -19,4 +19,4 @@ class SingletonWrapper {
   }
 };
 
-} // asioz
+} // aliens

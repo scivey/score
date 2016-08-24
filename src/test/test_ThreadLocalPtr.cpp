@@ -2,12 +2,12 @@
 #include <mutex>
 #include <thread>
 
-#include "asioz/ThreadLocalPtr.h"
-#include "asioz/Counter.h"
-#include "asioz/SingletonWrapper.h"
-using asioz::ThreadLocalPtr;
-using asioz::SingletonWrapper;
-using asioz::Counter;
+#include "aliens/ThreadLocalPtr.h"
+#include "aliens/Counter.h"
+#include "aliens/SingletonWrapper.h"
+using aliens::ThreadLocalPtr;
+using aliens::SingletonWrapper;
+using aliens::Counter;
 
 using StaticCounter = SingletonWrapper<Counter<13>>;
 
@@ -91,7 +91,7 @@ TEST(TestLocalPtr, TestSimple) {
   rep->reset();
   EXPECT_EQ(0, rep->nCreated());
   {
-    auto localPtr = asioz::ThreadLocalPtr<Noisy>::create();
+    auto localPtr = aliens::ThreadLocalPtr<Noisy>::create();
     {
       EXPECT_EQ(0, rep->nCreated());
       auto x = localPtr.get();

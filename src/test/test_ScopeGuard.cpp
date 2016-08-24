@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <functional>
 #include <atomic>
-#include "asioz/ScopeGuard.h"
+#include "aliens/ScopeGuard.h"
 
 using namespace std;
-using asioz::ScopeGuard;
+using aliens::ScopeGuard;
 
 TEST(TestScopeGuard, TestWorks) {
   int x = 0;

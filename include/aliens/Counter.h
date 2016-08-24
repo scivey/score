@@ -1,6 +1,6 @@
 #pragma once
 
-namespace asioz {
+namespace aliens {
 
 template<size_t NIdent>
 class Counter {
@@ -20,4 +20,4 @@ class Counter {
   }
 };
 
-} // asioz
+} // aliens

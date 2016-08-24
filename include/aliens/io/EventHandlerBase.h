@@ -6,9 +6,13 @@
 #include <glog/logging.h>
 #include <boost/asio.hpp>
 #include "aliens/FixedBuffer.h"
+
 using namespace std;
 using boost::asio::ip::tcp;
 using aliens::FixedBuffer;
+
+namespace aliens { namespace io {
+
 
 using Buffer = FixedBuffer<1024>;
 
@@ -275,3 +279,5 @@ int main() {
   serverThread.join();
   LOG(INFO) << "end";
 }
+
+}} // aliens::io

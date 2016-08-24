@@ -4,7 +4,7 @@
 #include <memory>
 #include <glog/logging.h>
 
-namespace asioz {
+namespace aliens {
 
 
 template<typename T>
@@ -72,4 +72,4 @@ class ThreadLocalPtr {
   }
 };
 
-} // asioz
+} // aliens

@@ -2,11 +2,11 @@
 #include <mutex>
 #include <thread>
 
-#include "asioz/Counter.h"
-#include "asioz/SingletonWrapper.h"
+#include "aliens/Counter.h"
+#include "aliens/SingletonWrapper.h"
 
-using asioz::Counter;
-using asioz::SingletonWrapper;
+using aliens::Counter;
+using aliens::SingletonWrapper;
 using StaticCounter = SingletonWrapper<Counter<29>>;
 
 TEST(TestSingletonWrapper, SimpleTest) {

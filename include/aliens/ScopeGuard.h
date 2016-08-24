@@ -2,7 +2,7 @@
 #include <atomic>
 #include <functional>
 
-namespace asioz {
+namespace aliens {
 
 class ScopeGuard {
  public:
@@ -21,4 +21,4 @@ class ScopeGuard {
 
 };
 
-} // asioz
+} // aliens

@@ -34,6 +34,8 @@ set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(LIB_SRC
     ${SRC}/ScopeGuard.cpp
+    ${SRC}/FixedBuffer.cpp
+
 )
 
 add_library(asiozcommon ${LIB_SRC})

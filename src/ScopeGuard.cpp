@@ -1,6 +1,6 @@
-#include "asioz/ScopeGuard.h"
+#include "aliens/ScopeGuard.h"
 
-namespace asioz {
+namespace aliens {
 
 ScopeGuard::ScopeGuard(typename ScopeGuard::void_func &&func)
   : func_(func) {}
@@ -15,4 +15,4 @@ ScopeGuard::~ScopeGuard() {
   }
 }
 
-} // asioz
+} // aliens
