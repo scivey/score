@@ -10,6 +10,8 @@
 #include "aliens/FixedBuffer.h"
 #include "aliens/tcp/TCPAcceptServer.h"
 #include "aliens/tcp/TCPServerSession.h"
+#include "aliens/tcp/TCPServer.h"
+#include "aliens/async/IOService.h"
 #include "aliens/memory.h"
 
 using namespace std;
@@ -17,12 +19,14 @@ using asio_tcp = boost::asio::ip::tcp;
 using aliens::Buffer;
 using aliens::tcp::TCPAcceptServer;
 using aliens::tcp::TCPServerSession;
+using aliens::async::IOService;
+using aliens::tcp::TCPServer;
 
 
-class SessionHandlerFactory {
- public:
-  virtual TCPServerSession::EventHandler* getHandler() = 0;
-};
+// class SessionHandlerFactory {
+//  public:
+//   virtual TCPServerSession::EventHandler* getHandler() = 0;
+// };
 
 
 class EchoSessionHandler: public TCPServerSession::EventHandler {
@@ -68,7 +72,7 @@ class EchoSessionHandler: public TCPServerSession::EventHandler {
 };
 
 
-class EchoSessionHandlerFactory : public SessionHandlerFactory {
+class EchoSessionHandlerFactory : public TCPServerSession::EventHandlerFactory {
  public:
   TCPServerSession::EventHandler* getHandler() override {
     return new EchoSessionHandler;
@@ -76,29 +80,32 @@ class EchoSessionHandlerFactory : public SessionHandlerFactory {
 };
 
 
-class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
- protected:
-  SessionHandlerFactory* sessionHandlerFactory_ {nullptr};
- public:
-  HandlerFactoryAcceptHandler(SessionHandlerFactory *factory)
-    : sessionHandlerFactory_(factory) {}
-  void onAcceptSuccess(asio_tcp::socket&& sock) override {
-    LOG(INFO) << "onAcceptSuccess!";
-    // obviously this needs memory management.
-    auto session = new TCPServerSession(
-      std::move(sock), sessionHandlerFactory_->getHandler()
-    );
-    session->start();
-    (void) session; // unused
-  }
-  void onAcceptError(boost::system::error_code ec) override {
-    LOG(INFO) << "onAcceptError: " << ec;
-  }
-  void onStarted() override {
-    LOG(INFO) << "onStarted!";
-    startAccepting();
-  }
-};
+// class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
+//  protected:
+//   SessionHandlerFactory* sessionHandlerFactory_ {nullptr};
+//  public:
+//   HandlerFactoryAcceptHandler(SessionHandlerFactory *factory)
+//     : sessionHandlerFactory_(factory) {}
+//   void onAcceptSuccess(asio_tcp::socket&& sock) override {
+//     LOG(INFO) << "onAcceptSuccess!";
+//     // obviously this needs memory management.
+//     auto session = std::make_shared<TCPServerSession>(
+//       std::move(sock), sessionHandlerFactory_->getHandler()
+//     );
+//     session->setDoneCallback([session]() {
+//       LOG(INFO) << "DONE CALLBACK!";
+//     });
+//     session->start();
+//   }
+//   void onAcceptError(boost::system::error_code ec) override {
+//     LOG(INFO) << "onAcceptError: " << ec;
+//   }
+//   void onStarted() override {
+//     LOG(INFO) << "onStarted!";
+//     startAccepting();
+//   }
+// };
+
 
 
 int main() {
@@ -107,15 +114,19 @@ int main() {
   short portNo = 5099;
   thread serverThread([portNo]() {
     try {
-      boost::asio::io_service ioService;
-      auto handler = new HandlerFactoryAcceptHandler(
-        new EchoSessionHandlerFactory
+      auto ioService = new IOService;
+      auto echoFactory = std::make_shared<EchoSessionHandlerFactory>();
+      auto server = std::make_shared<TCPServer>(
+        ioService, echoFactory
       );
-      auto server = std::make_shared<TCPAcceptServer>(
-        ioService, handler, asio_tcp::endpoint(asio_tcp::v4(), portNo)
-      );
-      server->start();
-      ioService.run();
+      server->listen(portNo);
+      // auto handler = new HandlerFactoryAcceptHandler(
+      //   new EchoSessionHandlerFactory
+      // );
+      // auto server = std::make_shared<TCPAcceptServer>(
+      //   ioService, handler, asio_tcp::endpoint(asio_tcp::v4(), portNo)
+      // );
+      ioService->run();
       // for (size_t i =0; i < 500; i++) {
       //   this_thread::sleep_for(chrono::milliseconds(10));
       // }

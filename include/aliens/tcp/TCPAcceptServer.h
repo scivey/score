@@ -3,6 +3,8 @@
 #include <glog/logging.h>
 #include <boost/asio.hpp>
 #include "aliens/async/EventHandlerBase.h"
+#include "aliens/async/IOService.h"
+
 
 
 namespace aliens { namespace tcp {
@@ -44,6 +46,7 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
   };
 
  protected:
+  async::IOService *ioService_ {nullptr};
   asio_tcp::acceptor acceptor_;
   EventHandler *handler_ {nullptr};
   asio_tcp::socket socket_;
@@ -53,9 +56,12 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
   TCPAcceptServer& operator=(const TCPAcceptServer&) = delete;
 
  public:
-  TCPAcceptServer(boost::asio::io_service &ioService,
+  TCPAcceptServer(async::IOService *ioService,
       EventHandler *handler, const asio_tcp::endpoint &tcpEndpoint)
-    : acceptor_(ioService, tcpEndpoint), handler_(handler), socket_(ioService) {}
+    : ioService_(ioService),
+      acceptor_(ioService->getBoostService(), tcpEndpoint),
+      handler_(handler),
+      socket_(ioService->getBoostService()) {}
 
   TCPAcceptServer(TCPAcceptServer&&) = default;
   TCPAcceptServer& operator=(TCPAcceptServer&&) = default;

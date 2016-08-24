@@ -5,6 +5,9 @@
 #include <folly/MoveWrapper.h>
 #include "aliens/FixedBuffer.h"
 #include "aliens/async/EventHandlerBase.h"
+#include "aliens/async/VoidCallback.h"
+
+#include "aliens/Maybe.h"
 
 namespace aliens { namespace tcp {
 
@@ -46,6 +49,13 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
 
   friend class EventHandler;
 
+  class EventHandlerFactory {
+   public:
+    virtual EventHandler* getHandler() = 0;
+  };
+
+
+
   enum class Status {
     OPEN = 1, CLOSED = 2
   };
@@ -55,7 +65,7 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
   // Buffer buff_;
   EventHandler *handler_ {nullptr};
   Status status_ {Status::OPEN};
-
+  Maybe<async::VoidCallback> onFinished_;
  public:
   TCPServerSession(asio_tcp::socket &&socket, EventHandler *handler)
     : socket_(std::move(socket)), handler_(handler) {}
@@ -71,6 +81,19 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
       handler_->beforeSessionDestroyed();
     }
   }
+
+  template<typename TCallable>
+  void setDoneCallback(TCallable &&callable) {
+    CHECK(!onFinished_.hasValue());
+    onFinished_.assign(std::move(callable));
+  }
+
+  template<typename TCallable>
+  void setDoneCallback(const TCallable &callable) {
+    CHECK(!onFinished_.hasValue());
+    onFinished_.assign(callable);
+  }
+
  protected:
   void readInto(std::unique_ptr<Buffer> buff) {
     auto self(shared_from_this());
@@ -114,6 +137,9 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
     status_ = Status::CLOSED;
     if (handler_) {
       handler_->onAfterClose();
+    }
+    if (onFinished_.hasValue()) {
+      onFinished_.value().invoke();
     }
   }
 };
