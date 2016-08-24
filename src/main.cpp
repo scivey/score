@@ -1,260 +1,101 @@
 #include <thread>
 #include <string>
 #include <sstream>
+#include <atomic>
+
 #include <memory>
 #include <folly/MoveWrapper.h>
 #include <glog/logging.h>
 #include <boost/asio.hpp>
 #include "aliens/FixedBuffer.h"
+#include "aliens/tcp/TCPAcceptServer.h"
+#include "aliens/tcp/TCPServerSession.h"
+#include "aliens/memory.h"
+
 using namespace std;
-using boost::asio::ip::tcp;
-using aliens::FixedBuffer;
-
-using Buffer = FixedBuffer<1024>;
-
-template<typename TParent>
-class EventHandlerBase {
- public:
-  using TParent = parent_type
-
- protected:
-  friend class TParent;
-  TParent *parent_ {nullptr};
-
-  void setParent(TParent *parent) {
-    parent_ = parent;
-  }
-
-  TParent* getParent() const {
-    return parent_;
-  }
- public:
-  EventHandlerBase(){}
-
-  bool hasParent() const {
-    return !!parent_;
-  }
-};
+using asio_tcp = boost::asio::ip::tcp;
+using aliens::Buffer;
+using aliens::tcp::TCPAcceptServer;
+using aliens::tcp::TCPServerSession;
 
 
-class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
- public:
-
-  using error_code = boost::system::error_code;
-
-  class EventHandler: public EventHandlerBase<TCPServerSession> {
-   public:
-    operator bool() const {
-      return hasParent();
-    }
-
-    virtual void read(std::unique_ptr<Buffer> buff) {
-      CHECK(good());
-      parent_->readInto(std::move(buff));
-    }
-    virtual void write(std::unique_ptr<Buffer> buff) {
-      CHECK(good());
-      parent_->triggerWrite(std::move(buff));
-    }
-    virtual void close() {
-      CHECK(good());
-      parent_->close();
-    }
-
-    virtual void beforeSessionDestroyed() {}
-
-    virtual void onWriteSuccess(size_t nr) = 0;
-    virtual void onWriteError(error_code ec, size_t nr) = 0;
-    virtual void onConnected() = 0;
-    virtual void onReadSuccess(std::unique_ptr<Buffer>) = 0;
-    virtual void onReadError(error_code ec) = 0;
-    virtual void onBeforeClose() {}
-    virtual void onAfterClose() {}
-  };
-
-  friend class EventHandler;
-
-  enum class Status {
-    OPEN = 1, CLOSED = 2
-  };
-
- protected:
-  tcp::socket socket_;
-  // Buffer buff_;
-  EventHandler *handler_ {nullptr};
-  Status status_ {Status::OPEN};
-
- public:
-  TCPServerSession(tcp::socket &&socket, EventHandler *handler)
-    : socket_(std::move(socket)), handler_(handler) {}
-
-  void start() {
-    handler_->setParent(this);
-    handler_->onConnected();
-  }
-
-  ~TCPRequestHandler() {
-    if (handler_) {
-      handler_->beforeSessionDestroyed();
-    }
-    LOG(INFO) << "~TCPRequestHandler()";
-  }
- protected:
-  void readInto(std::unique_ptr<Buffer> buff) {
-    auto self(shared_from_this());
-    boost::asio::buffer asioBuff(buff->body(), buff->capacity());
-    auto wrapped = folly::makeMoveWrapper(buff);
-    socket_.async_read_some(asioBuff,
-      [this, self, wrapped](error_code ec, std::size_t nr) {
-        folly::MoveWrapper<std::unique_ptr<Buffer>> movedBuff = wrapped;
-        std::unique_ptr<Buffer> buff = wrapped.move();
-        if (ec) {
-          handler_->onReadFailed(ec);
-        } else {
-          handler_->onReadSucceeded(std::move(buff));
-        }
-      }
-    );
-  }
-  void triggerWrite(std::unique_ptr<Buffer> buff) {
-    using MoveWrapper = folly::MoveWrapper<decltype(buff)>;
-    auto self(shared_from_this());
-    boost::asio::buffer asioBuff(buff->body(), buff->capacity());
-    auto wrapped = folly::makeMoveWrapper(buff);
-    boost::asio::async_write(socket_, asioBuff,
-      [this, self, wrapped](error_code ec, std::size_t nr) {
-        MoveWrapper movedBuff = wrapped;
-        std::unique_ptr<Buffer> buff = wrapped.move();
-        if (ec) {
-          handler_->onWriteFailed(ec, nr);
-        } else {
-          handler_->onWriteSucceeded(nr);
-        }
-      }
-    );
-  }
-  void close() {
-    CHECK(status_ == Status::OPEN);
-    if (handler_) {
-      handler_->onBeforeClose();
-    }
-    socket_.close();
-    status_ = Status::CLOSED;
-    if (handler_) {
-      handler_->onAfterClose();
-    }
-  }
-};
-
-
-class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
- public:
-
-  using boost::system::error_code;
-  class EventHandler : public EventHandlerBase<TCPAcceptServer> {
-   public:
-    virtual void onAcceptSuccess(tcp::socket&&) = 0;
-    virtual void onAcceptError(error_code ec) = 0;
-    virtual void onStarted() = 0;
-    virtual void onStopRequested() = 0;
-
-    virtual void onBeforeClose() {}
-    virtual void onAfterClose() {}
-    virtual void close() {
-      getParent()->close();
-    }
-
-  };
-
-  friend class EventHandler;
-
-  enum class Status {
-    OPEN = 1, CLOSED = 2
-  };
-
- protected:
-  tcp::acceptor acceptor_;
-  EventHandler *handler_ {nullptr};
-  tcp::socket socket_;
-  Status status_ {Status::CLOSED};
-
-  TCPAcceptServer(const TCPAcceptServer&) = delete;
-  TCPAcceptServer& operator=(const TCPAcceptServer&) = delete;
-
- public:
-  TCPAcceptServer(boost::asio::io_service &ioService,
-      EventHandler *handler, const tcp::endpoint &tcpEndpoint)
-    : acceptor_(ioService, tcpEndpoint), handler_(handler), socket_(ioService) {}
-
-  TCPAcceptServer(TCPAcceptServer&&) = default;
-  TCPAcceptServer& operator=(TCPAcceptServer&&) = default;
-
-  void start() {
-    CHECK(status_ == status_::CLOSED);
-    CHECK(!!handler_);
-    handler_->onStarted();
-  }
-
- protected:
-  void close() {
-    CHECK(status_ == Status::OPEN);
-    if (handler_) {
-      handler_->onBeforeClose();
-    }
-    acceptor_.stop();
-    status_ = status_::CLOSED;
-    if (handler_) {
-      handler_->onAfterClose();
-    }
-  }
-
-  void startAccepting() {
-    CHECK(status_ == Status::CLOSED);
-    status_ = Status::OPEN;
-    doAccept();
-  }
-
-  void doAccept() {
-    auto self = shared_from_this();
-    acceptor_.async_accept(socket_,
-      [self, this](error_code ec) {
-        if (ec) {
-          handler_->onAcceptError(ec);
-        } else {
-          handler_->onAcceptSuccess(std::move(socket_));
-        }
-        if (status_ == Status::OPEN) {
-          doAccept();
-        }
-      }
-    );
-  }
-
-  void maybeClose() {
-    if (status_ == Status::OPEN) {
-      close();
-    }
-  }
-
- public:
-  void stop() {
-    if (handler_) {
-      handler_->onStopRequested();
-    } else {
-      CHECK(status_ == Status::CLOSED);
-    }
-  }
-
-  ~TCPAcceptServer() {
-    maybeClose();
-  }
-};
-
-
-template<typename THandler>
 class SessionHandlerFactory {
  public:
-  virtual THandler* create() = 0;
+  virtual TCPServerSession::EventHandler* getHandler() = 0;
+};
+
+
+class EchoSessionHandler: public TCPServerSession::EventHandler {
+ protected:
+  std::atomic<bool> running_ {true};
+  std::atomic<size_t> counter_ {0};
+  void setRunning(bool isRunning) {
+    running_.store(isRunning);
+  }
+ public:
+  void onWriteSuccess(size_t nr) override {
+    LOG(INFO) << "onWriteSuccess! " << nr;
+    if (running_.load()) {
+      read(aliens::makeUnique<Buffer>());
+    }
+  }
+  void onReadSuccess(std::unique_ptr<Buffer> buff) override {
+    LOG(INFO) << "onReadSuccess!";
+    auto msg = buff->copyToString();
+    LOG(INFO) << "onReadSuccess!\t\t" << msg;
+    if (counter_.fetch_add(1) >= 4) {
+      close();
+    } else {
+      write(std::move(buff));
+    }
+  }
+
+  void onWriteError(boost::system::error_code ec, size_t nr) override {
+    LOG(INFO) << "onWriteError! " << ec;
+  }
+  void onReadError(boost::system::error_code ec) override {
+    LOG(INFO) << "onReadError! " << ec;
+  }
+  void onConnected() override {
+    read(aliens::makeUnique<Buffer>());
+  }
+  void onBeforeClose() override {
+    LOG(INFO) << "onBeforeClose";
+  }
+  void onAfterClose() override {
+    LOG(INFO) << "onAfterClose";
+  }
+};
+
+
+class EchoSessionHandlerFactory : public SessionHandlerFactory {
+ public:
+  TCPServerSession::EventHandler* getHandler() override {
+    return new EchoSessionHandler;
+  }
+};
+
+
+class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
+ protected:
+  std::unique_ptr<SessionHandlerFactory> sessionHandlerFactory_ {nullptr};
+ public:
+  HandlerFactoryAcceptHandler(std::unique_ptr<SessionHandlerFactory> &&factory)
+    : sessionHandlerFactory_(std::move(factory)) {}
+  void onAcceptSuccess(asio_tcp::socket&& sock) override {
+    // obviously this needs memory management.
+    auto session = new TCPServerSession(
+      std::move(sock), sessionHandlerFactory_->getHandler()
+    );
+    (void) session; // unused
+  }
+  void onAcceptError(boost::system::error_code ec) override {
+    LOG(INFO) << "onAcceptError: " << ec;
+  }
+  void onStarted() override {
+    LOG(INFO) << "onStarted!";
+    startAccepting();
+  }
 };
 
 
@@ -265,8 +106,14 @@ int main() {
   thread serverThread([portNo]() {
     try {
       boost::asio::io_service ioService;
-      auto server = std::make_shared<TCPServer>(ioService, tcp::endpoint(tcp::v4(), portNo));
-      server->listen();
+      auto handlerFactory = aliens::makeUnique<EchoSessionHandlerFactory>();
+      auto handler = new HandlerFactoryAcceptHandler(
+        aliens::makeUnique<EchoSessionHandlerFactory>()
+      );
+      auto server = std::make_shared<TCPAcceptServer>(
+        ioService, handler, asio_tcp::endpoint(asio_tcp::v4(), portNo)
+      );
+      server->start();
       ioService.run();
     } catch (std::exception &ex) {
       LOG(INFO) << "err! " << ex.what();

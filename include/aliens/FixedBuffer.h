@@ -33,7 +33,7 @@ class FixedBuffer {
   size_t capacity() const {
     return NBytes;
   }
-  std::string toString() {
+  std::string copyToString() {
     return detail::buffToString(body(), currentLen());
   }
 };
