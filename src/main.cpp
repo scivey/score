@@ -78,15 +78,17 @@ class EchoSessionHandlerFactory : public SessionHandlerFactory {
 
 class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
  protected:
-  std::unique_ptr<SessionHandlerFactory> sessionHandlerFactory_ {nullptr};
+  SessionHandlerFactory* sessionHandlerFactory_ {nullptr};
  public:
-  HandlerFactoryAcceptHandler(std::unique_ptr<SessionHandlerFactory> &&factory)
-    : sessionHandlerFactory_(std::move(factory)) {}
+  HandlerFactoryAcceptHandler(SessionHandlerFactory *factory)
+    : sessionHandlerFactory_(factory) {}
   void onAcceptSuccess(asio_tcp::socket&& sock) override {
+    LOG(INFO) << "onAcceptSuccess!";
     // obviously this needs memory management.
     auto session = new TCPServerSession(
       std::move(sock), sessionHandlerFactory_->getHandler()
     );
+    session->start();
     (void) session; // unused
   }
   void onAcceptError(boost::system::error_code ec) override {
@@ -102,21 +104,26 @@ class HandlerFactoryAcceptHandler : public TCPAcceptServer::EventHandler {
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  short portNo = 5097;
+  short portNo = 5099;
   thread serverThread([portNo]() {
     try {
       boost::asio::io_service ioService;
-      auto handlerFactory = aliens::makeUnique<EchoSessionHandlerFactory>();
       auto handler = new HandlerFactoryAcceptHandler(
-        aliens::makeUnique<EchoSessionHandlerFactory>()
+        new EchoSessionHandlerFactory
       );
       auto server = std::make_shared<TCPAcceptServer>(
         ioService, handler, asio_tcp::endpoint(asio_tcp::v4(), portNo)
       );
       server->start();
       ioService.run();
+      // for (size_t i =0; i < 500; i++) {
+      //   this_thread::sleep_for(chrono::milliseconds(10));
+      // }
     } catch (std::exception &ex) {
       LOG(INFO) << "err! " << ex.what();
+    } catch (...) {
+      auto ex2 = std::current_exception();
+      LOG(INFO) << "BAD!";
     }
   });
   serverThread.join();

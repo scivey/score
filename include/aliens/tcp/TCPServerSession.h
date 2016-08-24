@@ -66,10 +66,10 @@ class TCPServerSession : public std::enable_shared_from_this<TCPServerSession> {
   }
 
   ~TCPServerSession() {
+    LOG(INFO) << "~TCPServerSession()";
     if (handler_) {
       handler_->beforeSessionDestroyed();
     }
-    LOG(INFO) << "~TCPServerSession()";
   }
  protected:
   void readInto(std::unique_ptr<Buffer> buff) {

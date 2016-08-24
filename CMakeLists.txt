@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(aliens)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(GTEST ${EXTERNAL}/googletest)
@@ -66,6 +66,7 @@ set(TEST_SRC
     ${TEST_DIR}/test_ScopeGuard.cpp
     ${TEST_DIR}/test_ThreadLocalPtr.cpp
     ${TEST_DIR}/test_SingletonWrapper.cpp
+    ${TEST_DIR}/test_Maybe.cpp
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )

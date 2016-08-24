@@ -31,6 +31,7 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
     }
 
     virtual void startAccepting() {
+      CHECK(hasParent());
       getParent()->startAccepting();
     }
 
@@ -62,6 +63,7 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
   void start() {
     CHECK(status_ == Status::CLOSED);
     CHECK(!!handler_);
+    handler_->setParent(this);
     handler_->onStarted();
   }
 
@@ -80,9 +82,12 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
   }
 
   void startAccepting() {
+    LOG(INFO) << "startAccepting : 0";
     CHECK(status_ == Status::CLOSED);
     status_ = Status::OPEN;
+    LOG(INFO) << "startAccepting : 1";
     doAccept();
+    LOG(INFO) << "startAccepting : 2";
   }
 
   void doAccept() {
@@ -117,6 +122,7 @@ class TCPAcceptServer: public std::enable_shared_from_this<TCPAcceptServer> {
   }
 
   ~TCPAcceptServer() {
+    LOG(INFO) << "~TCPAcceptServer()";
     maybeClose();
   }
 };
