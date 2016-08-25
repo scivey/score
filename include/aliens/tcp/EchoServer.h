@@ -3,6 +3,7 @@
 #include <memory>
 #include <glog/logging.h>
 #include <boost/asio.hpp>
+#include "aliens/mem/util.h"
 #include "aliens/FixedBuffer.h"
 #include "aliens/tcp/TCPAcceptServer.h"
 #include "aliens/tcp/TCPSocket.h"
@@ -22,7 +23,7 @@ class EchoSocketHandler: public TCPSocket::EventHandler {
   void onWriteSuccess(size_t nr) override {
     LOG(INFO) << "onWriteSuccess! " << nr;
     if (running_.load()) {
-      read(aliens::makeUnique<Buffer>());
+      read(mem::makeUnique<Buffer>());
     }
   }
   void onReadSuccess(std::unique_ptr<Buffer> buff) override {
@@ -43,7 +44,7 @@ class EchoSocketHandler: public TCPSocket::EventHandler {
     LOG(INFO) << "onReadError! " << ec;
   }
   void onConnectSuccess() override {
-    read(aliens::makeUnique<Buffer>());
+    read(mem::makeUnique<Buffer>());
   }
   void onConnectError(boost::system::error_code ec) override {
     LOG(INFO) << "onConnectError!!";

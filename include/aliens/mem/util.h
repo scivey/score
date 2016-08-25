@@ -1,7 +1,7 @@
 #pragma once
+#include <memory>
 
-
-namespace aliens {
+namespace aliens { namespace mem {
 
 template<typename T>
 std::unique_ptr<T> makeUnique() {
@@ -13,4 +13,5 @@ std::unique_ptr<T> makeUnique(Args&& ...args) {
   return std::unique_ptr<T>(new T(std::forward<Args...>(args...)));
 }
 
-}
+
+}} // aliens::mem

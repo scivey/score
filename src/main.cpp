@@ -13,7 +13,7 @@
 #include "aliens/tcp/TCPServer.h"
 #include "aliens/tcp/TCPClient.h"
 #include "aliens/async/IOService.h"
-#include "aliens/memory.h"
+#include "aliens/mem/util.h"
 #include "aliens/tcp/EchoServer.h"
 
 using namespace std;
@@ -45,7 +45,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
       auto msg = messages_.back();
       messages_.pop_back();
       LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::makeUnique<Buffer>();
+      auto toSend = aliens::mem::makeUnique<Buffer>();
       toSend->fillWith(msg);
       write(std::move(toSend));
     }
@@ -59,7 +59,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
   }
   void onWriteSuccess(size_t nr) override {
     LOG(INFO) << "onWriteSuccess : " << nr;
-    read(aliens::makeUnique<Buffer>());
+    read(aliens::mem::makeUnique<Buffer>());
   }
   void onWriteError(boost::system::error_code ec, size_t nr) override {
     LOG(INFO) << "onWriteError : " << ec << " [" << nr << "]";
@@ -72,7 +72,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
       auto msg = messages_.back();
       messages_.pop_back();
       LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::makeUnique<Buffer>();
+      auto toSend = aliens::mem::makeUnique<Buffer>();
       toSend->fillWith(msg);
       write(std::move(toSend));
     }

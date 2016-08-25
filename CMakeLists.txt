@@ -35,7 +35,7 @@ set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LIB_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
-
+    ${SRC}/mem/standard.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})
@@ -66,6 +66,7 @@ set(TEST_SRC
     ${TEST_DIR}/test_ScopeGuard.cpp
     ${TEST_DIR}/test_ThreadLocalPtr.cpp
     ${TEST_DIR}/test_SingletonWrapper.cpp
+    ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
