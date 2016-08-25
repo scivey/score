@@ -1,12 +1,19 @@
 #pragma once
 #include <functional>
 #include <array>
+#include "aliens/Maybe.h"
 
 namespace aliens { namespace async {
 
-struct VoidCallback {
+class VoidCallback {
+ public:
   using void_func = std::function<void()>;
-  void_func func_;
+
+ protected:
+  Maybe<void_func> func_;
+
+ public:
+  VoidCallback(){}
   VoidCallback(void_func &&func): func_(std::move(func)) {}
   VoidCallback(const void_func &func): func_(func){}
 
@@ -17,7 +24,13 @@ struct VoidCallback {
   VoidCallback(const TCallable &callable): func_(callable) {}
 
   void invoke() {
-    func_();
+    if (func_.hasValue()) {
+      func_.value()();
+    }
+  }
+
+  void operator()() {
+    invoke();
   }
 };
 

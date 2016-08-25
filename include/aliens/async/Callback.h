@@ -17,8 +17,18 @@ struct Callback {
   template<typename TCallable>
   Callback(const TCallable &callable): func_(callable) {}
 
-  void invoke(T value) {
+  void invoke(const T &value) {
     func_(value);
+  }
+  void invoke(T &&value) {
+    func_(std::move(value));
+  }
+
+  void operator()(const T &value) {
+    invoke(value);
+  }
+  void operator()(T &&value) {
+    invoke(std::move(value));
   }
 };
 
