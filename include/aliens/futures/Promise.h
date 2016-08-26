@@ -21,8 +21,8 @@ class FutureCore: public std::enable_shared_from_this<FutureCore<T>> {
   auto then(TCallable &&callable) -> Future<std::decltype(callable(std::declval<T>()))> {
     CHECK(!onResult_.hasValue());
     using result_type = std::decltype(callable(std::declval<T>()));
-    using MoveWrapper = folly::MoveWrapper<decltype(callable)>;
-    auto wrapper = folly::makeMoveWrapper(std::move(callable));
+    using MoveWrapper = MoveWrapper<decltype(callable)>;
+    auto wrapper = makeMoveWrapper(std::move(callable));
     auto self = shared_from_this();
     auto promise = std::make_shared<Promise<result_type>>();
     onResult_.assign([this, self, wrapper, promise](T result) {

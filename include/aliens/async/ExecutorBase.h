@@ -3,22 +3,22 @@
 #include <glog/logging.h>
 #include "aliens/async/VoidCallback.h"
 #include "aliens/async/ErrBack.h"
-
+#include "aliens/MoveWrapper.h"
 #include "aliens/async/EventHandlerBase.h"
 #include "aliens/NullablePointer.h"
 
 namespace aliens { namespace async {
 
-class ExecutorInterface {
+class Executor {
  public:
   virtual void stop(ErrBack&&) = 0;
   virtual void start(ErrBack&&) = 0;
   virtual void submit(VoidCallback&&, ErrBack&&) = 0;
-  virtual ~ExecutorInterface() = default;
+  virtual ~Executor() = default;
 };
 
 
-class ExecutorBase : public ExecutorInterface {
+class ExecutorBase : public Executor {
  public:
   class EventHandler : public EventHandlerBase<ExecutorBase>,
                        public std::enable_shared_from_this<EventHandler> {
@@ -41,8 +41,8 @@ class ExecutorBase : public ExecutorInterface {
     }
     virtual void onStartRequested(ErrBack &&cb) {
       auto self = shared_from_this();
-      using MWrap = folly::MoveWrapper<ErrBack>;
-      auto wrapped = folly::makeMoveWrapper(cb);
+      using MWrap = MoveWrapper<ErrBack>;
+      auto wrapped = makeMoveWrapper(cb);
       onBeforeStart([self, this, wrapped](const ErrBack::except_option &ex1) {
         if (ex1) {
             MWrap unwrapped = wrapped;
@@ -67,8 +67,8 @@ class ExecutorBase : public ExecutorInterface {
     }
     virtual void onStopRequested(ErrBack &&cb) {
       auto self = shared_from_this();
-      using MWrap = folly::MoveWrapper<ErrBack>;
-      auto wrapped = folly::makeMoveWrapper(cb);
+      using MWrap = MoveWrapper<ErrBack>;
+      auto wrapped = makeMoveWrapper(cb);
       onBeforeStop([self, this, wrapped](const ErrBack::except_option &ex1) {
         if (ex1) {
           MWrap unwrapped = wrapped;
@@ -93,10 +93,10 @@ class ExecutorBase : public ExecutorInterface {
     }
     virtual void onSubmitRequested(VoidCallback &&work, ErrBack &&cb) {
       auto self = shared_from_this();
-      using WorkWrap = folly::MoveWrapper<VoidCallback>;
-      using ErrWrap = folly::MoveWrapper<ErrBack>;
-      auto wrappedWork = folly::makeMoveWrapper(work);
-      auto wrappedCb = folly::makeMoveWrapper(cb);
+      using WorkWrap = MoveWrapper<VoidCallback>;
+      using ErrWrap = MoveWrapper<ErrBack>;
+      auto wrappedWork = makeMoveWrapper(work);
+      auto wrappedCb = makeMoveWrapper(cb);
       getParent()->doSubmit(
         [self, this, wrappedWork]() {
           WorkWrap unwrapped = wrappedWork;
@@ -105,7 +105,7 @@ class ExecutorBase : public ExecutorInterface {
         },
         [self, this, wrappedCb](const ErrBack::except_option &ex) {
           if (ex) {
-            onSubmitError(ex);
+            onSubmitError(ex.value());
           } else {
             onSubmitSuccess();
           }
@@ -138,7 +138,7 @@ class ExecutorBase : public ExecutorInterface {
     if (handler) {
       handler->onStartRequested(std::move(cb));
     } else {
-      doStart(std::move(handler));
+      doStart(std::move(cb));
     }
   }
 

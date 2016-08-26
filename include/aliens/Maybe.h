@@ -82,6 +82,9 @@ class Maybe {
   bool isEmpty() const {
     return !hasValue();
   }
+  void reset() {
+    maybeDelete();
+  }
   ~Maybe() {
     maybeDelete();
   }

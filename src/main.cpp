@@ -4,7 +4,7 @@
 #include <atomic>
 
 #include <memory>
-#include <folly/MoveWrapper.h>
+#include "aliens/MoveWrapper.h"
 #include <glog/logging.h>
 #include <boost/asio.hpp>
 #include "aliens/FixedBuffer.h"
@@ -85,9 +85,8 @@ class EchoClientHandler: public TCPSocket::EventHandler {
   }
 };
 
-int main() {
-  google::InstallFailureSignalHandler();
-  LOG(INFO) << "start";
+void runEcho() {
+  LOG(INFO) << "echo start";
   short portNo = 5017;
   auto ioService = new IOService;
   thread serverThread([portNo, ioService]() {
@@ -116,4 +115,9 @@ int main() {
   serverThread.join();
   clientThread.join();
   LOG(INFO) << "end";
+}
+
+int main() {
+  google::InstallFailureSignalHandler();
+  runEcho();
 }

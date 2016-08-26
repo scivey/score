@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <memory>
-
+#include <glog/logging.h>
+#include <spdlog/spdlog.h>
 using namespace std;
 
 struct Point1 {
@@ -24,16 +25,63 @@ class Something : public enable_shared_from_this<Something> {
 };
 
 
-TEST(TestSomething, TestWorks) {
-  std::weak_ptr<Something> weakPtr;
-  EXPECT_TRUE(weakPtr.expired());
-  {
-    auto shared = std::make_shared<Something>(17);
-    EXPECT_EQ(17, shared->getValue());
-    EXPECT_TRUE(weakPtr.expired());
-    weakPtr = shared;
-    EXPECT_FALSE(weakPtr.expired());
-    EXPECT_EQ(17, weakPtr.lock()->getValue());
+class XX {
+ public:
+  enum class State {
+    A = 1, B = 2, C =3, NOTHING = 4
+  };
+ protected:
+  mutable State state_ {State::NOTHING};
+ public:
+  State getState() {
+    return state_;
   }
-  EXPECT_TRUE(weakPtr.expired());
+  void run() & {
+    state_ = State::A;
+  }
+  void run() const& {
+    LOG(INFO) << "B!";
+    state_ = State::B;
+  }
+  void run() && {
+    LOG(INFO) << "C!";
+    state_ = State::C;
+  }
+  void reset() {
+    state_ = State::NOTHING;
+  }
+};
+
+TEST(TestXX, TestWorks1) {
+  XX thing;
+  EXPECT_EQ(XX::State::NOTHING, thing.getState());
+  auto func = [](XX& plainRef) {
+    plainRef.run();
+  };
+  func(thing);
+  EXPECT_EQ(XX::State::A, thing.getState());
 }
+
+TEST(TestXX, TestWorks2) {
+  XX thing;
+  EXPECT_EQ(XX::State::NOTHING, thing.getState());
+  auto func = [](const XX& constRef) {
+    constRef.run();
+  };
+  func(thing);
+  EXPECT_EQ(XX::State::B, thing.getState());
+}
+
+// TEST(TestXX, TestWorks3) {
+//   XX thing;
+//   EXPECT_EQ(XX::State::NOTHING, thing.getState());
+//   bool called = false;
+//   auto func = [&called](XX&& movedRef) {
+//     EXPECT_EQ(XX::State::NOTHING, movedRef.getState());
+//     movedRef.run();
+//     EXPECT_EQ(XX::State::C, movedRef.getState());
+//     called = true;
+//   };
+//   func(std::move(thing));
+//   EXPECT_TRUE(called);
+// }

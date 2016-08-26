@@ -22,7 +22,10 @@ class ErrBack {
   ErrBack(const err_func &func): func_(func){}
 
   template<typename TCallable>
-  ErrBack(TCallable &&callable): func_(std::move(callable)){}
+  ErrBack(TCallable &&callable) {
+    err_func fn = std::move(callable);
+    func_.assign(std::move(fn));
+  }
 
   template<typename TCallable>
   ErrBack(const TCallable &callable): func_(callable) {}
@@ -42,6 +45,10 @@ class ErrBack {
 
   void operator()(const except_option &ex) {
     invoke(ex);
+  }
+
+  void operator()(const std::exception &ex) {
+    invoke(except_option(ex));
   }
 
   void operator()() {

@@ -6,11 +6,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(GTEST ${EXTERNAL}/googletest)
+set(SPDLOG ${EXTERNAL}/spdlog)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
+    ${SPDLOG}/include
     /usr/local/include
 )
 
@@ -36,6 +38,7 @@ set(LIB_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
     ${SRC}/mem/standard.cpp
+    ${SRC}/locks/ThreadBaton.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})
@@ -68,6 +71,9 @@ set(TEST_SRC
     ${TEST_DIR}/test_SingletonWrapper.cpp
     ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
+    ${TEST_DIR}/locks/test_ThreadBaton.cpp
+    ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
+
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )

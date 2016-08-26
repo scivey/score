@@ -2,7 +2,6 @@
 #include <memory>
 #include <glog/logging.h>
 #include <boost/asio.hpp>
-#include <folly/MoveWrapper.h>
 #include "aliens/FixedBuffer.h"
 #include "aliens/async/EventHandlerBase.h"
 #include "aliens/async/VoidCallback.h"
@@ -95,10 +94,10 @@ class TCPSocket : public std::enable_shared_from_this<TCPSocket> {
   void readInto(std::unique_ptr<Buffer> buff) {
     auto self(shared_from_this());
     auto asioBuff = boost::asio::buffer(buff->body(), buff->capacity());
-    auto wrapped = folly::makeMoveWrapper(buff);
+    auto wrapped = makeMoveWrapper(buff);
     socket_.async_read_some(asioBuff,
       [this, self, wrapped](error_code ec, std::size_t nr) {
-        folly::MoveWrapper<std::unique_ptr<Buffer>> movedBuff = wrapped;
+        MoveWrapper<std::unique_ptr<Buffer>> movedBuff = wrapped;
         std::unique_ptr<Buffer> buff = movedBuff.move();
         if (ec) {
           handler_->onReadError(ec);
@@ -109,10 +108,10 @@ class TCPSocket : public std::enable_shared_from_this<TCPSocket> {
     );
   }
   void triggerWrite(std::unique_ptr<Buffer> buff) {
-    using MoveWrapper = folly::MoveWrapper<decltype(buff)>;
+    using MoveWrapper = MoveWrapper<decltype(buff)>;
     auto self(shared_from_this());
     auto asioBuff = boost::asio::buffer(buff->body(), buff->capacity());
-    auto wrapped = folly::makeMoveWrapper(buff);
+    auto wrapped = makeMoveWrapper(buff);
     boost::asio::async_write(socket_, asioBuff,
       [this, self, wrapped](error_code ec, std::size_t nr) {
         MoveWrapper movedBuff = wrapped;
