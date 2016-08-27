@@ -42,7 +42,7 @@ set(LIB_SRC
     ${SRC}/exceptions/exceptions.cpp
     ${SRC}/reactor/FileDescriptor.cpp
     ${SRC}/reactor/EpollFd.cpp
-
+    ${SRC}/reactor/EpollReactor.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})
