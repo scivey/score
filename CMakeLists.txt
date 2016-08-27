@@ -48,6 +48,7 @@ set(LIB_SRC
     ${SRC}/reactor/ServerSocketTask.cpp
     ${SRC}/reactor/ClientSocketTask.cpp
     ${SRC}/reactor/TCPSocket.cpp
+    ${SRC}/reactor/ReactorThread.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})

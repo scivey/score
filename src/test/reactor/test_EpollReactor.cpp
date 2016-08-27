@@ -35,6 +35,7 @@
 #include "aliens/reactor/ClientSocketTask.h"
 #include "aliens/reactor/AcceptSocketTask.h"
 #include "aliens/reactor/ServerSocketTask.h"
+#include "aliens/reactor/ReactorThread.h"
 
 using namespace std;
 using aliens::async::ErrBack;
@@ -53,6 +54,7 @@ using aliens::reactor::SocketAddr;
 using aliens::reactor::ServerSocketTask;
 using aliens::reactor::ClientSocketTask;
 using aliens::reactor::AcceptSocketTask;
+using aliens::reactor::ReactorThread;
 
 
 
@@ -65,128 +67,6 @@ using aliens::reactor::AcceptSocketTask;
 
 
 
-
-class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
- protected:
-  std::unique_ptr<EpollReactor> reactor_ {nullptr};
-  std::unique_ptr<std::thread> thread_ {nullptr};
-  ReactorThread(){}
-  std::atomic<bool> running_ {false};
-  aliens::Maybe<ErrBack> onStopped_;
-  Synchronized<std::queue<VoidCallback>> toRun_;
- public:
-  static std::shared_ptr<ReactorThread> createShared() {
-    std::shared_ptr<ReactorThread> instance{new ReactorThread};
-    instance->reactor_ = EpollReactor::createUnique();
-    return instance;
-  }
-  EpollReactor* getReactor() {
-    return reactor_.get();
-  }
-  bool isRunning() const {
-    return running_.load();
-  }
-  void start() {
-    CHECK(!isRunning());
-    bool expected = false;
-    bool desired = true;
-    if (running_.compare_exchange_strong(expected, desired)) {
-      auto self = shared_from_this();
-      thread_.reset(new std::thread([this, self]() {
-        while (isRunning()) {
-          reactor_->runForDuration(std::chrono::milliseconds(50));
-          auto queueHandle = toRun_.getHandle();
-          while (!queueHandle->empty()) {
-            VoidCallback func = std::move(queueHandle->front());
-            queueHandle->pop();
-            func();
-          }
-        }
-        if (onStopped_.hasValue()) {
-          onStopped_.value()();
-        }
-      }));
-    } else {
-      throw BaseError("already started!");
-    }
-  }
-  void stop(ErrBack &&cb) {
-    if (!isRunning()) {
-      cb(BaseError("not running!"));
-      return;
-    }
-    onStopped_.assign(std::move(cb));
-    bool expected = true;
-    bool desired = false;
-    if (running_.compare_exchange_strong(expected, desired)) {
-      ; // do nothing; cb will be called by the loop in `start()`
-    } else {
-      onStopped_.value()(BaseError("someone else stopped before we could. race condition?"));
-    }
-  }
-
- protected:
-  // NB must be called from event loop thread.
-  void addTaskImpl(EpollReactor::Task *task) {
-    reactor_->addTask(task);
-  }
-
- public:
-  void addTask(EpollReactor::Task *task) {
-    auto self = shared_from_this();
-    runInEventThread([self, this, task]() {
-      addTaskImpl(task);
-    });
-  }
-  void addTask(EpollReactor::Task *task, VoidCallback &&cb) {
-    auto self = shared_from_this();
-    auto cbWrapper = aliens::makeMoveWrapper(std::forward<VoidCallback>(cb));
-    runInEventThread([self, this, task, cbWrapper]() {
-      addTaskImpl(task);
-      aliens::MoveWrapper<VoidCallback> unwrapped = cbWrapper;
-      VoidCallback movedCb = unwrapped.move();
-      movedCb();
-    });
-  }
-  void runInEventThread(VoidCallback &&cb) {
-    auto handle = toRun_.getHandle();
-    handle->push(std::move(cb));
-  }
-  void runInEventThread(VoidCallback &&cb, ErrBack &&onFinish) {
-    auto cbWrapper = aliens::makeMoveWrapper(
-      std::forward<VoidCallback>(cb)
-    );
-    auto doneWrapper = aliens::makeMoveWrapper(
-      std::forward<ErrBack>(onFinish)
-    );
-    auto self = shared_from_this();
-    runInEventThread([this, self, cbWrapper, doneWrapper]() {
-      MoveWrapper<VoidCallback> movedCb = cbWrapper;
-      VoidCallback unwrappedCb = movedCb.move();
-      MoveWrapper<ErrBack> movedDoneCb = doneWrapper;
-      ErrBack unwrappedDoneCb = movedDoneCb.move();
-      bool raised = false;
-      try {
-        unwrappedCb();
-      } catch (const std::exception &ex) {
-        raised = true;
-        unwrappedDoneCb(ex);
-      }
-      if (!raised) {
-        unwrappedDoneCb();
-      }
-    });
-  }
-  void join() {
-    if (!isRunning()) {
-      return;
-    }
-    while (running_.load()) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    }
-    thread_->join();
-  }
-};
 
 TEST(TestEpollReactor, TestConstruction) {
   auto reactor = EpollReactor::create();
