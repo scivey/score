@@ -40,6 +40,8 @@ set(LIB_SRC
     ${SRC}/mem/standard.cpp
     ${SRC}/locks/ThreadBaton.cpp
     ${SRC}/exceptions/exceptions.cpp
+    ${SRC}/reactor/FileDescriptor.cpp
+    ${SRC}/reactor/EpollFd.cpp
 
 )
 

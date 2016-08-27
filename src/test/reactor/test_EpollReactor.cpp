@@ -27,6 +27,8 @@
 #include "aliens/FixedBuffer.h"
 #include "aliens/exceptions/exceptions.h"
 #include "aliens/exceptions/macros.h"
+#include "aliens/reactor/FileDescriptor.h"
+#include "aliens/reactor/EpollFd.h"
 
 using namespace std;
 using aliens::async::ErrBack;
@@ -37,81 +39,10 @@ using aliens::Buffer;
 using aliens::exceptions::BaseError;
 using aliens::exceptions::SystemError;
 
+using aliens::reactor::FileDescriptor;
+using aliens::reactor::EpollFd;
 
-class FileDescriptor {
- protected:
-  int fd_ {0};
-  FileDescriptor(){}
-  FileDescriptor(int fd): fd_(fd){}
-  FileDescriptor(const FileDescriptor&) = delete;
-  FileDescriptor& operator=(const FileDescriptor&) = delete;
 
-  void maybeClose() {
-    if (fd_ > 0) {
-      ::close(fd_);
-      fd_ = 0;
-    }
-  }
- public:
-  static FileDescriptor fromIntExcept(int fd) {
-    CHECK(fd >= 0);
-    return FileDescriptor(fd);
-  }
-  FileDescriptor(FileDescriptor &&other): fd_(other.fd_) {
-    other.fd_ = 0;
-  }
-  FileDescriptor& operator=(FileDescriptor &&other) {
-    int temp = other.fd_;
-    other.fd_ = fd_;
-    fd_ = temp;
-    return *this;
-  }
-  ~FileDescriptor() {
-    maybeClose();
-  }
-  int get() {
-    return fd_;
-  }
-  bool valid() const {
-    return fd_ > 0;
-  }
-  explicit operator bool() const {
-    return valid();
-  }
-  void makeNonBlocking() {
-    CHECK(valid());
-    int flags, status;
-    flags = fcntl(fd_, F_GETFL, 0);
-    if (flags == -1) {
-      throw SystemError(errno);
-    }
-    flags |= O_NONBLOCK;
-    status = fcntl(fd_, F_SETFL, flags);
-    ALIENS_CHECK_SYSCALL(status);
-  }
-  void close() {
-    CHECK(valid());
-    ALIENS_CHECK_SYSCALL(::close(fd_));
-  }
-};
-
-class EpollFd {
- protected:
-  FileDescriptor fd_;
-  EpollFd(FileDescriptor &&descriptor)
-    : fd_(std::forward<FileDescriptor>(descriptor)) {}
-
- public:
-  static EpollFd create() {
-    int fd = epoll_create1(EPOLL_CLOEXEC);
-    ALIENS_CHECK_SYSCALL(fd);
-    return EpollFd(FileDescriptor::fromIntExcept(fd));
-  }
-  int get() {
-    CHECK(!!fd_);
-    return fd_.get();
-  }
-};
 
 bool epollEventHasError(const epoll_event *evt) {
   return evt->events & EPOLLERR
