@@ -9,5 +9,15 @@ class BaseError: public std::runtime_error {
   BaseError(const T& msg): std::runtime_error(msg){}
 };
 
+class SystemError: public BaseError {
+ protected:
+  int errno_ {0};
+ public:
+  SystemError(int err, const std::string &msg);
+  SystemError(int err);
+  int getErrno() const;
+  static SystemError fromErrno(int err, const std::string &msg);
+};
+
 
 }} // aliens::exceptions

@@ -25,7 +25,8 @@
 #include "aliens/Maybe.h"
 #include "aliens/MoveWrapper.h"
 #include "aliens/FixedBuffer.h"
-
+#include "aliens/exceptions/exceptions.h"
+#include "aliens/exceptions/macros.h"
 
 using namespace std;
 using aliens::async::ErrBack;
@@ -33,45 +34,8 @@ using aliens::async::VoidCallback;
 using aliens::locks::Synchronized;
 using aliens::MoveWrapper;
 using aliens::Buffer;
-
-class BaseError: public std::runtime_error {
- public:
-  template<typename T>
-  BaseError(const T& msg): std::runtime_error(msg){}
-};
-
-class SystemError: public BaseError {
- protected:
-  int errno_ {0};
- public:
-  // SystemError(int err): BaseError(strerror(err)), errno_(err) {}
-  SystemError(int err, const std::string &msg)
-    : BaseError(msg), errno_(err) {}
-  SystemError(int err)
-    : BaseError(strerror(err)), errno_(err){}
-  int getErrno() const {
-    return errno_;
-  }
-  static SystemError fromErrno(int err, const std::string &msg) {
-    std::ostringstream oss;
-    oss << "ERR [" << err << ":'" << strerror(err) << "'] : '" << msg << "'";
-    return SystemError(err, oss.str());
-  }
-};
-
-#define CHECK_SYSCALL(expr) \
-  do { \
-    if ((expr) < 0) { \
-      throw SystemError(errno); \
-    } \
-  } while (0); \
-
-#define CHECK_SYSCALL2(expr, msg) \
-  do { \
-    if ((expr) < 0) { \
-      throw SystemError::fromErrno(errno, msg); \
-    } \
-  } while (0); \
+using aliens::exceptions::BaseError;
+using aliens::exceptions::SystemError;
 
 
 class FileDescriptor {
@@ -123,11 +87,11 @@ class FileDescriptor {
     }
     flags |= O_NONBLOCK;
     status = fcntl(fd_, F_SETFL, flags);
-    CHECK_SYSCALL(status);
+    ALIENS_CHECK_SYSCALL(status);
   }
   void close() {
     CHECK(valid());
-    CHECK_SYSCALL(::close(fd_));
+    ALIENS_CHECK_SYSCALL(::close(fd_));
   }
 };
 
@@ -140,7 +104,7 @@ class EpollFd {
  public:
   static EpollFd create() {
     int fd = epoll_create1(EPOLL_CLOEXEC);
-    CHECK_SYSCALL(fd);
+    ALIENS_CHECK_SYSCALL(fd);
     return EpollFd(FileDescriptor::fromIntExcept(fd));
   }
   int get() {
@@ -201,7 +165,7 @@ class EpollReactor {
     epoll_event evt;
     evt.data.ptr = (void*) task;
     evt.events = EPOLLIN | EPOLLET;
-    CHECK_SYSCALL(epoll_ctl(
+    ALIENS_CHECK_SYSCALL(epoll_ctl(
       epollFd_.get(), EPOLL_CTL_ADD, task->getFd(), &evt
     ));
     task->setReactor(this);
@@ -313,7 +277,7 @@ class TCPSocket {
     );
     LOG(INFO) << "made socket.";
 
-    CHECK_SYSCALL2(sockFd, "socket()");
+    ALIENS_CHECK_SYSCALL2(sockFd, "socket()");
     LOG(INFO) << "connecting...";
     auto addrIn = addr.to_sockaddr_in();
     socklen_t addrLen = sizeof addrIn;
@@ -343,7 +307,7 @@ class TCPSocket {
         freeaddrinfo(result);
       }
     });
-    CHECK_SYSCALL(getaddrinfo(nullptr, portStr.c_str(), &hints, &result));
+    ALIENS_CHECK_SYSCALL(getaddrinfo(nullptr, portStr.c_str(), &hints, &result));
     int status, sfd;
     for (rp = result; rp != nullptr; rp = rp->ai_next) {
       sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
@@ -352,12 +316,12 @@ class TCPSocket {
       }
       {
         int shouldReuse = 1;
-        CHECK_SYSCALL(setsockopt(
+        ALIENS_CHECK_SYSCALL(setsockopt(
           sfd, SOL_SOCKET, SO_REUSEADDR,
           (const char*) &shouldReuse,
           sizeof(shouldReuse)
         ));
-        CHECK_SYSCALL(setsockopt(
+        ALIENS_CHECK_SYSCALL(setsockopt(
           sfd, SOL_SOCKET, SO_REUSEPORT,
           (const char*) &shouldReuse,
           sizeof(shouldReuse)
@@ -382,7 +346,7 @@ class TCPSocket {
     return fd_.valid();
   }
   void listen() {
-    CHECK_SYSCALL(::listen(fd_.get(), SOMAXCONN));
+    ALIENS_CHECK_SYSCALL(::listen(fd_.get(), SOMAXCONN));
   }
   void stop() {
     fd_.close();

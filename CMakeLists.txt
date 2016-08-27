@@ -39,6 +39,8 @@ set(LIB_SRC
     ${SRC}/FixedBuffer.cpp
     ${SRC}/mem/standard.cpp
     ${SRC}/locks/ThreadBaton.cpp
+    ${SRC}/exceptions/exceptions.cpp
+
 )
 
 add_library(alienscommon ${LIB_SRC})
