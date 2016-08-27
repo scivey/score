@@ -31,6 +31,11 @@
 #include "aliens/reactor/EpollFd.h"
 #include "aliens/reactor/SocketAddr.h"
 #include "aliens/reactor/EpollReactor.h"
+#include "aliens/reactor/TCPSocket.h"
+#include "aliens/reactor/ClientSocketTask.h"
+#include "aliens/reactor/AcceptSocketTask.h"
+#include "aliens/reactor/ServerSocketTask.h"
+
 using namespace std;
 using aliens::async::ErrBack;
 using aliens::async::VoidCallback;
@@ -40,287 +45,26 @@ using aliens::Buffer;
 using aliens::exceptions::BaseError;
 using aliens::exceptions::SystemError;
 
+using aliens::reactor::TCPSocket;
 using aliens::reactor::FileDescriptor;
 using aliens::reactor::EpollFd;
 using aliens::reactor::EpollReactor;
 using aliens::reactor::SocketAddr;
-
-
-
-
-class AcceptSocketTask;
-class ServerSocketTask;
-class ClientSocketTask;
-
-class TCPSocket {
- protected:
-  FileDescriptor fd_;
-  short localPort_ {0};
-  short remotePort_ {0};
-  std::string remoteHost_ {""};
-  TCPSocket(FileDescriptor &&fd)
-    : fd_(std::forward<FileDescriptor>(fd)){}
-
-  int getFdNo() {
-    return fd_.get();
-  }
- public:
-  friend class AcceptSocketTask;
-  friend class ServerSocketTask;
-  friend class ClientSocketTask;
-  static TCPSocket fromAccepted(FileDescriptor &&fd, const char* remoteHost, const char *remotePort) {
-    TCPSocket sock(std::forward<FileDescriptor>(fd));
-    sock.remoteHost_ = remoteHost;
-    int remPort = atol(remotePort);
-    CHECK(remPort <= 65535);
-    sock.remotePort_ = (short) remPort;
-    return sock;
-  }
-  static TCPSocket connect(SocketAddr addr) {
-    const int protocolPlaceholder = 0;
-    int sockFd = ::socket(
-      AF_INET,
-      SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
-      protocolPlaceholder
-    );
-    LOG(INFO) << "made socket.";
-
-    ALIENS_CHECK_SYSCALL2(sockFd, "socket()");
-    LOG(INFO) << "connecting...";
-    auto addrIn = addr.to_sockaddr_in();
-    socklen_t addrLen = sizeof addrIn;
-    int rc = ::connect(sockFd, (struct sockaddr*) &addrIn, addrLen);
-    if (rc < 0 && errno != EINPROGRESS) {
-      throw SystemError::fromErrno(errno, "connect()");
-    }
-    LOG(INFO) << "connected.";
-    auto desc = FileDescriptor::fromIntExcept(sockFd);
-    TCPSocket sock(std::move(desc));
-    sock.remotePort_ = addr.getPort();
-    sock.remoteHost_ = addr.getHost();
-    return sock;
-  }
-  static TCPSocket bindPort(short portno) {
-    ostringstream oss;
-    oss << portno;
-    auto portStr = oss.str();
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC; // either ipv4 or ipv6
-    hints.ai_socktype = SOCK_STREAM; // tcp
-    hints.ai_flags = AI_PASSIVE; // any interface
-    struct addrinfo *result, *rp;
-    aliens::ScopeGuard guard([&result]() {
-      if (result) {
-        freeaddrinfo(result);
-      }
-    });
-    ALIENS_CHECK_SYSCALL(getaddrinfo(nullptr, portStr.c_str(), &hints, &result));
-    int status, sfd;
-    for (rp = result; rp != nullptr; rp = rp->ai_next) {
-      sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-      if (sfd == -1) {
-        continue;
-      }
-      {
-        int shouldReuse = 1;
-        ALIENS_CHECK_SYSCALL(setsockopt(
-          sfd, SOL_SOCKET, SO_REUSEADDR,
-          (const char*) &shouldReuse,
-          sizeof(shouldReuse)
-        ));
-        ALIENS_CHECK_SYSCALL(setsockopt(
-          sfd, SOL_SOCKET, SO_REUSEPORT,
-          (const char*) &shouldReuse,
-          sizeof(shouldReuse)
-        ));
-      }
-      status = bind(sfd, rp->ai_addr, rp->ai_addrlen);
-      if (status == 0) {
-        break;
-      }
-      close(sfd);
-    }
-    if (!rp) {
-      throw BaseError("could not bind.");
-    }
-    auto desc = FileDescriptor::fromIntExcept(sfd);
-    desc.makeNonBlocking();
-    TCPSocket sock(std::move(desc));
-    sock.localPort_ = portno;
-    return sock;
-  }
-  bool valid() const {
-    return fd_.valid();
-  }
-  void listen() {
-    ALIENS_CHECK_SYSCALL(::listen(fd_.get(), SOMAXCONN));
-  }
-  void stop() {
-    fd_.close();
-  }
-};
-
-
-class ServerSocketTask: public EpollReactor::Task {
- protected:
-  TCPSocket sock_;
-  const size_t kReadBuffSize = 512;
-  void doRead() {
-    for (;;) {
-      char buff[kReadBuffSize];
-      ssize_t count = read(sock_.getFdNo(), buff, kReadBuffSize);
-      if (count == -1) {
-        if (errno == EAGAIN) {
-          break;
-        }
-      } else if (count == 0) {
-        onEOF();
-        break;
-      } else {
-        onRead(buff, count);
-      }
-    }
-  }
- public:
-  ServerSocketTask(TCPSocket &&sock)
-    : sock_(std::forward<TCPSocket>(sock)) {}
-  virtual void onEvent() override {
-    LOG(INFO) << "ServerSocketTask onEvent";
-    doRead();
-  }
-  virtual void onError() override {
-    LOG(INFO) << "ServerSocketTask onError";
-  }
-  virtual void onRead(char* buff, ssize_t buffLen) {
-    LOG(INFO) << "onRead! [" << buffLen << "] : '" << buff << "'";
-  }
-  virtual void onEOF() {
-    LOG(INFO) << "onEOF!";
-  }
-  int getFd() override {
-    return sock_.fd_.get();
-  }
-};
-
-class AcceptSocketTask: public EpollReactor::Task {
- protected:
-  TCPSocket sock_;
-  void doAccept() {
-    for (;;) {
-      struct sockaddr inAddr;
-      socklen_t inLen;
-      char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-      inLen = sizeof inAddr;
-      int inFd = accept(getFd(), &inAddr, &inLen);
-      if (inFd == -1) {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-          // all incoming connections processed.
-          break;
-        } else {
-          onAcceptError(errno);
-          break;
-        }
-      }
-      int status = getnameinfo(
-        &inAddr, inLen,
-        hbuf, sizeof hbuf,
-        sbuf, sizeof sbuf, NI_NUMERICHOST | NI_NUMERICSERV);
-      if (status == 0) {
-        onAcceptSuccess(inFd, hbuf, sbuf);
-      } else {
-        onAcceptError(errno);
-      }
-    }
-  }
- public:
-  AcceptSocketTask(TCPSocket &&sock)
-    : sock_(std::forward<TCPSocket>(sock)) {}
-
-  void onEvent() override {
-    LOG(INFO) << "onEvent! Accepting....";
-    doAccept();
-  }
-  void onError() override {
-    LOG(INFO) << "onError!";
-  }
-  int getFd() override {
-    return sock_.fd_.get();
-  }
-  TCPSocket& getSocket() {
-    return sock_;
-  }
-  virtual void onAcceptSuccess(int inFd, const char *host, const char *port) {
-    LOG(INFO) << "onAcceptSuccess : [" << inFd << "] " << host << ":" << port;
-    auto fd = FileDescriptor::fromIntExcept(inFd);
-    fd.makeNonBlocking();
-    auto sock = TCPSocket::fromAccepted(
-      std::move(fd), host, port
-    );
-    auto newTask = new ServerSocketTask(std::move(sock));
-    LOG(INFO) << "made new task.";
-    getReactor()->addTask(newTask);
-  }
-  virtual void onAcceptError(int err) {
-    LOG(INFO) << "onAcceptError : " << strerror(err);
-  }
-};
+using aliens::reactor::ServerSocketTask;
+using aliens::reactor::ClientSocketTask;
+using aliens::reactor::AcceptSocketTask;
 
 
 
 
 
 
-class ClientSocketTask: public EpollReactor::Task {
- public:
-  class EventHandler {
-   protected:
-    ClientSocketTask *task_ {nullptr};
-    void setTask(ClientSocketTask *task) {
-      task_ = task;
-    }
-   public:
-    friend class ClientSocketTask;
-    virtual ClientSocketTask* getTask() {
-      return task_;
-    }
-    virtual void onConnectSuccess() = 0;
-    virtual void onConnectError(const std::exception&) = 0;
-    virtual void onWritable() = 0;
-    virtual void onReadable() = 0;
-    virtual void write(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
-      task_->write(std::move(buff), std::forward<ErrBack>(cb));
-    }
-    virtual void readInto(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
-      task_->readInto(std::move(buff), std::forward<ErrBack>(cb));
-    }
-  };
-  friend class EventHandler;
- protected:
-  TCPSocket sock_;
-  EventHandler *handler_ {nullptr};
-  void readInto(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
-    LOG(INFO) << "readInto()";
-  }
-  void write(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
-    LOG(INFO) << "write()";
-  }
- public:
-  ClientSocketTask(TCPSocket &&sock, EventHandler *handler)
-    : sock_(std::forward<TCPSocket>(sock)), handler_(handler){
-    handler_->setTask(this);
-  }
-  virtual void onEvent() override {
-    LOG(INFO) << "ClientSocketTask onEvent";
-    // doRead();
-  }
-  virtual void onError() override {
-    LOG(INFO) << "ClientSocketTask onError";
-  }
-  int getFd() override {
-    return sock_.getFdNo();
-  }
-};
+
+
+
+
+
+
 
 class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
  protected:

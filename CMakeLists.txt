@@ -44,6 +44,10 @@ set(LIB_SRC
     ${SRC}/reactor/EpollFd.cpp
     ${SRC}/reactor/EpollReactor.cpp
     ${SRC}/reactor/SocketAddr.cpp
+    ${SRC}/reactor/AcceptSocketTask.cpp
+    ${SRC}/reactor/ServerSocketTask.cpp
+    ${SRC}/reactor/ClientSocketTask.cpp
+    ${SRC}/reactor/TCPSocket.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})
