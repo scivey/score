@@ -43,6 +43,7 @@ set(LIB_SRC
     ${SRC}/reactor/FileDescriptor.cpp
     ${SRC}/reactor/EpollFd.cpp
     ${SRC}/reactor/EpollReactor.cpp
+    ${SRC}/reactor/SocketAddr.cpp
 )
 
 add_library(alienscommon ${LIB_SRC})

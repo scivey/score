@@ -29,6 +29,7 @@
 #include "aliens/exceptions/macros.h"
 #include "aliens/reactor/FileDescriptor.h"
 #include "aliens/reactor/EpollFd.h"
+#include "aliens/reactor/SocketAddr.h"
 #include "aliens/reactor/EpollReactor.h"
 using namespace std;
 using aliens::async::ErrBack;
@@ -42,135 +43,10 @@ using aliens::exceptions::SystemError;
 using aliens::reactor::FileDescriptor;
 using aliens::reactor::EpollFd;
 using aliens::reactor::EpollReactor;
+using aliens::reactor::SocketAddr;
 
 
 
-// bool epollEventHasError(const epoll_event *evt) {
-//   return evt->events & EPOLLERR
-//     || evt->events & EPOLLHUP
-//     || (!evt->events & EPOLLIN);
-// }
-
-// bool epollEventHasError(const epoll_event &evt) {
-//   return epollEventHasError(&evt);
-// }
-
-
-// class EpollReactor {
-//  public:
-//   static const size_t kMaxEvents = 1024;
-//   class Task {
-//    protected:
-//     EpollReactor *reactor_ {nullptr};
-//     void setReactor(EpollReactor *reactor) {
-//       reactor_ = reactor;
-//     }
-//    public:
-//     friend class EpollReactor;
-//     EpollReactor* getReactor() const {
-//       return reactor_;
-//     }
-//     virtual int getFd() = 0;
-//     virtual void onError() = 0;
-//     virtual void onEvent() = 0;
-//   };
-//  protected:
-//   bool running_ {false};
-//   std::vector<Task*> tasks_;
-//   epoll_event events_[kMaxEvents];
-//   EpollFd epollFd_;
-//   EpollReactor(EpollFd &&fd)
-//     : epollFd_(std::forward<EpollFd>(fd)) {
-//     memset((void*) &events_, '\0', sizeof(events_));
-//   }
-//   static EpollReactor* createPtr() {
-//     return new EpollReactor(EpollFd::create());
-//   }
-//  public:
-//   static EpollReactor create() {
-//     return EpollReactor(EpollFd::create());
-//   }
-//   static std::unique_ptr<EpollReactor> createUnique() {
-//     return std::unique_ptr<EpollReactor>(createPtr());
-//   }
-//   void addTask(Task *task) {
-//     epoll_event evt;
-//     evt.data.ptr = (void*) task;
-//     evt.events = EPOLLIN | EPOLLET;
-//     ALIENS_CHECK_SYSCALL(epoll_ctl(
-//       epollFd_.get(), EPOLL_CTL_ADD, task->getFd(), &evt
-//     ));
-//     task->setReactor(this);
-//     tasks_.push_back(task);
-//   }
-//   int runOnce() {
-//     int nEvents = epoll_wait(epollFd_.get(), events_, kMaxEvents, 20);
-//     for (size_t i = 0; i < nEvents; i++) {
-//       auto task = (Task*) events_[i].data.ptr;
-//       if (epollEventHasError(events_[i])) {
-//         task->onError();
-//         continue;
-//       } else {
-//         task->onEvent();
-//       }
-//     }
-//     return nEvents;
-//   }
-//   void loopForever() {
-//     running_ = true;
-//     for (;;) {
-//       runOnce();
-//       if (!running_) {
-//         break;
-//       }
-//     }
-//   }
-//   using msec = std::chrono::milliseconds;
-//   void runForDuration(msec duration) {
-//     auto start = std::chrono::system_clock::now().time_since_epoch();
-//     for (;;) {
-//       runOnce();
-//       auto now = std::chrono::system_clock::now().time_since_epoch();
-//       auto elapsed = now - start;
-//       if (elapsed >= duration) {
-//         break;
-//       }
-//     }
-//   }
-//   void stop() {
-//     CHECK(running_);
-//     running_ = false;
-//   }
-//   bool isRunning() const {
-//     return running_;
-//   }
-// };
-
-
-class SocketAddr {
- protected:
-  std::string host_;
-  short port_;
- public:
-  SocketAddr(const std::string &host, short port)
-    : host_(host), port_(port){}
-  const std::string& getHost() const {
-    return host_;
-  }
-  short getPort() const {
-    return port_;
-  }
-  struct sockaddr_in to_sockaddr_in() const {
-    struct sockaddr_in result;
-    memset(&result, 0, sizeof(result));
-    result.sin_family = AF_INET;
-    result.sin_port = htons(port_);
-    if (inet_aton(host_.c_str(), &result.sin_addr) == 0) {
-      throw BaseError("invalid address.");
-    }
-    return result;
-  }
-};
 
 class AcceptSocketTask;
 class ServerSocketTask;
