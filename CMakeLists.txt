@@ -72,7 +72,8 @@ set(TEST_SRC
     ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
     ${TEST_DIR}/locks/test_ThreadBaton.cpp
-    ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
+    # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
+    ${TEST_DIR}/reactor/test_EpollReactor.cpp
 
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp

@@ -16,16 +16,13 @@ ThreadBaton::AlreadyPosted::AlreadyPosted()
 
 
 void ThreadBaton::post() {
-  LOG(INFO) << "start post().";
   std::unique_lock<std::mutex> lk{mutex_};
   doPost();
   lk.unlock();
   condition_.notify_one();
-  LOG(INFO) << "end post().";
 }
 
 void ThreadBaton::wait() {
-  LOG(INFO) << "start wait().";
   if (posted_.load()) {
     // fast path
     return;
@@ -48,7 +45,6 @@ void ThreadBaton::wait() {
     }
     this_thread::sleep_for(chrono::milliseconds(200));
   }
-  LOG(INFO) << "end wait()";
 }
 
 bool ThreadBaton::isDone() const {
