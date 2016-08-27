@@ -32,7 +32,8 @@ class ClientSocketTask: public EpollReactor::Task {
   void write(std::unique_ptr<Buffer> buff, async::ErrBack &&cb);
  public:
   ClientSocketTask(TCPSocket &&sock, EventHandler *handler);
-  virtual void onEvent() override;
+  virtual void onReadable() override;
+  virtual void onWritable() override;
   virtual void onError() override;
   int getFd() override;
 };

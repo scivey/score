@@ -10,7 +10,8 @@ class AcceptSocketTask: public EpollReactor::Task {
   void doAccept();
  public:
   AcceptSocketTask(TCPSocket &&sock);
-  void onEvent() override;
+  void onWritable() override;
+  void onReadable() override;
   void onError() override;
   int getFd() override;
   TCPSocket& getSocket();

@@ -39,9 +39,13 @@ void AcceptSocketTask::doAccept() {
 AcceptSocketTask::AcceptSocketTask(TCPSocket &&sock)
   : sock_(std::forward<TCPSocket>(sock)) {}
 
-void AcceptSocketTask::onEvent() {
+void AcceptSocketTask::onReadable() {
   LOG(INFO) << "onEvent! Accepting....";
   doAccept();
+}
+
+void AcceptSocketTask::onWritable() {
+  LOG(INFO) << "AcceptSocketTask::onWritable() : should this happen?";
 }
 
 void AcceptSocketTask::onError() {

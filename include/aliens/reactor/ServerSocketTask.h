@@ -11,7 +11,8 @@ class ServerSocketTask: public EpollReactor::Task {
   void doRead();
  public:
   ServerSocketTask(TCPSocket &&sock);
-  virtual void onEvent() override;
+  virtual void onReadable() override;
+  virtual void onWritable() override;
   virtual void onError() override;
   virtual void onRead(char* buff, ssize_t buffLen);
   virtual void onEOF();

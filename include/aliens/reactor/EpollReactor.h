@@ -20,7 +20,8 @@ class EpollReactor {
     EpollReactor* getReactor() const;
     virtual int getFd() = 0;
     virtual void onError() = 0;
-    virtual void onEvent() = 0;
+    virtual void onReadable() = 0;
+    virtual void onWritable() = 0;
   };
  protected:
   bool running_ {false};

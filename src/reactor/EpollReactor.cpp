@@ -46,7 +46,7 @@ std::unique_ptr<EpollReactor> EpollReactor::createUnique() {
 void EpollReactor::addTask(Task *task) {
   epoll_event evt;
   evt.data.ptr = (void*) task;
-  evt.events = EPOLLIN | EPOLLET;
+  evt.events = EPOLLIN | EPOLLOUT | EPOLLET;
   ALIENS_CHECK_SYSCALL(epoll_ctl(
     epollFd_.get(), EPOLL_CTL_ADD, task->getFd(), &evt
   ));
@@ -61,8 +61,12 @@ int EpollReactor::runOnce() {
     if (epollEventHasError(events_[i])) {
       task->onError();
       continue;
-    } else {
-      task->onEvent();
+    }
+    if (events_[i].events & EPOLLIN) {
+      task->onReadable();
+    }
+    if (events_[i].events & EPOLLOUT) {
+      task->onWritable();
     }
   }
   return nEvents;

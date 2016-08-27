@@ -26,6 +26,8 @@ void ClientSocketTask::readInto(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
 
 void ClientSocketTask::write(std::unique_ptr<Buffer> buff, ErrBack &&cb) {
   LOG(INFO) << "write()";
+  auto b2 = buff.release();
+  ::write(getFd(), b2->body(), b2->currentLen());
 }
 
 ClientSocketTask::ClientSocketTask(TCPSocket &&sock, EventHandler *handler)
@@ -33,9 +35,14 @@ ClientSocketTask::ClientSocketTask(TCPSocket &&sock, EventHandler *handler)
   handler_->setTask(this);
 }
 
-void ClientSocketTask::onEvent() {
-  LOG(INFO) << "ClientSocketTask onEvent";
-  // doRead();
+void ClientSocketTask::onReadable() {
+  LOG(INFO) << "ClientSocketTask onReadable";
+  handler_->onReadable();
+}
+
+void ClientSocketTask::onWritable() {
+  LOG(INFO) << "ClientSocketTask onWritable";
+  handler_->onWritable();
 }
 
 void ClientSocketTask::onError() {
