@@ -1,15 +1,15 @@
 #pragma once
 
 #include <memory>
-#include "aliens/reactor/ReflectedEpollTask.h"
+#include "aliens/reactor/ReflectedFdHandlerTask.h"
 
 namespace aliens { namespace reactor {
 
 template<typename T>
 class FdHandlerBase {
  public:
-  friend class ReflectedEpollTask<T>;
-  using EpollTask = ReflectedEpollTask<T>;
+  friend class ReflectedFdHandlerTask<T>;
+  using EpollTask = ReflectedFdHandlerTask<T>;
  protected:
   FileDescriptor fd_;
   EpollTask epollTask_;
@@ -17,14 +17,14 @@ class FdHandlerBase {
     return (T*) this;
   }
  public:
-  void onReadable() {
-    getThis()->triggerReadable();
+  void triggerReadable() {
+    getThis()->onReadable();
   }
-  void onWritable() {
-    getThis()->triggerWritable();
+  void triggerWritable() {
+    getThis()->onWritable();
   }
-  void onError() {
-    getThis()->triggerError();
+  void triggerError() {
+    getThis()->onError();
   }
   EpollTask* getEpollTask() {
     return &epollTask_;
