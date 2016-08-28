@@ -21,9 +21,8 @@ class AsyncBytesTransport {
   };
   virtual void setReadHandler(ReadHandler*) = 0;
   virtual ReadHandler* getReadHandler() = 0;
+  virtual void write(WriteCallback* cb, void* buff, size_t buffLen) = 0;
   virtual ~AsyncBytesTransport() = default;
-
-
 };
 
 }} // aliens::reactor

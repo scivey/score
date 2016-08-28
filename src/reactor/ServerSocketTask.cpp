@@ -25,7 +25,6 @@ ServerSocketTask::ServerSocketTask(TCPSocket &&sock)
   : sock_(std::forward<TCPSocket>(sock)) {}
 
 void ServerSocketTask::onReadable() {
-  LOG(INFO) << "ServerSocketTask onEvent";
   doRead();
 }
 
@@ -46,7 +45,7 @@ void ServerSocketTask::onEOF() {
 }
 
 int ServerSocketTask::getFd() {
-  return sock_.fd_.get();
+  return sock_.getFdNo();
 }
 
 }} // aliens::reactor

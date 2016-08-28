@@ -121,4 +121,8 @@ void ReactorThread::join() {
   thread_->join();
 }
 
+ReactorThread::~ReactorThread() {
+  // join();
+}
+
 }} // aliens::reactor

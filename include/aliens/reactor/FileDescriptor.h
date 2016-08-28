@@ -15,7 +15,7 @@ class FileDescriptor {
   static FileDescriptor fromIntExcept(int fd);
   FileDescriptor(FileDescriptor &&other);
   FileDescriptor& operator=(FileDescriptor &&other);
-  int get();
+  int getFdNo() const;
   bool valid() const;
   explicit operator bool() const;
   void makeNonBlocking();

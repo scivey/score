@@ -40,7 +40,6 @@ AcceptSocketTask::AcceptSocketTask(TCPSocket &&sock)
   : sock_(std::forward<TCPSocket>(sock)) {}
 
 void AcceptSocketTask::onReadable() {
-  LOG(INFO) << "onEvent! Accepting....";
   doAccept();
 }
 
@@ -53,7 +52,7 @@ void AcceptSocketTask::onError() {
 }
 
 int AcceptSocketTask::getFd() {
-  return sock_.fd_.get();
+  return sock_.getFdNo();
 }
 
 TCPSocket& AcceptSocketTask::getSocket() {
@@ -61,14 +60,13 @@ TCPSocket& AcceptSocketTask::getSocket() {
 }
 
 void AcceptSocketTask::onAcceptSuccess(int inFd, const char *host, const char *port) {
-  LOG(INFO) << "onAcceptSuccess : [" << inFd << "] " << host << ":" << port;
+  // LOG(INFO) << "onAcceptSuccess : [" << inFd << "] " << host << ":" << port;
   auto fd = FileDescriptor::fromIntExcept(inFd);
   fd.makeNonBlocking();
   auto sock = TCPSocket::fromAccepted(
     std::move(fd), host, port
   );
   auto newTask = new ServerSocketTask(std::move(sock));
-  LOG(INFO) << "made new task.";
   getReactor()->addTask(newTask);
 }
 

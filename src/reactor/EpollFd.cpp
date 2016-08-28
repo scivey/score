@@ -17,7 +17,7 @@ EpollFd EpollFd::create() {
 
 int EpollFd::get() {
   CHECK(!!fd_);
-  return fd_.get();
+  return fd_.getFdNo();
 }
 
 }} // aliens::reactor

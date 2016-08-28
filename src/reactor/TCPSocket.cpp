@@ -18,8 +18,8 @@ namespace aliens { namespace reactor {
 TCPSocket::TCPSocket(FileDescriptor &&fd)
   : fd_(std::forward<FileDescriptor>(fd)){}
 
-int TCPSocket::getFdNo() {
-  return fd_.get();
+int TCPSocket::getFdNo() const {
+  return fd_.getFdNo();
 }
 
 TCPSocket TCPSocket::fromAccepted(FileDescriptor &&fd, const char* remoteHost, const char *remotePort) {
@@ -38,17 +38,14 @@ TCPSocket TCPSocket::connect(SocketAddr addr) {
     SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
     protocolPlaceholder
   );
-  LOG(INFO) << "made socket.";
 
   ALIENS_CHECK_SYSCALL2(sockFd, "socket()");
-  LOG(INFO) << "connecting...";
   auto addrIn = addr.to_sockaddr_in();
   socklen_t addrLen = sizeof addrIn;
   int rc = ::connect(sockFd, (struct sockaddr*) &addrIn, addrLen);
   if (rc < 0 && errno != EINPROGRESS) {
     throw SystemError::fromErrno(errno, "connect()");
   }
-  LOG(INFO) << "connected.";
   auto desc = FileDescriptor::fromIntExcept(sockFd);
   TCPSocket sock(std::move(desc));
   sock.remotePort_ = addr.getPort();
@@ -112,7 +109,7 @@ bool TCPSocket::valid() const {
 }
 
 void TCPSocket::listen() {
-  ALIENS_CHECK_SYSCALL(::listen(fd_.get(), SOMAXCONN));
+  ALIENS_CHECK_SYSCALL(::listen(fd_.getFdNo(), SOMAXCONN));
 }
 
 void TCPSocket::stop() {

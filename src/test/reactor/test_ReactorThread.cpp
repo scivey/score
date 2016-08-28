@@ -19,24 +19,16 @@ namespace {
 
 void joinAtomic(std::atomic<bool> &done) {
   while (!done.load()) {
-    this_thread::sleep_for(chrono::milliseconds(50));
+    ;
   }
 }
 
 class ClientHandler1 : public ClientSocketTask::EventHandler {
  public:
-  void onConnectSuccess() override {
-    LOG(INFO) << "onConnectSuccess!";
-  }
-  void onConnectError(const std::exception &ex) override {
-    LOG(INFO) << "onConnectError : " << ex.what();
-  }
-  void onWritable() override {
-    LOG(INFO) << "onWritable.";
-  }
-  void onReadable() override {
-    LOG(INFO) << "onWritable.";
-  }
+  void onConnectSuccess() override {}
+  void onConnectError(const std::exception &ex) override {}
+  void onWritable() override {}
+  void onReadable() override {}
 };
 }
 
@@ -44,66 +36,57 @@ TEST(TestReactorThread, TestRun1) {
   auto reactorThread = ReactorThread::createShared();
   reactorThread->start();
   auto sock = TCPSocket::bindPort(9025);
-  auto task = std::unique_ptr<AcceptSocketTask>(
+  auto task = std::shared_ptr<AcceptSocketTask>(
     new AcceptSocketTask(std::move(sock))
   );
   task->getSocket().listen();
   std::atomic<bool> serverStarted {false};
   reactorThread->addTask(task.get(), [&serverStarted](){
-    LOG(INFO) << "added task!";
     serverStarted.store(true);
   });
   joinAtomic(serverStarted);
-  LOG(INFO) << "sleeping...";
-  this_thread::sleep_for(chrono::milliseconds(200));
-
-
   auto clientSock = TCPSocket::connect(SocketAddr("127.0.0.1", 9025));
   auto clientTask = new ClientSocketTask(std::move(clientSock), new ClientHandler1);
-  reactorThread->addTask(clientTask, []() {
-    LOG(INFO) << "added client!";
+  std::atomic<bool> addedClient {false};
+  reactorThread->addTask(clientTask, [&addedClient]() {
+    addedClient.store(true);
   });
-  LOG(INFO) << "sleeping.....";
-  this_thread::sleep_for(chrono::milliseconds(1000));
+  joinAtomic(addedClient);
   std::atomic<bool> done {false};
-  LOG(INFO) << "stopping..";
-  reactorThread->runInEventThread([&task, &reactorThread, &done]() {
-    LOG(INFO) << "here..";
+  reactorThread->runInEventThread([task, reactorThread, &done]() {
     task->getSocket().stop();
-    reactorThread->stop([&done](const aliens::Maybe<std::exception> &err) {
+    reactorThread->stop([&done, reactorThread, task](const aliens::Maybe<std::exception> &err) {
       done.store(true);
     });
   });
-  LOG(INFO) << "waiting for stop..";
+  joinAtomic(done);
   reactorThread->join();
-  LOG(INFO) << "end.";
 }
 
 class ClientHandler2 : public ClientSocketTask::EventHandler {
  protected:
   std::unique_ptr<Buffer> toSend_;
+  std::atomic<bool> connected_ {false};
+  std::atomic<bool> wrote_ {false};
  public:
   ClientHandler2(std::unique_ptr<Buffer> &&toSend)
     : toSend_(std::forward<std::unique_ptr<Buffer>>(toSend)){}
   void onConnectSuccess() override {
-    LOG(INFO) << "onConnectSuccess!";
+    connected_.store(true);
   }
   void onConnectError(const std::exception &ex) override {
-    LOG(INFO) << "onConnectError : " << ex.what();
+    throw ex;
   }
   void onWritable() override {
-    LOG(INFO) << "onWritable.";
     if (toSend_) {
       write(std::move(toSend_), [this](const ErrBack::except_option &err) {
-        LOG(INFO) << "wrote!";
-        if (err.hasValue()) {
-          LOG(INFO) << "got exception : " << err.value().what();
-        }
+        EXPECT_FALSE(err.hasValue());
+        wrote_.store(true);
       });
     }
   }
   void onReadable() override {
-    LOG(INFO) << "onReadable.";
+    LOG(INFO) << "onReadable";
   }
 };
 
@@ -118,12 +101,9 @@ TEST(TestReactorThread, TestRun2) {
   task->getSocket().listen();
   std::atomic<bool> serverStarted {false};
   reactorThread->addTask(task.get(), [&serverStarted](){
-    LOG(INFO) << "added task!";
     serverStarted.store(true);
   });
   joinAtomic(serverStarted);
-  LOG(INFO) << "sleeping...";
-  this_thread::sleep_for(chrono::milliseconds(200));
   auto clientSock = TCPSocket::connect(SocketAddr("127.0.0.1", 9025));
   auto buff = makeUnique<Buffer>();
   buff->fillWith("this is a test\r\n");
@@ -131,21 +111,17 @@ TEST(TestReactorThread, TestRun2) {
     std::move(clientSock),
     new ClientHandler2(std::move(buff))
   );
-  reactorThread->addTask(clientTask, []() {
-    LOG(INFO) << "added client!";
+  std::atomic<bool> addedTask {false};
+  reactorThread->addTask(clientTask, [&addedTask]() {
+    addedTask.store(true);
   });
-  LOG(INFO) << "sleeping.....";
-  this_thread::sleep_for(chrono::milliseconds(1000));
+  joinAtomic(addedTask);
   std::atomic<bool> done {false};
-  LOG(INFO) << "stopping..";
   reactorThread->runInEventThread([&task, &reactorThread, &done]() {
-    LOG(INFO) << "here..";
     task->getSocket().stop();
     reactorThread->stop([&done](const aliens::Maybe<std::exception> &err) {
       done.store(true);
     });
   });
-  LOG(INFO) << "waiting for stop..";
   reactorThread->join();
-  LOG(INFO) << "end.";
 }

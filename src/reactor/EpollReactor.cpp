@@ -45,6 +45,7 @@ std::unique_ptr<EpollReactor> EpollReactor::createUnique() {
 
 void EpollReactor::addTask(Task *task) {
   epoll_event evt;
+  memset(&evt, 0, sizeof(evt));
   evt.data.ptr = (void*) task;
   evt.events = EPOLLIN | EPOLLOUT | EPOLLET;
   ALIENS_CHECK_SYSCALL(epoll_ctl(

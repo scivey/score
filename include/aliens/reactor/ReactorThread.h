@@ -36,6 +36,7 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   void runInEventThread(async::VoidCallback &&cb);
   void runInEventThread(async::VoidCallback &&cb, async::ErrBack &&onFinish);
   void join();
+  ~ReactorThread();
 };
 
 }} // aliens::reactor

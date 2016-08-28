@@ -34,7 +34,8 @@ FileDescriptor& FileDescriptor::operator=(FileDescriptor &&other) {
 FileDescriptor::~FileDescriptor() {
   maybeClose();
 }
-int FileDescriptor::get() {
+
+int FileDescriptor::getFdNo() const {
   return fd_;
 }
 bool FileDescriptor::valid() const {
