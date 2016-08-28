@@ -2,14 +2,15 @@
 
 #include <sys/eventfd.h>
 #include "aliens/reactor/EpollReactor.h"
-#include "aliens/reactor/ReflectedEpollTask.h"
+#include "aliens/reactor/FdHandlerBase.h"
+// #include "aliens/reactor/ReflectedEpollTask.h"
 
 namespace aliens { namespace reactor {
 
-class EventFd {
+class EventFd : public FdHandlerBase<EventFd> {
  public:
-  friend class ReflectedEpollTask<EventFd>;
-  using EpollTask = ReflectedEpollTask<EventFd>;
+  // friend class ReflectedEpollTask<EventFd>;
+  // using EpollTask = ReflectedEpollTask<EventFd>;
 
   class EventHandler {
    public:
@@ -18,16 +19,15 @@ class EventFd {
   };
 
  protected:
-  FileDescriptor fd_;
-  EpollTask epollTask_;
+  // FileDescriptor fd_;
+  // EpollTask epollTask_;
   EventHandler *handler_ {nullptr};
+  EventFd(FileDescriptor &&desc, EventHandler *handler);
+
+ public:
   void onReadable();
   void onWritable();
   void onError();
-  EventFd(FileDescriptor &&desc, EventHandler *handler);
- public:
-  EpollTask* getEpollTask();
-  int getFdNo() const;
   static EventFd create(EventHandler*);
   static std::shared_ptr<EventFd> createShared(EventHandler*);
   void stop();

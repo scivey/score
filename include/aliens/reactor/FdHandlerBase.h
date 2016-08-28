@@ -1,15 +1,15 @@
 #pragma once
 
 #include <memory>
-#include "aliens/reactor/ReflectedFdHandlerTask.h"
+#include "aliens/reactor/ReflectedEpollTask.h"
 
 namespace aliens { namespace reactor {
 
 template<typename T>
 class FdHandlerBase {
  public:
-  friend class ReflectedFdHandlerTask<T>;
-  using EpollTask = ReflectedFdHandlerTask<T>;
+  friend class ReflectedEpollTask<T>;
+  using EpollTask = ReflectedEpollTask<T>;
  protected:
   FileDescriptor fd_;
   EpollTask epollTask_;
@@ -30,7 +30,15 @@ class FdHandlerBase {
     return &epollTask_;
   }
   FdHandlerBase(FileDescriptor &&fd)
-    : fd_(std::forward<FileDescriptor>(fd)) {}
+    : fd_(std::forward<FileDescriptor>(fd)) {
+    epollTask_.setParent(getThis());
+  }
+  int getFdNo() const {
+    return fd_.getFdNo();
+  }
+  void stop() {
+    fd_.close();
+  }
 };
 
 

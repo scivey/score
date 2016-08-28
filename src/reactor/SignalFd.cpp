@@ -12,14 +12,8 @@ namespace aliens { namespace reactor {
 
 
 SignalFd::SignalFd(FileDescriptor &&desc, SignalFd::EventHandler *handler)
-  : fd_(std::forward<FileDescriptor>(desc)),
-    handler_(handler) {
-  epollTask_.setParent(this);
-}
-
-void SignalFd::stop() {
-  fd_.close();
-}
+  : FdHandlerBase<SignalFd>(std::forward<FileDescriptor>(desc)),
+    handler_(handler) {}
 
 void SignalFd::onReadable() {
   struct signalfd_siginfo fdsi;
@@ -55,15 +49,6 @@ std::shared_ptr<SignalFd> SignalFd::createShared(
   return std::shared_ptr<SignalFd>(new SignalFd(create(
     handler
   )));
-}
-
-
-SignalFd::EpollTask* SignalFd::getEpollTask() {
-  return &epollTask_;
-}
-
-int SignalFd::getFdNo() const {
-  return fd_.getFdNo();
 }
 
 

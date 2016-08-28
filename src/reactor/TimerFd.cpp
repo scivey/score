@@ -9,14 +9,8 @@ namespace aliens { namespace reactor {
 
 
 TimerFd::TimerFd(FileDescriptor &&desc, TimerFd::EventHandler *handler)
-  : fd_(std::forward<FileDescriptor>(desc)),
-    handler_(handler) {
-  epollTask_.setParent(this);
-}
-
-void TimerFd::stop() {
-  fd_.close();
-}
+  : FdHandlerBase<TimerFd>(std::forward<FileDescriptor>(desc)),
+    handler_(handler) {}
 
 void TimerFd::onReadable() {
   uint64_t nTimeouts {0};
@@ -67,15 +61,6 @@ std::shared_ptr<TimerFd> TimerFd::createShared(
   return std::shared_ptr<TimerFd>(new TimerFd(create(
     settings, handler
   )));
-}
-
-
-TimerFd::EpollTask* TimerFd::getEpollTask() {
-  return &epollTask_;
-}
-
-int TimerFd::getFdNo() const {
-  return fd_.getFdNo();
 }
 
 

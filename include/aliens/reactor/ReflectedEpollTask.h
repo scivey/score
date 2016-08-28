@@ -19,13 +19,13 @@ class ReflectedEpollTask : public EpollReactor::Task {
   }
   ReflectedEpollTask(){}
   void onReadable() override {
-    getParent()->onReadable();
+    getParent()->triggerReadable();
   }
   void onWritable() override {
-    getParent()->onWritable();
+    getParent()->triggerWritable();
   }
   void onError() override {
-    getParent()->onError();
+    getParent()->triggerError();
   }
   int getFd() override {
     return getParent()->getFdNo();

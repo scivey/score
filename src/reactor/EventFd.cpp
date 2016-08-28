@@ -5,19 +5,8 @@
 namespace aliens { namespace reactor {
 
 EventFd::EventFd(FileDescriptor &&desc, EventHandler *handler)
-  : fd_(std::forward<FileDescriptor>(desc)),
-    handler_(handler) {
-  epollTask_.setParent(this);
-}
-
-
-EventFd::EpollTask* EventFd::getEpollTask() {
-  return &epollTask_;
-}
-
-int EventFd::getFdNo() const {
-  return fd_.getFdNo();
-}
+  : FdHandlerBase<EventFd>(std::forward<FileDescriptor>(desc)),
+    handler_(handler) {}
 
 void EventFd::stop() {
   throw exceptions::BaseError("not implemented.");
