@@ -39,7 +39,13 @@ std::shared_ptr<EventFd> EventFd::createShared(
 
 void EventFd::triggerRead() {
   CHECK(!!handler_);
-  handler_->onTick();
+  uint64_t eventNo;
+  CHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
+  handler_->onEvent(eventNo);
+}
+
+void EventFd::write(uint64_t msg) {
+  CHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
 }
 
 void EventFd::EpollTask::onReadable() {
@@ -66,5 +72,6 @@ void EventFd::EpollTask::setParent(EventFd *parent) {
 EventFd* EventFd::EpollTask::getParent() const {
   return parent_;
 }
+
 
 }} // aliens::reactor

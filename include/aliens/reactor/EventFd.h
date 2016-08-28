@@ -25,7 +25,7 @@ class EventFd {
 
   class EventHandler {
    public:
-    virtual void onTick() = 0;
+    virtual void onEvent(uint64_t) = 0;
     virtual ~EventHandler() = default;
   };
 
@@ -41,6 +41,7 @@ class EventFd {
   static EventFd create(EventHandler*);
   static std::shared_ptr<EventFd> createShared(EventHandler*);
   void stop();
+  void write(uint64_t);
 };
 
 }} // aliens::reactor
