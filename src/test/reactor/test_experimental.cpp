@@ -32,5 +32,4 @@ void joinAtomic(std::atomic<bool> &done) {
 
 TEST(TestReactorExperimental, TestSomething) {
   EXPECT_TRUE(true);
-
 }
