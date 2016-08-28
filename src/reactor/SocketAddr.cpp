@@ -6,6 +6,8 @@
 
 namespace aliens { namespace reactor {
 
+SocketAddr::SocketAddr(){}
+
 SocketAddr::SocketAddr(const std::string &host, short port)
   : host_(host), port_(port){}
 
@@ -14,6 +16,14 @@ SocketAddr::SocketAddr(const std::string &host, const std::string &port)
 
 const std::string& SocketAddr::getHost() const {
   return host_;
+}
+
+void SocketAddr::setHost(const std::string &host) {
+  host_ = host;
+}
+
+void SocketAddr::setPort(short portNo) {
+  port_ = portNo;
 }
 
 short SocketAddr::getPort() const {

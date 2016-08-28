@@ -23,6 +23,7 @@ int TCPSocket::getFdNo() const {
 }
 
 TCPSocket TCPSocket::fromAccepted(FileDescriptor &&fd, const char* remoteHost, const char *remotePort) {
+  LOG(INFO) << "fromAccepted! {fd=" << fd.getFdNo() << "}";
   TCPSocket sock(std::forward<FileDescriptor>(fd));
   sock.remoteHost_ = remoteHost;
   int remPort = atol(remotePort);

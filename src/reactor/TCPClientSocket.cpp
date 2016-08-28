@@ -1,4 +1,4 @@
-#include "aliens/reactor/TCPServerSocket.h"
+#include "aliens/reactor/TCPClientSocket.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
@@ -15,22 +15,21 @@
 using aliens::io::NonOwnedBufferPtr;
 using aliens::async::ErrBack;
 using aliens::exceptions::BaseError;
+using aliens::exceptions::SystemError;
 
 namespace aliens { namespace reactor {
 
-TCPServerSocket::TCPServerSocket(FileDescriptor &&desc,
+TCPClientSocket::TCPClientSocket(FileDescriptor &&desc,
     EventHandler *handler,
-    const SocketAddr& localAddr,
     const SocketAddr &remoteAddr)
-  : FdHandlerBase<TCPServerSocket>(std::forward<FileDescriptor>(desc)),
+  : FdHandlerBase<TCPClientSocket>(std::forward<FileDescriptor>(desc)),
     handler_(handler),
-    localAddr_(localAddr),
     remoteAddr_(remoteAddr) {
   handler_->setParent(this);
 }
 
-void TCPServerSocket::readSome() {
-  LOG(INFO) << "onReadable";
+void TCPClientSocket::readSome() {
+  LOG(INFO) << "readSome";
   const size_t kReadBuffSize = 128;
   for (;;) {
     void *buffPtr {nullptr};
@@ -55,39 +54,25 @@ void TCPServerSocket::readSome() {
   }
 }
 
-void TCPServerSocket::triggerReadable() {
-  handler_->onReadableStart();
-}
-
-void TCPServerSocket::triggerWritable() {
+void TCPClientSocket::triggerWritable() {
   handler_->onWritable();
 }
 
-void TCPServerSocket::triggerError() {
+
+void TCPClientSocket::triggerReadable() {
+  handler_->onReadableStart();
+}
+
+void TCPClientSocket::triggerError() {
   LOG(INFO) << "onError [" << errno << "]";
 }
 
-TCPServerSocket TCPServerSocket::fromAccepted(
-    FileDescriptor &&fd,
-    TCPServerSocket::EventHandler *handler,
-    const SocketAddr &localAddr,
-    const SocketAddr &remoteAddr) {
-  LOG(INFO) << "TCPServerSocket::fromAccepted()"
-    << "\t{fd=" << fd.getFdNo() << "}";
-  return TCPServerSocket(
-    std::forward<FileDescriptor>(fd),
-    handler,
-    localAddr,
-    remoteAddr
-  );
-}
-
-void TCPServerSocket::EventHandler::sendBuff(
+void TCPClientSocket::EventHandler::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
   getParent()->sendBuff(buff, std::forward<ErrBack>(cb));
 }
 
-void TCPServerSocket::sendBuff(
+void TCPClientSocket::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
   auto buffStr = buff.copyToString();
   LOG(INFO) << "should send : [" << buffStr.size()
@@ -104,12 +89,42 @@ void TCPServerSocket::sendBuff(
   }
 }
 
-void TCPServerSocket::EventHandler::shutdown() {
+void TCPClientSocket::EventHandler::shutdown() {
   getParent()->shutdown();
 }
 
-void TCPServerSocket::shutdown() {
-  LOG(INFO) << "TCPServerSocket::shutdown()";
+void TCPClientSocket::shutdown() {
+  LOG(INFO) << "TCPClientSocket::shutdown()";
   getFileDescriptor().close();
 }
+
+
+TCPClientSocket TCPClientSocket::connect(
+    SocketAddr addr, TCPClientSocket::EventHandler* handler) {
+  const int protocolPlaceholder = 0;
+  int sockFd = ::socket(
+    AF_INET,
+    SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
+    protocolPlaceholder
+  );
+  ALIENS_CHECK_SYSCALL2(sockFd, "socket()");
+  auto addrIn = addr.to_sockaddr_in();
+  socklen_t addrLen = sizeof addrIn;
+  int rc = ::connect(sockFd, (struct sockaddr*) &addrIn, addrLen);
+  if (rc < 0 && errno != EINPROGRESS) {
+    throw SystemError::fromErrno(errno, "connect()");
+  }
+  return TCPClientSocket(
+    FileDescriptor::fromIntExcept(sockFd),
+    handler, addr
+  );
+}
+
+std::shared_ptr<TCPClientSocket> TCPClientSocket::connectShared(
+    SocketAddr addr, TCPClientSocket::EventHandler* handler) {
+  return std::shared_ptr<TCPClientSocket>(new TCPClientSocket(
+    TCPClientSocket::connect(addr, handler)
+  ));
+}
+
 }} // aliens::reactor

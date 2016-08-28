@@ -19,8 +19,9 @@
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/reactor/TCPAcceptSocket.h"
 #include "aliens/reactor/TCPServerSocket.h"
+#include "aliens/reactor/TCPClientSocket.h"
 #include "aliens/locks/ThreadBaton.h"
-
+#include "aliens/io/NonOwnedBufferPtr.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/async/VoidCallback.h"
 #include "aliens/async/Callback.h"
@@ -31,6 +32,8 @@
 #include <folly/Conv.h>
 
 #include <glog/logging.h>
+
+using aliens::io::NonOwnedBufferPtr;
 
 template<typename T>
 void sayType(const T& ref) {
@@ -46,9 +49,31 @@ using namespace aliens::locks;
 
 
 
+NonOwnedBufferPtr makeStupidBuffer(const std::string &msg) {
+  string result = msg;
+  result += "\r\n";
+  auto copied = (char*) malloc(result.size() + 1);
+  memcpy((void*) copied, (void*) result.data(), result.size() - 1);
+  copied[result.size()] = '\0';
+  return NonOwnedBufferPtr{copied, result.size() - 1};
+}
+
 class SomeRequestHandler : public TCPServerSocket::EventHandler {
+ protected:
+  std::string lastBuff_;
+  bool isWritable_ {false};
  public:
+  SomeRequestHandler() {
+    LOG(INFO) << "SomeRequestHandler()";
+  }
+  void onReadableStart() override {
+    LOG(INFO) << "SomeRequestHandler::onReadableStart()";
+  }
+  void onReadableStop() override {
+    LOG(INFO) << "SomeRequestHandler::onReadableStop()";
+  }
   void getReadBuffer(void **buff, size_t *buffLen, size_t hint) override {
+    LOG(INFO) << "getReadBuffer : hint=" << hint;
     void *buffPtr = malloc(hint);
     memset(buffPtr, 0, hint);
     *buff = buffPtr;
@@ -58,12 +83,42 @@ class SomeRequestHandler : public TCPServerSocket::EventHandler {
     LOG(INFO) << "readBufferAvailable : " << buffLen;
     auto data = (const char*) buff;
     LOG(INFO) << "\tread: '" << data << "'";
+    lastBuff_ = "";
+    for (size_t i = 0; i < buffLen; i++) {
+      char c = data[i];
+      lastBuff_.push_back(c);
+    }
+    LOG(INFO) << "getFdNo..";
+    getParent()->getFdNo();
+    LOG(INFO) << "/getFdNo..";
+
+    if (isWritable_) {
+      doEcho();
+    }
+  }
+  void doEcho() {
+    if (isWritable_ && !lastBuff_.empty()) {
+      isWritable_ = false;
+      auto buffPtr = makeStupidBuffer(lastBuff_);
+      lastBuff_ = "";
+      sendBuff(buffPtr, [](const ErrBack::except_option &err) {
+        LOG(INFO) << "sendBuff callback";
+        if (err.hasValue()) {
+          LOG(INFO) << "err : " << err.value().what();
+        }
+      });
+    }
   }
   void onWritable() override {
     LOG(INFO) << "onWritable.";
+    isWritable_ = true;
+    if (!lastBuff_.empty()) {
+      doEcho();
+    }
   }
   void onEOF() override {
     LOG(INFO) << "onEOF.";
+    shutdown();
   }
 };
 
@@ -85,13 +140,18 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
   void onAcceptSuccess(int sfd, const char *hostName, const char *portNo) override {
     LOG(INFO) << "onAcceptSuccess : [" << sfd << "] : " << hostName << ":" << portNo;
     auto desc = FileDescriptor::fromIntExcept(sfd);
+    desc.makeNonBlocking();
     SocketAddr localAddr("127.0.0.1", 9999);
     SocketAddr remoteAddr(hostName, portNo);
     auto handler = handlerFactory_->getHandler();
     auto serverSock = new TCPServerSocket(TCPServerSocket::fromAccepted(
       std::move(desc), handler, localAddr, remoteAddr
     ));
-    ALIENS_UNUSED(serverSock);
+    LOG(INFO) << "made server socket..";
+    LOG(INFO) << "\t\t server socket "
+              << "{accept_fd=" << getParent()->getFdNo() << "}"
+              << " {server_fd=" << serverSock->getFdNo() << "}";
+    getParent()->getReactor()->addTask(serverSock->getEpollTask());
   }
   void onAcceptError(int err) override {
     LOG(INFO) << "onAcceptError [" << err << "]";
@@ -105,18 +165,89 @@ class SomeFactory: public RequestHandlerFactory {
   }
 };
 
+class ClientHandler : public TCPClientSocket::EventHandler {
+ protected:
+  bool sent_ {false};
+  std::string msg_ {"DEFAULT"};
+ public:
+  ClientHandler(){}
+  ClientHandler(const std::string& msg): msg_(msg){}
+  void getReadBuffer(void **buff, size_t *buffLen, size_t hint) override {
+    LOG(INFO) << "client getReadBuffer : hint=" << hint;
+    void *buffPtr = malloc(hint);
+    memset(buffPtr, 0, hint);
+    *buff = buffPtr;
+    *buffLen = hint;
+  }
+  void readBufferAvailable(void *buff, size_t buffLen) override {
+    LOG(INFO) << "client readBufferAvailable : " << buffLen;
+    auto data = (const char*) buff;
+    LOG(INFO) << "\tclient read: '" << data << "'";
+    // shutdown();
+  }
+  void onReadableStart() override {
+    LOG(INFO) << "onReadableStart.";
+  }
+  void onReadableStop() override {
+    LOG(INFO) << "onReadableStop.";
+  }
+  void onConnectSuccess() override {
+    LOG(INFO) << "CONNECTED.";
+  }
+  void onConnectError(int err) override {
+    LOG(INFO) << "client err! " << strerror(err);
+  }
+  void onWritable() override {
+    LOG(INFO) << "client onWritable!";
+    if (!sent_) {
+      sent_ = true;
+      LOG(INFO) << "sending.";
+      auto buffPtr = makeStupidBuffer(msg_);
+      sendBuff(buffPtr, [](const ErrBack::except_option &ex) {
+        LOG(INFO) << "client sent buffer.";
+        if (ex.hasValue()) {
+          LOG(INFO) << "client err: " << ex.value().what();
+        }
+      });
+    }
+  }
+  void onEOF() override {
+    LOG(INFO) << "onEOF.";
+  }
+};
+
+static const short kPortNum = 9051;
+
 void runServer() {
   auto react = ReactorThread::createShared();
-  react->start();
-  this_thread::sleep_for(chrono::milliseconds(2000));
-  auto acceptor = new TCPAcceptSocket(TCPAcceptSocket::bindPort(
-    9051, new AcceptHandler(std::unique_ptr<SomeFactory>(new SomeFactory))
-  ));
-  acceptor->listen();
-  this_thread::sleep_for(chrono::milliseconds(2000));
-  react->addTask(acceptor->getEpollTask(), []() {
-    LOG(INFO) << "added acceptor.";
+  EpollReactor::Options options;
+  options.setWaitTimeout(std::chrono::milliseconds(200));
+  react->start(options);
+  ThreadBaton bat1;
+  react->runInEventThread([&bat1, react]() {
+    LOG(INFO) << "here.";
+    auto acceptor = new TCPAcceptSocket(TCPAcceptSocket::bindPort(
+      kPortNum, new AcceptHandler(std::unique_ptr<SomeFactory>(new SomeFactory))
+    ));
+    acceptor->listen();
+    react->addTask(acceptor->getEpollTask(), [&bat1]() {
+      LOG(INFO) << "added acceptor.";
+      bat1.post();
+    });
   });
+  bat1.wait();
+  ThreadBaton bat2;
+  react->runInEventThread([&bat2, react]() {
+    SocketAddr addr {"127.0.0.1", kPortNum};
+    auto client = new TCPClientSocket(TCPClientSocket::connect(
+      addr, new ClientHandler
+    ));
+    react->addTask(client->getEpollTask(), [&bat2]() {
+      LOG(INFO) << "added client.";
+      bat2.post();
+    });
+  });
+  bat2.wait();
   this_thread::sleep_for(chrono::milliseconds(20000));
   react->runInEventThread([react]() {
     react->stop([](const ErrBack::except_option& err) {
@@ -128,84 +259,10 @@ void runServer() {
   LOG(INFO) << "runServer() joined.";
 }
 
-#include <type_traits>
-
-template<typename T>
-using decay_t = typename std::decay<T>::type;
-
-template<typename T>
-using res_t = typename std::result_of<T ()>::type;
-
-int get9() {
-  return 9;
-}
-
-int add5(int x) {
-  return x + 5;
-}
-
-using Noise = aliens::test_support::Noisy<31>;
-
-
-static const size_t kBuffBytes = 32;
-using Buff = aliens::FixedBuffer<kBuffBytes>;
-
-#include <cstdlib>
-#include <cstdio>
-#include <sys/uio.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-void tryIov() {
-  const size_t kNBuffs = 4;
-  Buff buffs[kNBuffs];
-  iovec vecs[kNBuffs];
-  for (size_t i = 0; i < kNBuffs; i++) {
-    vecs[i].iov_base = buffs[i].vdata();
-    vecs[i].iov_len = buffs[i].capacity() - 1;
-  }
-  int fd = open("CMakeLists.txt", O_RDONLY | O_CLOEXEC);
-  ssize_t nr = readv(fd, (iovec*) vecs, kNBuffs);
-  LOG(INFO) << "nr : " << nr;
-  ALIENS_CHECK_SYSCALL2(nr, "readv()");
-  for (size_t i = 0; i < kNBuffs; i++) {
-    LOG(INFO) << buffs[i].copyToString();
-  }
-}
-
-
-#include "aliens/atomic/IntrinsicAtomic.h"
-#include "aliens/formatters/formatters.h"
-using namespace aliens::formatters;
-using AtomicUint128 = aliens::atomic::IntrinsicAtomic<__uint128_t>;
-
-
-void tryAtomic16() {
-  AtomicUint128 anAtom;
-  std::vector<std::shared_ptr<thread>> threads;
-  for (size_t i = 0; i < 4; i++) {
-    threads.push_back(std::make_shared<std::thread>([&anAtom]() {
-      for (size_t j = 0; j < 50; j++) {
-        for (;;) {
-          auto expected = anAtom.load();
-          auto desired = expected + 1;
-          if (anAtom.compare_exchange_strong(&expected, desired)) {
-            break;
-          }
-        }
-      }
-    }));
-  }
-  for (auto &t: threads) {
-    t->join();
-  }
-  auto lastVal = anAtom.load();
-  LOG(INFO) << "final : " << lastVal;
-}
 
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start.";
-  tryAtomic16();
+  runServer();
   LOG(INFO) << "end.";
 }

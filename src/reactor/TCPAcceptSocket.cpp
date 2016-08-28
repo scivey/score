@@ -14,7 +14,9 @@ namespace aliens { namespace reactor {
 TCPAcceptSocket::TCPAcceptSocket(FileDescriptor &&desc,
     EventHandler *handler)
   : FdHandlerBase<TCPAcceptSocket>(std::forward<FileDescriptor>(desc)),
-    handler_(handler) {}
+    handler_(handler) {
+  handler_->setParent(this);
+}
 
 void TCPAcceptSocket::onReadable() {
   LOG(INFO) << "onReadable";
@@ -92,19 +94,26 @@ TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
     status = bind(sfd, rp->ai_addr, rp->ai_addrlen);
     if (status == 0) {
       break;
+    } else {
+      close(sfd);
     }
-    close(sfd);
   }
   if (!rp) {
     throw exceptions::BaseError("could not bind.");
   }
-  auto desc = FileDescriptor::fromIntExcept(sfd);
-  desc.makeNonBlocking();
-  TCPAcceptSocket sock(std::move(desc), handler);
+  // auto desc = FileDescriptor::fromIntExcept(sfd);
+  // desc.makeNonBlocking();
+  // TCPAcceptSocket sock(std::move(desc), handler);
+  TCPAcceptSocket sock(
+    FileDescriptor::fromIntExcept(sfd),
+    handler
+  );
+  sock.getFileDescriptor().makeNonBlocking();
   return sock;
 }
 
 void TCPAcceptSocket::listen() {
+  LOG(INFO) << "listen()";
   ALIENS_CHECK_SYSCALL(::listen(getFdNo(), SOMAXCONN));
 }
 

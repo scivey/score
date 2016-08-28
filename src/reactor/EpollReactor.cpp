@@ -9,6 +9,8 @@
 
 namespace aliens { namespace reactor {
 
+using duration_type = typename EpollReactor::duration_type;
+
 bool epollEventHasError(const epoll_event *evt) {
   return evt->events & EPOLLERR
     || evt->events & EPOLLHUP
@@ -26,21 +28,22 @@ void EpollReactor::Task::setReactor(EpollReactor *reactor) {
   reactor_ = reactor;
 }
 
-EpollReactor::EpollReactor(EpollFd &&fd)
-  : epollFd_(std::forward<EpollFd>(fd)) {
+EpollReactor::EpollReactor(EpollFd &&fd, const EpollReactor::Options &opts)
+  : epollFd_(std::forward<EpollFd>(fd)),
+    options_(opts) {
   memset((void*) &events_, '\0', sizeof(events_));
 }
 
-EpollReactor* EpollReactor::createPtr() {
-  return new EpollReactor(EpollFd::create());
+EpollReactor* EpollReactor::createPtr(const EpollReactor::Options &opts) {
+  return new EpollReactor(EpollFd::create(), opts);
 }
 
-EpollReactor EpollReactor::create() {
-  return EpollReactor(EpollFd::create());
+EpollReactor EpollReactor::create(const EpollReactor::Options &opts) {
+  return EpollReactor(EpollFd::create(), opts);
 }
 
-std::unique_ptr<EpollReactor> EpollReactor::createUnique() {
-  return std::unique_ptr<EpollReactor>(createPtr());
+std::unique_ptr<EpollReactor> EpollReactor::createUnique(const EpollReactor::Options &ops) {
+  return std::unique_ptr<EpollReactor>(createPtr(ops));
 }
 
 void EpollReactor::addTask(Task *task) {
@@ -56,7 +59,8 @@ void EpollReactor::addTask(Task *task) {
 }
 
 int EpollReactor::runOnce() {
-  int nEvents = epoll_wait(epollFd_.get(), events_, kMaxEvents, 20);
+  size_t timeoutMsec = options_.getWaitTimeout().count();
+  int nEvents = epoll_wait(epollFd_.get(), events_, kMaxEvents, timeoutMsec);
   for (size_t i = 0; i < nEvents; i++) {
     auto task = (Task*) events_[i].data.ptr;
     if (epollEventHasError(events_[i])) {
@@ -83,7 +87,6 @@ void EpollReactor::loopForever() {
   }
 }
 
-using duration_type = typename EpollReactor::duration_type;
 void EpollReactor::runForDuration(duration_type minDuration) {
   auto start = std::chrono::system_clock::now().time_since_epoch();
   for (;;) {
@@ -103,6 +106,14 @@ void EpollReactor::stop() {
 
 bool EpollReactor::isRunning() const {
   return running_;
+}
+
+void EpollReactor::Options::setWaitTimeout(duration_type ms) {
+  waitTimeout_ = ms;
+}
+
+duration_type EpollReactor::Options::getWaitTimeout() const {
+  return waitTimeout_;
 }
 
 }} // aliens::reactor

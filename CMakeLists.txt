@@ -56,6 +56,7 @@ set(LIB_SRC
     ${SRC}/reactor/TCPSocket.cpp
     ${SRC}/reactor/TCPAcceptSocket.cpp
     ${SRC}/reactor/TCPServerSocket.cpp
+    ${SRC}/reactor/TCPClientSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 )
 

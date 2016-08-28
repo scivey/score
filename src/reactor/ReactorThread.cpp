@@ -1,12 +1,13 @@
 #include "aliens/reactor/ReactorThread.h"
+#include "aliens/Maybe.h"
 
 namespace aliens { namespace reactor {
 
 ReactorThread::ReactorThread(){}
 
+
 std::shared_ptr<ReactorThread> ReactorThread::createShared() {
   std::shared_ptr<ReactorThread> instance{new ReactorThread};
-  instance->reactor_ = EpollReactor::createUnique();
   return instance;
 }
 
@@ -18,15 +19,33 @@ bool ReactorThread::isRunning() const {
   return running_.load();
 }
 
-void ReactorThread::start() {
+using EOptions = EpollReactor::Options;
+
+void ReactorThread::start(const EOptions &opts) {
   CHECK(!isRunning());
   bool expected = false;
   bool desired = true;
   if (running_.compare_exchange_strong(expected, desired)) {
     auto self = shared_from_this();
-    thread_.reset(new std::thread([this, self]() {
+    EOptions copiedOpts = opts;
+    thread_.reset(new std::thread([this, self, copiedOpts]() {
+      reactor_ = EpollReactor::createUnique(copiedOpts);
       while (isRunning()) {
-        reactor_->runForDuration(std::chrono::milliseconds(50));
+        reactor_->runOnce();
+        for (;;) {
+          Maybe<async::VoidCallback> func;
+          {
+            auto queueHandle = toRun_.getHandle();
+            if (queueHandle->empty()) {
+              break;
+            }
+            func.assign(std::move(queueHandle->front()));
+            queueHandle->pop();
+          }
+          if (func.hasValue()) {
+            func.value()();
+          }
+        }
         auto queueHandle = toRun_.getHandle();
         while (!queueHandle->empty()) {
           async::VoidCallback func = std::move(queueHandle->front());

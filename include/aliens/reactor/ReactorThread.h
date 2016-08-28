@@ -29,7 +29,7 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   static std::shared_ptr<ReactorThread> createShared();
   EpollReactor* getReactor();
   bool isRunning() const;
-  void start();
+  void start(const EpollReactor::Options& = EpollReactor::Options());
   void stop(async::ErrBack &&cb);
 
  protected:

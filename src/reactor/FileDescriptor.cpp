@@ -2,9 +2,12 @@
 #include "aliens/exceptions/exceptions.h"
 #include "aliens/exceptions/macros.h"
 
+#include <atomic>
 #include <glog/logging.h>
 #include <fcntl.h>
 #include <cstdio>
+
+using namespace aliens::exceptions;
 
 namespace aliens { namespace reactor {
 
@@ -23,6 +26,7 @@ FileDescriptor FileDescriptor::fromIntExcept(int fd) {
   return FileDescriptor(fd);
 }
 FileDescriptor::FileDescriptor(FileDescriptor &&other): fd_(other.fd_) {
+  VLOG(50) << "move construction {fd=" << fd_ << "}";
   other.fd_ = 0;
 }
 FileDescriptor& FileDescriptor::operator=(FileDescriptor &&other) {

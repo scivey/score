@@ -1,9 +1,8 @@
-#include "aliens/reactor/TCPServerSocket.h"
+#include "aliens/reactor/TCPChannel.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
 #include "aliens/macros.h"
-
 #include "aliens/reactor/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -18,19 +17,16 @@ using aliens::exceptions::BaseError;
 
 namespace aliens { namespace reactor {
 
-TCPServerSocket::TCPServerSocket(FileDescriptor &&desc,
+TCPChannel::TCPChannel(FileDescriptor &&desc,
     EventHandler *handler,
-    const SocketAddr& localAddr,
-    const SocketAddr &remoteAddr)
-  : FdHandlerBase<TCPServerSocket>(std::forward<FileDescriptor>(desc)),
+    const ConnectionInfo& connInfo)
+  : FdHandlerBase<TCPChannel>(std::forward<FileDescriptor>(desc)),
     handler_(handler),
-    localAddr_(localAddr),
-    remoteAddr_(remoteAddr) {
+    connInfo_(connInfo) {
   handler_->setParent(this);
 }
 
-void TCPServerSocket::readSome() {
-  LOG(INFO) << "onReadable";
+void TCPChannel::readSome() {
   const size_t kReadBuffSize = 128;
   for (;;) {
     void *buffPtr {nullptr};
@@ -55,39 +51,24 @@ void TCPServerSocket::readSome() {
   }
 }
 
-void TCPServerSocket::triggerReadable() {
+void TCPChannel::triggerReadable() {
   handler_->onReadableStart();
 }
 
-void TCPServerSocket::triggerWritable() {
+void TCPChannel::triggerWritable() {
   handler_->onWritable();
 }
 
-void TCPServerSocket::triggerError() {
+void TCPChannel::triggerError() {
   LOG(INFO) << "onError [" << errno << "]";
 }
 
-TCPServerSocket TCPServerSocket::fromAccepted(
-    FileDescriptor &&fd,
-    TCPServerSocket::EventHandler *handler,
-    const SocketAddr &localAddr,
-    const SocketAddr &remoteAddr) {
-  LOG(INFO) << "TCPServerSocket::fromAccepted()"
-    << "\t{fd=" << fd.getFdNo() << "}";
-  return TCPServerSocket(
-    std::forward<FileDescriptor>(fd),
-    handler,
-    localAddr,
-    remoteAddr
-  );
-}
-
-void TCPServerSocket::EventHandler::sendBuff(
+void TCPChannel::EventHandler::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
   getParent()->sendBuff(buff, std::forward<ErrBack>(cb));
 }
 
-void TCPServerSocket::sendBuff(
+void TCPChannel::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
   auto buffStr = buff.copyToString();
   LOG(INFO) << "should send : [" << buffStr.size()
@@ -104,12 +85,36 @@ void TCPServerSocket::sendBuff(
   }
 }
 
-void TCPServerSocket::EventHandler::shutdown() {
+void TCPChannel::EventHandler::shutdown() {
   getParent()->shutdown();
 }
 
-void TCPServerSocket::shutdown() {
-  LOG(INFO) << "TCPServerSocket::shutdown()";
+void TCPChannel::shutdown() {
+  LOG(INFO) << "TCPChannel::shutdown()";
   getFileDescriptor().close();
 }
+
+TCPChannel TCPChannel::fromDescriptor(FileDescriptor &&fd,
+    EventHandler *handler, const ConnectionInfo &info) {
+  return TCPChannel(
+    std::forward<FileDescriptor>(fd),
+    handler, info
+  );
+}
+TCPChannel TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
+    EventHandler *handler, const ConnectionInfo &info) {
+  return new TCPChannel(
+    std::forward<FileDescriptor>(fd),
+    handler, info
+  );
+}
+
+std::shared_ptr<TCPChannel> TCPChannel::fromDescriptorShared(
+    FileDescriptor &&fd, EventHandler *handler
+    const ConnectionInfo &info) {
+  return std::shared_ptr<TCPChannel>(
+    TCPChannel::fromDescriptorPtr(fd, handler, info)
+  );
+}
+
 }} // aliens::reactor

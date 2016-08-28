@@ -10,7 +10,21 @@ namespace aliens { namespace reactor {
 
 class EpollReactor {
  public:
+
+  using duration_type = std::chrono::milliseconds;
   static const size_t kMaxEvents = 1024;
+
+  class Options {
+   protected:
+    duration_type waitTimeout_;
+   public:
+    Options() {
+      waitTimeout_ = std::chrono::milliseconds {20};
+    }
+    void setWaitTimeout(duration_type ms);
+    duration_type getWaitTimeout() const;
+  };
+
   class Task {
    protected:
     EpollReactor *reactor_ {nullptr};
@@ -23,22 +37,21 @@ class EpollReactor {
     virtual void onReadable() = 0;
     virtual void onWritable() = 0;
   };
+
  protected:
   bool running_ {false};
   std::vector<Task*> tasks_;
   epoll_event events_[kMaxEvents];
   EpollFd epollFd_;
-  EpollReactor(EpollFd &&fd);
-  static EpollReactor* createPtr();
+  Options options_;
+  EpollReactor(EpollFd &&fd, const Options &options);
+  static EpollReactor* createPtr(const Options &options);
  public:
-  static EpollReactor create();
-  static std::unique_ptr<EpollReactor> createUnique();
+  static EpollReactor create(const Options &options = Options());
+  static std::unique_ptr<EpollReactor> createUnique(const Options &options = Options());
   void addTask(Task *task);
   int runOnce();
   void loopForever();
-
-  using duration_type = std::chrono::milliseconds;
-
   void runForDuration(duration_type minDuration);
   void stop();
   bool isRunning() const;
