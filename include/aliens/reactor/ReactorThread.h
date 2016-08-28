@@ -20,6 +20,9 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   std::unique_ptr<std::thread> thread_ {nullptr};
   ReactorThread();
   std::atomic<bool> running_ {false};
+  std::atomic<bool> finished_ {false};
+  std::atomic<bool> joining_ {false};
+  std::atomic<bool> joined_ {false};
   aliens::Maybe<async::ErrBack> onStopped_;
   locks::Synchronized<std::queue<async::VoidCallback>> toRun_;
  public:

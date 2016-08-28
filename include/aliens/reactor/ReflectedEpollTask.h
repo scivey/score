@@ -1,3 +1,4 @@
+#pragma once
 #include "aliens/reactor/EpollReactor.h"
 
 namespace aliens { namespace reactor {

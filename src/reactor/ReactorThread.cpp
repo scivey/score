@@ -35,8 +35,12 @@ void ReactorThread::start() {
         }
       }
       if (onStopped_.hasValue()) {
+        LOG(INFO) << "calling onStopped";
         onStopped_.value()();
+      } else {
+        LOG(INFO) << "not calling onStopped.";
       }
+      finished_.store(true);
     }));
   } else {
     throw exceptions::BaseError("already started!");
@@ -112,17 +116,31 @@ void ReactorThread::runInEventThread(async::VoidCallback &&cb, async::ErrBack &&
 }
 
 void ReactorThread::join() {
-  if (!isRunning()) {
+  if (!isRunning() && joined_.load()) {
     return;
   }
   while (running_.load()) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
-  thread_->join();
+  while (!finished_.load()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+  {
+    bool expected = false;
+    bool desired = true;
+    if (joining_.compare_exchange_strong(expected, desired)) {
+      thread_->join();
+      joined_.store(true);
+    } else {
+      while (!joined_.load()) {
+        ;
+      }
+    }
+  }
 }
 
 ReactorThread::~ReactorThread() {
-  // join();
+  join();
 }
 
 }} // aliens::reactor

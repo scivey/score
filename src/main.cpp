@@ -1,123 +1,66 @@
-#include <thread>
-#include <string>
-#include <sstream>
-#include <atomic>
-
-#include <memory>
-#include "aliens/MoveWrapper.h"
 #include <glog/logging.h>
-#include <boost/asio.hpp>
-#include "aliens/FixedBuffer.h"
-#include "aliens/tcp/TCPAcceptServer.h"
-#include "aliens/tcp/TCPSocket.h"
-#include "aliens/tcp/TCPServer.h"
-#include "aliens/tcp/TCPClient.h"
-#include "aliens/async/IOService.h"
-#include "aliens/mem/util.h"
-#include "aliens/tcp/EchoServer.h"
+// #include <spdlog/spdlog.h>
+#include "aliens/reactor/EpollReactor.h"
+#include "aliens/reactor/ReactorThread.h"
+#include "aliens/reactor/SignalFd.h"
+#include "aliens/reactor/TimerFd.h"
+#include "aliens/reactor/TimerSettings.h"
+#include "aliens/async/ErrBack.h"
+#include "aliens/async/VoidCallback.h"
 
 using namespace std;
-using asio_tcp = boost::asio::ip::tcp;
-using aliens::Buffer;
-using aliens::io::SocketAddr;
+using namespace aliens::async;
+using namespace aliens::reactor;
 
-using aliens::tcp::TCPAcceptServer;
-using aliens::tcp::TCPSocket;
-using aliens::tcp::TCPClient;
-
-using aliens::async::IOService;
-using aliens::tcp::TCPServer;
-using aliens::tcp::EchoServer;
-
-
-class EchoClientHandler: public TCPSocket::EventHandler {
+class CallbackTimerHandler : public TimerFd::EventHandler {
  protected:
-  std::vector<std::string> messages_;
+  VoidCallback callback_;
  public:
-  EchoClientHandler(const std::vector<std::string> messages)
-    : messages_(messages) {}
-
-
-  void maybeWrite() {
-    if (messages_.empty()) {
-      LOG(INFO) << "out of messages!!";
-    } else {
-      auto msg = messages_.back();
-      messages_.pop_back();
-      LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::mem::makeUnique<Buffer>();
-      toSend->fillWith(msg);
-      write(std::move(toSend));
-    }
-  }
-  void onConnectSuccess() override {
-    LOG(INFO) << "onConnectSuccess..";
-    maybeWrite();
-  }
-  void onConnectError(boost::system::error_code ec) override {
-    LOG(INFO) << "onConnectError '" << ec << "'";
-  }
-  void onWriteSuccess(size_t nr) override {
-    LOG(INFO) << "onWriteSuccess : " << nr;
-    read(aliens::mem::makeUnique<Buffer>());
-  }
-  void onWriteError(boost::system::error_code ec, size_t nr) override {
-    LOG(INFO) << "onWriteError : " << ec << " [" << nr << "]";
-  }
-  void onReadSuccess(std::unique_ptr<Buffer> buff) override {
-    LOG(INFO) << "onReadSuccess!!! '" << buff->copyToString() << "'";
-    if (messages_.empty()) {
-      LOG(INFO) << "out of messages!!";
-    } else {
-      auto msg = messages_.back();
-      messages_.pop_back();
-      LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::mem::makeUnique<Buffer>();
-      toSend->fillWith(msg);
-      write(std::move(toSend));
-    }
-  }
-  void onReadError(boost::system::error_code ec) override {
-    LOG(INFO) << "onReadError...";
-  }
-  void onAfterClose() override {
-    LOG(INFO) << "onAfterClose.";
+  CallbackTimerHandler(VoidCallback &&cb)
+    : callback_(std::forward<VoidCallback>(cb)) {}
+  void onTick() override {
+    callback_();
   }
 };
 
-void runEcho() {
-  LOG(INFO) << "echo start";
-  short portNo = 5017;
-  auto ioService = new IOService;
-  thread serverThread([portNo, ioService]() {
-    try {
-      auto server = std::make_shared<EchoServer>(ioService);
-      server->listen(portNo);
-      ioService->run();
-    } catch (std::exception &ex) {
-      LOG(INFO) << "err! " << ex.what();
-    } catch (...) {
-      auto ex2 = std::current_exception();
-      LOG(INFO) << "BAD!";
-    }
-  });
-  this_thread::sleep_for(chrono::milliseconds(50));
-  thread clientThread([portNo, ioService]() {
-      SocketAddr addr;
-      addr.host = "localhost";
-      addr.port = portNo;
-      std::vector<std::string> messages {
-        "one", "two", "three", "four", "five"
-      };
-      auto client = std::make_shared<TCPClient>(ioService, new EchoClientHandler(messages), addr);
-      client->start();
-  });
-  serverThread.join();
-  clientThread.join();
-  LOG(INFO) << "end";
-}
-
 int main() {
   google::InstallFailureSignalHandler();
-  runEcho();
+  auto react = ReactorThread::createShared();
+  react->start();
+  auto handler1 = std::make_shared<CallbackTimerHandler>(VoidCallback([]() {
+    LOG(INFO) << "TICK1!";
+  }));
+  auto handler2 = std::make_shared<CallbackTimerHandler>(VoidCallback([]() {
+    LOG(INFO) << "TICK2!";
+  }));
+  auto timer1 = TimerFd::createShared(
+    TimerSettings(
+      std::chrono::milliseconds(500),
+      std::chrono::milliseconds(1000)
+    ),
+    handler1.get()
+  );
+  auto timer2 = TimerFd::createShared(
+    TimerSettings(
+      std::chrono::milliseconds(1000),
+      std::chrono::milliseconds(500)
+    ),
+    handler2.get()
+  );
+  react->addTask(timer1->getEpollTask(), [](){
+    LOG(INFO) << "added task1...";
+  });
+  react->addTask(timer2->getEpollTask(), [](){
+    LOG(INFO) << "added task2...";
+  });
+  this_thread::sleep_for(chrono::milliseconds(4000));
+  react->stop([react](const ErrBack::except_option &err) {
+    if (err.hasValue()) {
+      LOG(INFO) << "ERR : " << err.value().what();
+    } else {
+      LOG(INFO) << "stopped with no errors..";
+    }
+  });
+  react->join();
+  LOG(INFO) << "here...";
 }
