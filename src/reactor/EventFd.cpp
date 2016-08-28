@@ -37,7 +37,16 @@ std::shared_ptr<EventFd> EventFd::createShared(
   )));
 }
 
-void EventFd::triggerRead() {
+
+void EventFd::onWritable() {
+  LOG(INFO) << "EventFd::onWritable()";
+}
+
+void EventFd::onError() {
+  LOG(INFO) << "EventFd::onError()";
+}
+
+void EventFd::onReadable() {
   CHECK(!!handler_);
   uint64_t eventNo;
   CHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
@@ -46,31 +55,6 @@ void EventFd::triggerRead() {
 
 void EventFd::write(uint64_t msg) {
   CHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
-}
-
-void EventFd::EpollTask::onReadable() {
-  LOG(INFO) << "EventFd::EpollTask::onReadable()";
-  getParent()->triggerRead();
-}
-
-void EventFd::EpollTask::onWritable() {
-  LOG(INFO) << "EventFd::EpollTask::onWritable()";
-}
-
-void EventFd::EpollTask::onError() {
-  LOG(INFO) << "EventFd::EpollTask::onError()";
-}
-
-int EventFd::EpollTask::getFd() {
-  return parent_->getFdNo();
-}
-
-void EventFd::EpollTask::setParent(EventFd *parent) {
-  parent_ = parent;
-}
-
-EventFd* EventFd::EpollTask::getParent() const {
-  return parent_;
 }
 
 

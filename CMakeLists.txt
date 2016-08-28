@@ -50,6 +50,7 @@ set(LIB_SRC
     ${SRC}/reactor/TimerFd.cpp
     ${SRC}/reactor/TimerSettings.cpp
     ${SRC}/reactor/EventFd.cpp
+    ${SRC}/reactor/SignalFd.cpp
     ${SRC}/reactor/TCPSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 )
@@ -91,6 +92,7 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_TCPSocket.cpp
     ${TEST_DIR}/reactor/test_TimerFd.cpp
     ${TEST_DIR}/reactor/test_EventFd.cpp
+    ${TEST_DIR}/reactor/test_SignalFd.cpp
     ${TEST_DIR}/reactor/test_experimental.cpp
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp

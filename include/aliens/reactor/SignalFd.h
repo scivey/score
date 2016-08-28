@@ -6,14 +6,14 @@
 
 namespace aliens { namespace reactor {
 
-class EventFd {
+class SignalFd {
  public:
-  friend class ReflectedEpollTask<EventFd>;
-  using EpollTask = ReflectedEpollTask<EventFd>;
+  friend class ReflectedEpollTask<SignalFd>;
+  using EpollTask = ReflectedEpollTask<SignalFd>;
 
   class EventHandler {
    public:
-    virtual void onEvent(uint64_t) = 0;
+    virtual void onSignal(uint32_t) = 0;
     virtual ~EventHandler() = default;
   };
 
@@ -21,17 +21,16 @@ class EventFd {
   FileDescriptor fd_;
   EpollTask epollTask_;
   EventHandler *handler_ {nullptr};
+  SignalFd(FileDescriptor &&desc, EventHandler *handler);
   void onReadable();
   void onWritable();
   void onError();
-  EventFd(FileDescriptor &&desc, EventHandler *handler);
  public:
-  EpollTask* getEpollTask();
+  EpollTask *getEpollTask();
   int getFdNo() const;
-  static EventFd create(EventHandler*);
-  static std::shared_ptr<EventFd> createShared(EventHandler*);
+  static SignalFd create(EventHandler*);
+  static std::shared_ptr<SignalFd> createShared(EventHandler*);
   void stop();
-  void write(uint64_t);
 };
 
 }} // aliens::reactor

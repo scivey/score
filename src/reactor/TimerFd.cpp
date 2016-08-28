@@ -18,7 +18,7 @@ void TimerFd::stop() {
   fd_.close();
 }
 
-void TimerFd::triggerRead() {
+void TimerFd::onReadable() {
   uint64_t nTimeouts {0};
   CHECK(8 == read(getFdNo(), &nTimeouts, sizeof(uint64_t)));
   CHECK(!!handler_);
@@ -28,6 +28,14 @@ void TimerFd::triggerRead() {
   for (size_t i = 0; i < nTimeouts; i++) {
     handler_->onTick();
   }
+}
+
+void TimerFd::onWritable() {
+  LOG(INFO) << "TimerFd::onWritable";
+}
+
+void TimerFd::onError() {
+  LOG(INFO) << "TimerFd::onError";
 }
 
 TimerFd TimerFd::create(const TimerSettings& settings, TimerFd::EventHandler *handler) {
@@ -61,29 +69,6 @@ std::shared_ptr<TimerFd> TimerFd::createShared(
   )));
 }
 
-void TimerFd::EpollTask::onReadable() {
-  getParent()->triggerRead();
-}
-
-void TimerFd::EpollTask::onWritable() {
-  LOG(INFO) << "TimerFd::EpollTask::onWritable()";
-}
-
-void TimerFd::EpollTask::onError() {
-  LOG(INFO) << "TimerFd::EpollTask::onError()";
-}
-
-int TimerFd::EpollTask::getFd() {
-  return parent_->getFdNo();
-}
-
-void TimerFd::EpollTask::setParent(TimerFd *parent) {
-  parent_ = parent;
-}
-
-TimerFd* TimerFd::EpollTask::getParent() const {
-  return parent_;
-}
 
 TimerFd::EpollTask* TimerFd::getEpollTask() {
   return &epollTask_;

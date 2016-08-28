@@ -29,8 +29,11 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   void start();
   void stop(async::ErrBack &&cb);
 
+ protected:
   // NB must be called from event loop thread.
   void addTaskImpl(EpollReactor::Task *task);
+
+ public:
   void addTask(EpollReactor::Task *task);
   void addTask(EpollReactor::Task *task, async::VoidCallback &&cb);
   void runInEventThread(async::VoidCallback &&cb);

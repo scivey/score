@@ -3,27 +3,14 @@
 #include <sys/timerfd.h>
 #include "aliens/reactor/EpollReactor.h"
 #include "aliens/reactor/TimerSettings.h"
-
+#include "aliens/reactor/ReflectedEpollTask.h"
 
 namespace aliens { namespace reactor {
 
 class TimerFd {
  public:
-  class EpollTask : public EpollReactor::Task {
-   protected:
-    TimerFd* parent_ {nullptr};
-    EpollTask(){}
-    void setParent(TimerFd *parent);
-    friend class TimerFd;
-    TimerFd* getParent() const;
-   public:
-    void onReadable() override;
-    void onWritable() override;
-    void onError() override;
-    int getFd() override;
-  };
-
-  friend class EpollTask;
+  friend class ReflectedEpollTask<TimerFd>;
+  using EpollTask = ReflectedEpollTask<TimerFd>;
 
   class EventHandler {
    public:
@@ -37,7 +24,9 @@ class TimerFd {
   EventHandler *handler_ {nullptr};
 
   TimerFd(FileDescriptor &&desc, EventHandler *handler);
-  void triggerRead();
+  void onReadable();
+  void onWritable();
+  void onError();
  public:
   EpollTask *getEpollTask();
   int getFdNo() const;
