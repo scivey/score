@@ -86,6 +86,8 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_EpollReactor.cpp
     ${TEST_DIR}/reactor/test_ReactorThread.cpp
     ${TEST_DIR}/reactor/test_TCPSocket.cpp
+    ${TEST_DIR}/reactor/test_experimental.cpp
+
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )
