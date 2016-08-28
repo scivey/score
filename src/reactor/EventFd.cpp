@@ -28,11 +28,11 @@ std::shared_ptr<EventFd> EventFd::createShared(
 
 
 void EventFd::onWritable() {
-  LOG(INFO) << "EventFd::onWritable()";
+  VLOG(50) << "EventFd::onWritable()";
 }
 
 void EventFd::onError() {
-  LOG(INFO) << "EventFd::onError()";
+  VLOG(50) << "EventFd::onError()";
 }
 
 void EventFd::onReadable() {

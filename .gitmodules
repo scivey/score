@@ -8,3 +8,9 @@
 [submodule "external/hana"]
 	path = external/hana
 	url = https://github.com/boostorg/hana
+[submodule "external/cxxopts"]
+	path = external/cxxopts
+	url = https://github.com/jarro2783/cxxopts
+[submodule "external/variant"]
+	path = external/variant
+	url = https://github.com/eggs-cpp/variant

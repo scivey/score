@@ -1,11 +1,16 @@
 #include "aliens/reactor/SocketAddr.h"
 #include "aliens/exceptions/exceptions.h"
 #include <cstring>
+#include <cstdlib>
+#include <cstdio>
 
 namespace aliens { namespace reactor {
 
 SocketAddr::SocketAddr(const std::string &host, short port)
   : host_(host), port_(port){}
+
+SocketAddr::SocketAddr(const std::string &host, const std::string &port)
+  : host_(host), port_( (short) std::strtoul(port.c_str(), nullptr, 0) ) {}
 
 const std::string& SocketAddr::getHost() const {
   return host_;

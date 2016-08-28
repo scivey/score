@@ -20,6 +20,7 @@
 
 #include "aliens/ScopeGuard.h"
 #include "aliens/locks/Synchronized.h"
+#include "aliens/locks/ThreadBaton.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/async/VoidCallback.h"
 #include "aliens/Maybe.h"
@@ -38,34 +39,14 @@
 #include "aliens/reactor/ReactorThread.h"
 
 using namespace std;
+using namespace aliens::locks;
+using namespace aliens::reactor;
 using aliens::async::ErrBack;
 using aliens::async::VoidCallback;
-using aliens::locks::Synchronized;
 using aliens::MoveWrapper;
 using aliens::Buffer;
 using aliens::exceptions::BaseError;
 using aliens::exceptions::SystemError;
-
-using aliens::reactor::TCPSocket;
-using aliens::reactor::FileDescriptor;
-using aliens::reactor::EpollFd;
-using aliens::reactor::EpollReactor;
-using aliens::reactor::SocketAddr;
-using aliens::reactor::ServerSocketTask;
-using aliens::reactor::ClientSocketTask;
-using aliens::reactor::AcceptSocketTask;
-using aliens::reactor::ReactorThread;
-
-
-
-
-
-
-
-
-
-
-
 
 
 TEST(TestEpollReactor, TestConstruction) {
@@ -77,7 +58,6 @@ TEST(TestEpollReactor, TestRun1) {
   auto reactor = EpollReactor::create();
   reactor.runOnce();
   EXPECT_TRUE(true);
-  LOG(INFO) << "here";
 }
 
 TEST(TestEpollReactor, TestRun2) {
@@ -91,7 +71,6 @@ TEST(TestEpollReactor, TestRun2) {
   reactor.runForDuration(std::chrono::milliseconds{20});
   EXPECT_TRUE(true);
   task->getSocket().stop();
-  LOG(INFO) << "here";
 }
 
 
@@ -103,21 +82,20 @@ TEST(TestEpollReactor, TestRun3) {
     new AcceptSocketTask(std::move(sock))
   );
   task->getSocket().listen();
-  reactorThread->addTask(task.get(), [](){
-    LOG(INFO) << "added task!";
+  ThreadBaton bat1;
+  reactorThread->addTask(task.get(), [&bat1](){
+    bat1.post();
   });
-  LOG(INFO) << "sleeping...";
-  this_thread::sleep_for(chrono::milliseconds(100));
-  std::atomic<bool> done {false};
-  reactorThread->runInEventThread([&task, &reactorThread, &done]() {
+  bat1.wait();
+  ThreadBaton bat2;
+  reactorThread->runInEventThread([&task, &reactorThread, &bat2]() {
     task->getSocket().stop();
-    reactorThread->stop([&done](const aliens::Maybe<std::exception> &err) {
-      done.store(true);
+    reactorThread->stop([&bat2](const aliens::Maybe<std::exception> &err) {
+      bat2.post();
     });
   });
-  LOG(INFO) << "waiting for stop..";
+  bat2.wait();
   reactorThread->join();
-  LOG(INFO) << "end.";
 }
 
 

@@ -11,6 +11,7 @@ class SocketAddr {
   short port_;
  public:
   SocketAddr(const std::string &host, short port);
+  SocketAddr(const std::string &host, const std::string &port);
   const std::string& getHost() const;
   short getPort() const;
   struct sockaddr_in to_sockaddr_in() const;

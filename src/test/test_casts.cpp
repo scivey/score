@@ -40,11 +40,9 @@ class XX {
     state_ = State::A;
   }
   void run() const& {
-    LOG(INFO) << "B!";
     state_ = State::B;
   }
   void run() && {
-    LOG(INFO) << "C!";
     state_ = State::C;
   }
   void reset() {
@@ -71,17 +69,3 @@ TEST(TestXX, TestWorks2) {
   func(thing);
   EXPECT_EQ(XX::State::B, thing.getState());
 }
-
-// TEST(TestXX, TestWorks3) {
-//   XX thing;
-//   EXPECT_EQ(XX::State::NOTHING, thing.getState());
-//   bool called = false;
-//   auto func = [&called](XX&& movedRef) {
-//     EXPECT_EQ(XX::State::NOTHING, movedRef.getState());
-//     movedRef.run();
-//     EXPECT_EQ(XX::State::C, movedRef.getState());
-//     called = true;
-//   };
-//   func(std::move(thing));
-//   EXPECT_TRUE(called);
-// }

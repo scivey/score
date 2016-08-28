@@ -21,6 +21,9 @@ class FixedBuffer {
   char* body() {
     return (char*) data_;
   }
+  void* vdata() {
+    return (void*) data_;
+  }
   void zero() {
     memset((char*) data_, '\0', NBytes);
   }

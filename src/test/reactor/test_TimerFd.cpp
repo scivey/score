@@ -50,9 +50,7 @@ TEST(TestTimerFd, TestSanity) {
     TimerSettings(chrono::milliseconds(5), chrono::milliseconds(5)),
     handler.get()
   );
-  reactorThread->addTask(timer->getEpollTask(), [](){
-    LOG(INFO) << "added task!";
-  });
+  reactorThread->addTask(timer->getEpollTask(), [](){});
 
   size_t current = target.load();
   while (current < 5) {
@@ -68,8 +66,6 @@ TEST(TestTimerFd, TestSanity) {
     });
   });
   joinAtomic(finished);
-  LOG(INFO) << "waiting for stop..";
   reactorThread->join();
   EXPECT_GT(target.load(), 4);
-  LOG(INFO) << "end.";
 }

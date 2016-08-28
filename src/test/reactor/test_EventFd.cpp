@@ -25,7 +25,6 @@ class EventHandler : public EventFd::EventHandler {
     return events_.getHandle()->size();
   }
   void onEvent(uint64_t evt) override {
-    LOG(INFO) << "onEvent : " << evt;
     events_.getHandle()->push_back(evt);
   }
   std::vector<uint64_t> copyEvents() const {
@@ -45,26 +44,6 @@ void joinAtomic(std::atomic<bool> &done) {
 }
 }
 
-class Barrier {
- protected:
-  std::atomic<size_t> counter_ {0};
-  size_t expected_ {0};
-  std::atomic<bool> done_ {false};
- public:
-  Barrier(size_t expected): expected_(expected){}
-  void post() {
-    size_t prev = counter_.fetch_add(1);
-    LOG(INFO) << "post : " << prev;
-    if (prev == expected_ - 1) {
-      done_.store(true);
-    }
-  }
-  void wait() {
-    while(!done_.load()) {
-      ;
-    }
-  }
-};
 
 TEST(EventFd, TestSanity) {
   auto reactorThread = ReactorThread::createShared();
@@ -85,7 +64,6 @@ TEST(EventFd, TestSanity) {
   while (handler->numReceived() == 0) {
     ;
   }
-  LOG(INFO) << "numReceived adequate.";
   auto received = handler->copyEvents();
   EXPECT_EQ(957, received.at(0));
   EXPECT_EQ(1, received.size());

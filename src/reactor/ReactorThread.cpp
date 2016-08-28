@@ -35,10 +35,10 @@ void ReactorThread::start() {
         }
       }
       if (onStopped_.hasValue()) {
-        LOG(INFO) << "calling onStopped";
+        VLOG(50) << "calling onStopped";
         onStopped_.value()();
       } else {
-        LOG(INFO) << "not calling onStopped.";
+        VLOG(50) << "not calling onStopped.";
       }
       finished_.store(true);
     }));

@@ -1,6 +1,8 @@
 #pragma once
 #include <mutex>
 #include <thread>
+#include <set>
+#include <glog/logging.h>
 #include "aliens/ThreadLocalPtr.h"
 #include "aliens/Counter.h"
 #include "aliens/SingletonWrapper.h"
@@ -80,6 +82,9 @@ class Noisy {
   }
   Noisy(): id_(StaticCounter::get()->get()) {
     getReport()->markCreated(id_);
+  }
+  void speak() {
+    LOG(INFO) << "Noisy<" << NIdent << "> : id='" << id_ << "'";
   }
   ~Noisy() {
     maybeMarkDestroyed();

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(aliens)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0 -mcx16 -march=native")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(GTEST ${EXTERNAL}/googletest)
@@ -29,6 +29,7 @@ set(COMMON_LIBS
     boost_thread
     glog
     pthread
+    gcc_s
     atomic
 )
 
@@ -40,6 +41,7 @@ set(LIB_SRC
     ${SRC}/mem/standard.cpp
     ${SRC}/locks/ThreadBaton.cpp
     ${SRC}/exceptions/exceptions.cpp
+    ${SRC}/formatters/formatters.cpp
     ${SRC}/reactor/FileDescriptor.cpp
     ${SRC}/reactor/EpollFd.cpp
     ${SRC}/reactor/EpollReactor.cpp
@@ -52,6 +54,8 @@ set(LIB_SRC
     ${SRC}/reactor/EventFd.cpp
     ${SRC}/reactor/SignalFd.cpp
     ${SRC}/reactor/TCPSocket.cpp
+    ${SRC}/reactor/TCPAcceptSocket.cpp
+    ${SRC}/reactor/TCPServerSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 )
 
@@ -94,6 +98,7 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_EventFd.cpp
     ${TEST_DIR}/reactor/test_SignalFd.cpp
     ${TEST_DIR}/reactor/test_experimental.cpp
+    ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )

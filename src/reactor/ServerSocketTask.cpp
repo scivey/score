@@ -29,19 +29,19 @@ void ServerSocketTask::onReadable() {
 }
 
 void ServerSocketTask::onWritable() {
-  LOG(INFO) << "onWritable!";
+  VLOG(50) << "onWritable!";
 }
 
 void ServerSocketTask::onError() {
-  LOG(INFO) << "ServerSocketTask onError";
+  VLOG(50) << "ServerSocketTask onError";
 }
 
 void ServerSocketTask::onRead(char* buff, ssize_t buffLen) {
-  LOG(INFO) << "onRead! [" << buffLen << "] : '" << buff << "'";
+  VLOG(50) << "onRead! [" << buffLen << "] : '" << buff << "'";
 }
 
 void ServerSocketTask::onEOF() {
-  LOG(INFO) << "onEOF!";
+  VLOG(50) << "onEOF!";
 }
 
 int ServerSocketTask::getFd() {
