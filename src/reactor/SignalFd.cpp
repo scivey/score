@@ -40,10 +40,11 @@ SignalFd SignalFd::create(SignalFd::EventHandler *handler) {
   int sfd;
   sigemptyset(&mask);
   sigaddset(&mask, SIGINT);
-  ALIENS_CHECK_SYSCALL2(
-    sigprocmask(SIG_BLOCK, &mask, nullptr),
-    "sigprocmask()"
-  );
+  sigaddset(&mask, SIGUSR1);
+  // ALIENS_CHECK_SYSCALL2(
+  //   sigprocmask(SIG_BLOCK, &mask, nullptr),
+  //   "sigprocmask()"
+  // );
   sfd = signalfd(-1, &mask, SFD_NONBLOCK | SFD_CLOEXEC);
   ALIENS_CHECK_SYSCALL2(sfd, "signalfd()");
   return SignalFd(FileDescriptor::fromIntExcept(sfd), handler);
