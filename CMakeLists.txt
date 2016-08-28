@@ -53,10 +53,12 @@ set(LIB_SRC
     ${SRC}/reactor/TimerSettings.cpp
     ${SRC}/reactor/EventFd.cpp
     ${SRC}/reactor/SignalFd.cpp
-    ${SRC}/reactor/TCPSocket.cpp
+    ${SRC}/reactor/TCPChannel.cpp
+    ${SRC}/reactor/TCPClient.cpp
     ${SRC}/reactor/TCPAcceptSocket.cpp
-    ${SRC}/reactor/TCPServerSocket.cpp
-    ${SRC}/reactor/TCPClientSocket.cpp
+    # ${SRC}/reactor/TCPSocket.cpp
+    # ${SRC}/reactor/TCPServerSocket.cpp
+    # ${SRC}/reactor/TCPClientSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 )
 

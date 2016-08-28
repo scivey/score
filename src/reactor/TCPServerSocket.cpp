@@ -15,101 +15,27 @@
 using aliens::io::NonOwnedBufferPtr;
 using aliens::async::ErrBack;
 using aliens::exceptions::BaseError;
+using std::unique_ptr;
 
 namespace aliens { namespace reactor {
 
-TCPServerSocket::TCPServerSocket(FileDescriptor &&desc,
-    EventHandler *handler,
-    const SocketAddr& localAddr,
-    const SocketAddr &remoteAddr)
-  : FdHandlerBase<TCPServerSocket>(std::forward<FileDescriptor>(desc)),
-    handler_(handler),
-    localAddr_(localAddr),
-    remoteAddr_(remoteAddr) {
-  handler_->setParent(this);
-}
+using ChannelPtr = unique_ptr<TCPServerSocket>;
 
-void TCPServerSocket::readSome() {
-  LOG(INFO) << "onReadable";
-  const size_t kReadBuffSize = 128;
-  for (;;) {
-    void *buffPtr {nullptr};
-    size_t buffLen {0};
-    handler_->getReadBuffer(&buffPtr, &buffLen, kReadBuffSize);
-    CHECK(!!buffPtr);
-    ssize_t nr = read(getFdNo(), (char*) buffPtr, buffLen);
-    if (nr == -1) {
-      if (errno == EAGAIN) {
-        handler_->onReadableStop();
-        break;
-      } else {
-        ALIENS_CHECK_SYSCALL2(nr, "read()");
-      }
-    } else if (nr == 0) {
-      handler_->onReadableStop();
-      handler_->onEOF();
-      break;
-    } else {
-      handler_->readBufferAvailable(buffPtr, nr);
-    }
-  }
-}
+TCPServerSocket::TCPServerSocket(ChannelPtr channel)
+  : channel_(std::forward<ChannelPtr>(channel)) {}
 
-void TCPServerSocket::triggerReadable() {
-  handler_->onReadableStart();
+TCPServerSocket TCPServerSocket::fromAccepted(ChannelPtr channel) {
+  return TCPServerSocket(std::forward<ChannelPtr>(channel));
 }
-
-void TCPServerSocket::triggerWritable() {
-  handler_->onWritable();
+TCPServerSocket* TCPServerSocket::fromAcceptedPtr(ChannelPtr channel) {
+  return new TCPServerSocket(std::forward<ChannelPtr>(channel));
 }
-
-void TCPServerSocket::triggerError() {
-  LOG(INFO) << "onError [" << errno << "]";
-}
-
-TCPServerSocket TCPServerSocket::fromAccepted(
-    FileDescriptor &&fd,
-    TCPServerSocket::EventHandler *handler,
-    const SocketAddr &localAddr,
-    const SocketAddr &remoteAddr) {
-  LOG(INFO) << "TCPServerSocket::fromAccepted()"
-    << "\t{fd=" << fd.getFdNo() << "}";
-  return TCPServerSocket(
-    std::forward<FileDescriptor>(fd),
-    handler,
-    localAddr,
-    remoteAddr
+std::shared_ptr<TCPServerSocket> TCPServerSocket::fromAcceptedShared(
+    ChannelPtr channel) {
+  return std::shared_ptr<TCPServerSocket>(
+    TCPServerSocket::fromAcceptedPtr(std::forward<ChannelPtr>(channel))
   );
 }
 
-void TCPServerSocket::EventHandler::sendBuff(
-    NonOwnedBufferPtr buff, ErrBack &&cb) {
-  getParent()->sendBuff(buff, std::forward<ErrBack>(cb));
-}
 
-void TCPServerSocket::sendBuff(
-    NonOwnedBufferPtr buff, ErrBack &&cb) {
-  auto buffStr = buff.copyToString();
-  LOG(INFO) << "should send : [" << buffStr.size()
-      << "] '" << buffStr << "'";
-  auto fd = getFdNo();
-  // ALIENS_UNUSED(fd);
-  cb();
-  ssize_t nr = ::write(fd, buff.vdata(), buff.size());
-  ALIENS_CHECK_SYSCALL2(nr, "write()");
-  if (nr == buff.size()) {
-    cb();
-  } else {
-    cb(BaseError("couldn't write everything."));
-  }
-}
-
-void TCPServerSocket::EventHandler::shutdown() {
-  getParent()->shutdown();
-}
-
-void TCPServerSocket::shutdown() {
-  LOG(INFO) << "TCPServerSocket::shutdown()";
-  getFileDescriptor().close();
-}
 }} // aliens::reactor

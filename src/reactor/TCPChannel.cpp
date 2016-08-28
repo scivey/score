@@ -19,11 +19,16 @@ namespace aliens { namespace reactor {
 
 TCPChannel::TCPChannel(FileDescriptor &&desc,
     EventHandler *handler,
-    const ConnectionInfo& connInfo)
+    const TCPConnectionInfo& connInfo)
   : FdHandlerBase<TCPChannel>(std::forward<FileDescriptor>(desc)),
     handler_(handler),
     connInfo_(connInfo) {
   handler_->setParent(this);
+}
+
+
+void TCPChannel::EventHandler::readSome() {
+  getParent()->readSome();
 }
 
 void TCPChannel::readSome() {
@@ -95,14 +100,15 @@ void TCPChannel::shutdown() {
 }
 
 TCPChannel TCPChannel::fromDescriptor(FileDescriptor &&fd,
-    EventHandler *handler, const ConnectionInfo &info) {
+    EventHandler *handler, const TCPConnectionInfo &info) {
   return TCPChannel(
     std::forward<FileDescriptor>(fd),
     handler, info
   );
 }
-TCPChannel TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
-    EventHandler *handler, const ConnectionInfo &info) {
+
+TCPChannel* TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
+    EventHandler *handler, const TCPConnectionInfo &info) {
   return new TCPChannel(
     std::forward<FileDescriptor>(fd),
     handler, info
@@ -110,10 +116,22 @@ TCPChannel TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
 }
 
 std::shared_ptr<TCPChannel> TCPChannel::fromDescriptorShared(
-    FileDescriptor &&fd, EventHandler *handler
-    const ConnectionInfo &info) {
+    FileDescriptor &&fd, EventHandler *handler,
+    const TCPConnectionInfo &info) {
   return std::shared_ptr<TCPChannel>(
-    TCPChannel::fromDescriptorPtr(fd, handler, info)
+    TCPChannel::fromDescriptorPtr(
+      std::forward<FileDescriptor>(fd), handler, info
+    )
+  );
+}
+
+std::unique_ptr<TCPChannel> TCPChannel::fromDescriptorUnique(
+    FileDescriptor &&fd, EventHandler *handler,
+    const TCPConnectionInfo &info) {
+  return std::unique_ptr<TCPChannel>(
+    TCPChannel::fromDescriptorPtr(
+      std::forward<FileDescriptor>(fd), handler, info
+    )
   );
 }
 

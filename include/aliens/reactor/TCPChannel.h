@@ -4,6 +4,7 @@
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/reactor/SocketAddr.h"
 #include "aliens/reactor/ParentHaving.h"
+#include "aliens/reactor/TCPConnectionInfo.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
 
@@ -28,21 +29,12 @@ class TCPChannel : public FdHandlerBase<TCPChannel> {
   };
   friend class EventHandler;
 
-  struct ConnectionInfo {
-    SocketAddr localAddr;
-    SocketAddr remoteAddr;
-  };
-
  protected:
   EventHandler *handler_ {nullptr};
-  ConnectionInfo connInfo_;
-  TCPChannel(FileDescriptor &&, EventHandler*, const ConnectionInfo&);
+  TCPConnectionInfo connInfo_;
+  TCPChannel(FileDescriptor &&, EventHandler*, const TCPConnectionInfo&);
   void readSome();
 
-  static TCPChannel* fromDescriptorPtr(
-    FileDescriptor&&fd, EventHandler *handler,
-    const ConnectionInfo &info
-  );
  public:
   void triggerReadable();
   void triggerWritable();
@@ -51,11 +43,19 @@ class TCPChannel : public FdHandlerBase<TCPChannel> {
   void shutdown();
   static TCPChannel fromDescriptor(
     FileDescriptor&&fd, EventHandler *handler,
-    const ConnectionInfo &info
+    const TCPConnectionInfo &info
   );
-  static TCPChannel fromDescriptorShared(
+  static TCPChannel* fromDescriptorPtr(
     FileDescriptor&&fd, EventHandler *handler,
-    const ConnectionInfo &info
+    const TCPConnectionInfo &info
+  );
+  static std::shared_ptr<TCPChannel> fromDescriptorShared(
+    FileDescriptor&&fd, EventHandler *handler,
+    const TCPConnectionInfo &info
+  );
+  static std::unique_ptr<TCPChannel> fromDescriptorUnique(
+    FileDescriptor&&fd, EventHandler *handler,
+    const TCPConnectionInfo &info
   );
 };
 

@@ -18,8 +18,8 @@
 #include "aliens/reactor/TimerSettings.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/reactor/TCPAcceptSocket.h"
-#include "aliens/reactor/TCPServerSocket.h"
-#include "aliens/reactor/TCPClientSocket.h"
+#include "aliens/reactor/TCPClient.h"
+#include "aliens/reactor/TCPChannel.h"
 #include "aliens/locks/ThreadBaton.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
 #include "aliens/async/ErrBack.h"
@@ -58,7 +58,7 @@ NonOwnedBufferPtr makeStupidBuffer(const std::string &msg) {
   return NonOwnedBufferPtr{copied, result.size() - 1};
 }
 
-class SomeRequestHandler : public TCPServerSocket::EventHandler {
+class SomeRequestHandler : public TCPChannel::EventHandler {
  protected:
   std::string lastBuff_;
   bool isWritable_ {false};
@@ -66,8 +66,15 @@ class SomeRequestHandler : public TCPServerSocket::EventHandler {
   SomeRequestHandler() {
     LOG(INFO) << "SomeRequestHandler()";
   }
+  void onConnectSuccess() override {
+    LOG(INFO) << "onConnectSuccess.";
+  }
+  void onConnectError(int err) override {
+    LOG(INFO) << "onConnectError : " << strerror(err);
+  }
   void onReadableStart() override {
     LOG(INFO) << "SomeRequestHandler::onReadableStart()";
+    readSome();
   }
   void onReadableStop() override {
     LOG(INFO) << "SomeRequestHandler::onReadableStop()";
@@ -126,7 +133,7 @@ class SomeRequestHandler : public TCPServerSocket::EventHandler {
 
 class RequestHandlerFactory {
  public:
-  virtual TCPServerSocket::EventHandler* getHandler() = 0;
+  virtual TCPChannel::EventHandler* getHandler() = 0;
   virtual ~RequestHandlerFactory() = default;
 };
 
@@ -143,15 +150,21 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
     desc.makeNonBlocking();
     SocketAddr localAddr("127.0.0.1", 9999);
     SocketAddr remoteAddr(hostName, portNo);
+    TCPConnectionInfo connInfo;
+    connInfo.localAddr = localAddr;
+    connInfo.remoteAddr = remoteAddr;
     auto handler = handlerFactory_->getHandler();
-    auto serverSock = new TCPServerSocket(TCPServerSocket::fromAccepted(
-      std::move(desc), handler, localAddr, remoteAddr
-    ));
+    auto channel = TCPChannel::fromDescriptorPtr(std::move(desc),
+      handlerFactory_->getHandler(), connInfo
+    );
+    // auto serverSock = new TCPServerSocket(TCPServerSocket::fromAccepted(
+    //   std::move(desc), handler, localAddr, remoteAddr
+    // ));
     LOG(INFO) << "made server socket..";
     LOG(INFO) << "\t\t server socket "
               << "{accept_fd=" << getParent()->getFdNo() << "}"
-              << " {server_fd=" << serverSock->getFdNo() << "}";
-    getParent()->getReactor()->addTask(serverSock->getEpollTask());
+              << " {server_fd=" << channel->getFdNo() << "}";
+    getParent()->getReactor()->addTask(channel->getEpollTask());
   }
   void onAcceptError(int err) override {
     LOG(INFO) << "onAcceptError [" << err << "]";
@@ -160,14 +173,15 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
 
 class SomeFactory: public RequestHandlerFactory {
  public:
-  TCPServerSocket::EventHandler* getHandler() override {
+  TCPChannel::EventHandler* getHandler() override {
     return new SomeRequestHandler;
   }
 };
 
-class ClientHandler : public TCPClientSocket::EventHandler {
+class ClientHandler : public TCPChannel::EventHandler {
  protected:
   bool sent_ {false};
+  bool gotResponse_ {false};
   std::string msg_ {"DEFAULT"};
  public:
   ClientHandler(){}
@@ -187,9 +201,16 @@ class ClientHandler : public TCPClientSocket::EventHandler {
   }
   void onReadableStart() override {
     LOG(INFO) << "onReadableStart.";
+    if (sent_) {
+      gotResponse_ = true;
+    }
+    readSome();
   }
   void onReadableStop() override {
     LOG(INFO) << "onReadableStop.";
+    if (gotResponse_) {
+      shutdown();
+    }
   }
   void onConnectSuccess() override {
     LOG(INFO) << "CONNECTED.";
@@ -239,9 +260,9 @@ void runServer() {
   ThreadBaton bat2;
   react->runInEventThread([&bat2, react]() {
     SocketAddr addr {"127.0.0.1", kPortNum};
-    auto client = new TCPClientSocket(TCPClientSocket::connect(
-      addr, new ClientHandler
-    ));
+    auto client = TCPClient::connectPtr(
+      react->getReactor(), new ClientHandler, addr
+    );
     react->addTask(client->getEpollTask(), [&bat2]() {
       LOG(INFO) << "added client.";
       bat2.post();
