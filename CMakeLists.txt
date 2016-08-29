@@ -98,7 +98,7 @@ set(TEST_SRC
     ${TEST_DIR}/mem/test_LSharedPtr.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
     ${TEST_DIR}/vendored/test_seastar_imports.cpp
-
+    # ${TEST_DIR}/vendored/test_folly_imports.cpp
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )

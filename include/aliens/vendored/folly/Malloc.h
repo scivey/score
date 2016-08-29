@@ -38,8 +38,8 @@
 // includes and uses fbstring.
 #if defined(_GLIBCXX_USE_FB) && !defined(_LIBSTDCXX_FBSTRING)
 
-#include <folly/detail/Malloc.h>
-#include <folly/portability/BitsFunctexcept.h>
+#include "aliens/vendored/folly/detail/Malloc.h"
+#include "aliens/vendored/folly/portability/BitsFunctexcept.h"
 
 #include <string>
 
@@ -87,19 +87,19 @@ __attribute__((__weak__));
 
 #include <bits/functexcept.h>
 
-#define FOLLY_HAVE_MALLOC_H 1
+#define ALIENS_FOLLY_HAVE_MALLOC_H 1
 
 #else // !defined(_LIBSTDCXX_FBSTRING)
 
-#include <folly/detail/Malloc.h> /* nolint */
-#include <folly/portability/BitsFunctexcept.h> /* nolint */
+#include "aliens/vendored/folly/detail/Malloc.h" /* nolint */
+#include "aliens/vendored/folly/portability/BitsFunctexcept.h" /* nolint */
 
 #endif
 
 // for malloc_usable_size
 // NOTE: FreeBSD 9 doesn't have malloc.h.  Its definitions
 // are found in stdlib.h.
-#if FOLLY_HAVE_MALLOC_H
+#if ALIENS_FOLLY_HAVE_MALLOC_H
 #include <malloc.h>
 #else
 #include <stdlib.h>
@@ -117,15 +117,15 @@ __attribute__((__weak__));
 namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 #else
-namespace folly {
+namespace aliens { namespace vendored { namespace folly {
 #endif
 
 // Cannot depend on Portability.h when _LIBSTDCXX_FBSTRING.
 // Disabled for nvcc because it fails on attributes on lambdas.
 #if defined(__GNUC__) && !defined(__NVCC__)
-#define FOLLY_MALLOC_NOINLINE __attribute__((__noinline__))
+#define ALIENS_FOLLY_MALLOC_NOINLINE __attribute__((__noinline__))
 #else
-#define FOLLY_MALLOC_NOINLINE
+#define ALIENS_FOLLY_MALLOC_NOINLINE
 #endif
 
 /**
@@ -140,7 +140,7 @@ inline bool usingJEMalloc() noexcept {
   // per-thread counter of allocated memory increases. This makes me
   // feel dirty inside. Also note that this requires jemalloc to have
   // been compiled with --enable-stats.
-  static const bool result = [] () FOLLY_MALLOC_NOINLINE noexcept {
+  static const bool result = [] () ALIENS_FOLLY_MALLOC_NOINLINE noexcept {
     // Some platforms (*cough* OSX *cough*) require weak symbol checks to be
     // in the form if (mallctl != nullptr). Not if (mallctl) or if (!mallctl)
     // (!!). http://goo.gl/xpmctm
@@ -282,5 +282,6 @@ _GLIBCXX_END_NAMESPACE_VERSION
 #endif
 
 } // folly
+}} // aliens::vendored
 
 #endif // !defined(_GLIBCXX_USE_FB) || defined(_LIBSTDCXX_FBSTRING)

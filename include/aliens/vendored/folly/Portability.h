@@ -20,8 +20,7 @@
 
 #include <cstddef>
 
-//  #include <folly/portability/Config.h>
-
+#include "aliens/vendored/folly/portability/Config.h"
 #include "aliens/vendored/folly/CPortability.h"
 
 #if ALIENS_FOLLY_HAVE_SCHED_H

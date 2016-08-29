@@ -18,11 +18,11 @@
 
 #include <stdlib.h>
 
-#include <folly/Portability.h>
+#include "aliens/vendored/folly/Portability.h"
 
 extern "C" {
 
-#if FOLLY_HAVE_WEAK_SYMBOLS
+#if ALIENS_FOLLY_HAVE_WEAK_SYMBOLS
 void* mallocx(size_t, int) __attribute__((__weak__));
 void* rallocx(void*, size_t, int) __attribute__((__weak__));
 size_t xallocx(void*, size_t, size_t, int) __attribute__((__weak__));

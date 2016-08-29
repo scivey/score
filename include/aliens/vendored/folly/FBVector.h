@@ -54,7 +54,7 @@ namespace aliens { namespace vendored { namespace folly {
 //=============================================================================
 // unrolling
 
-#define FOLLY_FBV_UNROLL_PTR(first, last, OP) do {  \
+#define ALIENS_FOLLY_FBV_UNROLL_PTR(first, last, OP) do {  \
   for (; (last) - (first) >= 4; (first) += 4) {     \
     OP(((first) + 0));                              \
     OP(((first) + 1));                              \
@@ -374,9 +374,9 @@ private:
       //  version is about 0.5% slower on size 262144.
 
       // for (; first != last; ++first) first->~T();
-      #define FOLLY_FBV_OP(p) (p)->~T()
-      FOLLY_FBV_UNROLL_PTR(first, last, FOLLY_FBV_OP)
-      #undef FOLLY_FBV_OP
+      #define ALIENS_FOLLY_FBV_OP(p) (p)->~T()
+      ALIENS_FOLLY_FBV_UNROLL_PTR(first, last, ALIENS_FOLLY_FBV_OP)
+      #undef ALIENS_FOLLY_FBV_OP
     }
   }
 
@@ -1265,7 +1265,7 @@ private: // we have the private section first because it defines some macros
   // These three functions, make_window, wrap_frame, and
   //  insert_use_fresh_memory, can be combined into a uniform interface.
   // Since that interface involves a lot of case-work, it is built into
-  //  some macros: FOLLY_FBVECTOR_INSERT_(PRE|START|TRY|END)
+  //  some macros: ALIENS_FOLLY_FBVECTOR_INSERT_(PRE|START|TRY|END)
   // Macros are used in an attempt to let GCC perform better optimizations,
   //  especially control flow optimization.
   //
@@ -1342,7 +1342,7 @@ private: // we have the private section first because it defines some macros
   //---------------------------------------------------------------------------
   // interface
 
-  #define FOLLY_FBVECTOR_INSERT_PRE(cpos, n)                                  \
+  #define ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, n)                                  \
     if (n == 0) return (iterator)cpos;                                        \
     bool at_end = cpos == cend();                                             \
     bool fresh = insert_use_fresh(at_end, n);                                 \
@@ -1351,7 +1351,7 @@ private: // we have the private section first because it defines some macros
 
     // check for internal data (technically not required by the standard)
 
-  #define FOLLY_FBVECTOR_INSERT_START(cpos, n)                                \
+  #define ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, n)                                \
       }                                                                       \
       assert(isValid(cpos));                                                  \
     }                                                                         \
@@ -1378,7 +1378,7 @@ private: // we have the private section first because it defines some macros
 
     // construct the inserted elements
 
-  #define FOLLY_FBVECTOR_INSERT_TRY(cpos, n)                                  \
+  #define ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, n)                                  \
     } catch (...) {                                                           \
       if (fresh) {                                                            \
         M_deallocate(b, newCap);                                              \
@@ -1400,7 +1400,7 @@ private: // we have the private section first because it defines some macros
 
     // delete the inserted elements (exception has been thrown)
 
-  #define FOLLY_FBVECTOR_INSERT_END(cpos, n)                                  \
+  #define ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, n)                                  \
         M_deallocate(b, newCap);                                              \
         throw;                                                                \
       }                                                                       \
@@ -1417,42 +1417,42 @@ public:
 
   template <class... Args>
   iterator emplace(const_iterator cpos, Args&&... args) {
-    FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
-    FOLLY_FBVECTOR_INSERT_START(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, 1)
       M_construct(start, std::forward<Args>(args)...);
-    FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
       M_destroy(start);
-    FOLLY_FBVECTOR_INSERT_END(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, 1)
   }
 
   iterator insert(const_iterator cpos, const T& value) {
-    FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
       if (dataIsInternal(value)) return insert(cpos, T(value));
-    FOLLY_FBVECTOR_INSERT_START(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, 1)
       M_construct(start, value);
-    FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
       M_destroy(start);
-    FOLLY_FBVECTOR_INSERT_END(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, 1)
   }
 
   iterator insert(const_iterator cpos, T&& value) {
-    FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, 1)
       if (dataIsInternal(value)) return insert(cpos, T(std::move(value)));
-    FOLLY_FBVECTOR_INSERT_START(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, 1)
       M_construct(start, std::move(value));
-    FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, 1)
       M_destroy(start);
-    FOLLY_FBVECTOR_INSERT_END(cpos, 1)
+    ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, 1)
   }
 
   iterator insert(const_iterator cpos, size_type n, VT value) {
-    FOLLY_FBVECTOR_INSERT_PRE(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, n)
       if (dataIsInternalAndNotVT(value)) return insert(cpos, n, T(value));
-    FOLLY_FBVECTOR_INSERT_START(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, n)
       D_uninitialized_fill_n_a(start, n, value);
-    FOLLY_FBVECTOR_INSERT_TRY(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, n)
       D_destroy_range_a(start, start + n);
-    FOLLY_FBVECTOR_INSERT_END(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, n)
   }
 
   template <class It, class Category = typename
@@ -1473,12 +1473,12 @@ private:
   iterator insert(const_iterator cpos, FIt first, FIt last,
                   std::forward_iterator_tag) {
     size_type n = std::distance(first, last);
-    FOLLY_FBVECTOR_INSERT_PRE(cpos, n)
-    FOLLY_FBVECTOR_INSERT_START(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_PRE(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_START(cpos, n)
       D_uninitialized_copy_a(start, first, last);
-    FOLLY_FBVECTOR_INSERT_TRY(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_TRY(cpos, n)
       D_destroy_range_a(start, start + n);
-    FOLLY_FBVECTOR_INSERT_END(cpos, n)
+    ALIENS_FOLLY_FBVECTOR_INSERT_END(cpos, n)
   }
 
   template <class IIt>
