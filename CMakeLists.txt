@@ -35,6 +35,7 @@ set(COMMON_LIBS
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+
 set(LIB_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
@@ -54,6 +55,16 @@ set(LIB_SRC
     ${SRC}/reactor/TCPClient.cpp
     ${SRC}/reactor/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
+
+    ${SRC}/vendored/smhasher/Platform.cpp
+    ${SRC}/vendored/smhasher/sha1.cpp
+    ${SRC}/vendored/smhasher/md5.cpp
+    ${SRC}/vendored/smhasher/Types.cpp
+    ${SRC}/vendored/smhasher/Bitvec.cpp
+    ${SRC}/vendored/smhasher/Bitslice.cpp
+    ${SRC}/vendored/smhasher/Random.cpp
+
+
 )
 
 add_library(alienscommon ${LIB_SRC})
