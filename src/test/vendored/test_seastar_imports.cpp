@@ -2,6 +2,8 @@
 #include <bitset>
 #include <vector>
 #include "aliens/vendored/seastar/core/bitset-iter.hh"
+#include "aliens/vendored/seastar/core/function_traits.hh"
+
 /*
   These are just quick sanity checks, not exhaustive tests,
   since seastar has its own test suite.
