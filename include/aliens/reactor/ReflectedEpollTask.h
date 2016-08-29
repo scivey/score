@@ -1,34 +1,26 @@
 #pragma once
 #include "aliens/reactor/EpollReactor.h"
+#include "aliens/ParentHaving.h"
+
 
 namespace aliens { namespace reactor {
 
 template<typename T>
-class ReflectedEpollTask : public EpollReactor::Task {
+class ReflectedEpollTask : public ParentHaving<T>,
+                           public EpollReactor::Task {
  public:
-  using parent_type = T;
-
- protected:
-  parent_type* parent_ {nullptr};
- public:
-  void setParent(parent_type *parent) {
-    parent_ = parent;
-  }
-  parent_type* getParent() const {
-    return parent_;
-  }
   ReflectedEpollTask(){}
   void onReadable() override {
-    getParent()->triggerReadable();
+    this->getParent()->triggerReadable();
   }
   void onWritable() override {
-    getParent()->triggerWritable();
+    this->getParent()->triggerWritable();
   }
   void onError() override {
-    getParent()->triggerError();
+    this->getParent()->triggerError();
   }
   int getFd() override {
-    return getParent()->getFdNo();
+    return this->getParent()->getFdNo();
   }
 };
 
