@@ -95,7 +95,10 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_EventFd.cpp
     ${TEST_DIR}/reactor/test_SignalFd.cpp
     ${TEST_DIR}/reactor/test_experimental.cpp
+    ${TEST_DIR}/mem/test_LSharedPtr.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
+    ${TEST_DIR}/vendored/test_seastar_imports.cpp
+
     # ${TEST_DIR}/test_UninitializedArray.cpp
     ${TEST_DIR}/test_casts.cpp
 )
