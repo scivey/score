@@ -9,9 +9,6 @@ namespace aliens { namespace reactor {
 
 class EventFd : public FdHandlerBase<EventFd> {
  public:
-  // friend class ReflectedEpollTask<EventFd>;
-  // using EpollTask = ReflectedEpollTask<EventFd>;
-
   class EventHandler {
    public:
     virtual void onEvent(uint64_t) = 0;
@@ -19,8 +16,6 @@ class EventFd : public FdHandlerBase<EventFd> {
   };
 
  protected:
-  // FileDescriptor fd_;
-  // EpollTask epollTask_;
   EventHandler *handler_ {nullptr};
   EventFd(FileDescriptor &&desc, EventHandler *handler);
 
