@@ -3,7 +3,7 @@
 #include <glog/logging.h>
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/net/SocketAddr.h"
-#include "aliens/misc/ParentHaving.h"
+#include "aliens/ParentHaving.h"
 #include "aliens/net/TCPConnectionInfo.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
@@ -12,7 +12,7 @@ namespace aliens { namespace net {
 
 class TCPChannel : public reactor::FdHandlerBase<TCPChannel> {
  public:
-  class EventHandler: public misc::ParentHaving<TCPChannel> {
+  class EventHandler: public ParentHaving<TCPChannel> {
    public:
     virtual void getReadBuffer(void** buff, size_t* buffLen, size_t hint) = 0;
     virtual void readBufferAvailable(void *buff, size_t buffLen) = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace aliens { namespace misc {
+namespace aliens {
 
 template<typename T>
 class ParentHaving {
@@ -20,4 +20,4 @@ class ParentHaving {
   }
 };
 
-}} // aliens::misc
+} // aliens

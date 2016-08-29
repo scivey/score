@@ -1,13 +1,13 @@
 #pragma once
 #include <glog/logging.h>
 #include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/misc/ParentHaving.h"
+#include "aliens/ParentHaving.h"
 
 namespace aliens { namespace net {
 
 class TCPAcceptSocket : public reactor::FdHandlerBase<TCPAcceptSocket> {
  public:
-  class EventHandler: public misc::ParentHaving<TCPAcceptSocket> {
+  class EventHandler: public ParentHaving<TCPAcceptSocket> {
    public:
     virtual void onAcceptSuccess(int inFd, const char *host, const char *port) = 0;
     virtual void onAcceptError(int err) = 0;
