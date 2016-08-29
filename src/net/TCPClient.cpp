@@ -1,10 +1,10 @@
-#include "aliens/reactor/TCPClient.h"
+#include "aliens/net/TCPClient.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
 #include "aliens/macros.h"
 
-#include "aliens/reactor/SocketAddr.h"
+#include "aliens/net/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -12,13 +12,17 @@
 #include <netdb.h>
 #include <glog/logging.h>
 
+using aliens::net::SocketAddr;
 using aliens::io::NonOwnedBufferPtr;
 using aliens::async::ErrBack;
 using aliens::exceptions::BaseError;
 using aliens::exceptions::SystemError;
+using aliens::reactor::EpollReactor;
+using aliens::posix::FileDescriptor;
 
 
-namespace aliens { namespace reactor {
+
+namespace aliens { namespace net {
 
 using channel_ptr = typename TCPClient::channel_ptr;
 

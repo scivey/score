@@ -3,6 +3,8 @@
 #include <sys/epoll.h>
 #include "aliens/macros.h"
 
+using aliens::posix::FileDescriptor;
+
 namespace aliens { namespace reactor {
 
 EpollFd::EpollFd(FileDescriptor &&descriptor)

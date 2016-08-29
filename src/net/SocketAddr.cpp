@@ -1,26 +1,34 @@
-#include "aliens/reactor/SocketAddr.h"
+#include "aliens/net/SocketAddr.h"
 #include "aliens/exceptions/exceptions.h"
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 
-namespace aliens { namespace reactor {
+using aliens::io::Scstring;
+
+namespace aliens { namespace net {
 
 SocketAddr::SocketAddr(){}
 
-SocketAddr::SocketAddr(const std::string &host, short port)
-  : host_(host), port_(port){}
+SocketAddr::SocketAddr(Scstring &&host, short port)
+  : host_(std::forward<Scstring>(host)), port_(port){}
 
-SocketAddr::SocketAddr(const std::string &host, const std::string &port)
-  : host_(host), port_( (short) std::strtoul(port.c_str(), nullptr, 0) ) {}
+SocketAddr::SocketAddr(Scstring &&host, Scstring &&port)
+  : host_(std::forward<Scstring>(host)),
+    port_( (short) std::strtoul(port.c_str(), nullptr, 0) ) {}
 
-const std::string& SocketAddr::getHost() const {
+const Scstring& SocketAddr::getHost() const {
   return host_;
 }
 
-void SocketAddr::setHost(const std::string &host) {
+void SocketAddr::setHost(Scstring &&host) {
+  host_ = std::forward<Scstring>(host);
+}
+
+void SocketAddr::setHost(const Scstring &host) {
   host_ = host;
 }
+
 
 void SocketAddr::setPort(short portNo) {
   port_ = portNo;
@@ -41,4 +49,4 @@ struct sockaddr_in SocketAddr::to_sockaddr_in() const {
   return result;
 }
 
-}} // aliens::reactor
+}} // aliens::net

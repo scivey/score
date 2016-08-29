@@ -16,7 +16,7 @@ class SignalFd: public FdHandlerBase<SignalFd> {
 
  protected:
   EventHandler *handler_ {nullptr};
-  SignalFd(FileDescriptor &&desc, EventHandler *handler);
+  SignalFd(posix::FileDescriptor &&desc, EventHandler *handler);
  public:
   void onReadable();
   void onWritable();

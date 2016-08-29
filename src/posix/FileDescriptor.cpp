@@ -1,4 +1,4 @@
-#include "aliens/reactor/FileDescriptor.h"
+#include "aliens/posix/FileDescriptor.h"
 #include "aliens/exceptions/exceptions.h"
 #include "aliens/macros.h"
 
@@ -9,7 +9,7 @@
 
 using namespace aliens::exceptions;
 
-namespace aliens { namespace reactor {
+namespace aliens { namespace posix {
 
 FileDescriptor::FileDescriptor(){}
 
@@ -65,5 +65,5 @@ void FileDescriptor::close() {
   ALIENS_CHECK_SYSCALL(::close(fd_));
 }
 
-}} // aliens::reactor
+}} // aliens::posix
 

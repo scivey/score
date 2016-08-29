@@ -5,6 +5,8 @@
 #include <glog/logging.h>
 #include "aliens/macros.h"
 
+using aliens::posix::FileDescriptor;
+
 namespace aliens { namespace reactor {
 
 

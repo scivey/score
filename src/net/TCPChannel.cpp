@@ -1,9 +1,9 @@
-#include "aliens/reactor/TCPChannel.h"
+#include "aliens/net/TCPChannel.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
 #include "aliens/macros.h"
-#include "aliens/reactor/SocketAddr.h"
+#include "aliens/net/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -14,8 +14,8 @@
 using aliens::io::NonOwnedBufferPtr;
 using aliens::async::ErrBack;
 using aliens::exceptions::BaseError;
-
-namespace aliens { namespace reactor {
+using aliens::posix::FileDescriptor;
+namespace aliens { namespace net {
 
 TCPChannel::TCPChannel(FileDescriptor &&desc,
     EventHandler *handler,

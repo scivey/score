@@ -3,7 +3,6 @@
 #include <sys/eventfd.h>
 #include "aliens/reactor/EpollReactor.h"
 #include "aliens/reactor/FdHandlerBase.h"
-// #include "aliens/reactor/ReflectedEpollTask.h"
 
 namespace aliens { namespace reactor {
 
@@ -17,7 +16,7 @@ class EventFd : public FdHandlerBase<EventFd> {
 
  protected:
   EventHandler *handler_ {nullptr};
-  EventFd(FileDescriptor &&desc, EventHandler *handler);
+  EventFd(posix::FileDescriptor &&desc, EventHandler *handler);
 
  public:
   void onReadable();

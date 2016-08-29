@@ -43,17 +43,17 @@ set(LIB_SRC
     ${SRC}/locks/ThreadBaton.cpp
     ${SRC}/exceptions/exceptions.cpp
     ${SRC}/formatters/formatters.cpp
-    ${SRC}/reactor/FileDescriptor.cpp
+    ${SRC}/posix/FileDescriptor.cpp
+    ${SRC}/net/SocketAddr.cpp
     ${SRC}/reactor/EpollFd.cpp
     ${SRC}/reactor/EpollReactor.cpp
-    ${SRC}/reactor/SocketAddr.cpp
     ${SRC}/reactor/TimerFd.cpp
     ${SRC}/reactor/TimerSettings.cpp
     ${SRC}/reactor/EventFd.cpp
     ${SRC}/reactor/SignalFd.cpp
-    ${SRC}/reactor/TCPChannel.cpp
-    ${SRC}/reactor/TCPClient.cpp
-    ${SRC}/reactor/TCPAcceptSocket.cpp
+    ${SRC}/net/TCPChannel.cpp
+    ${SRC}/net/TCPClient.cpp
+    ${SRC}/net/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 
     ${SRC}/vendored/smhasher/Platform.cpp

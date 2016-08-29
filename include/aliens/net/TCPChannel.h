@@ -2,17 +2,17 @@
 #include <glog/logging.h>
 #include <glog/logging.h>
 #include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/reactor/SocketAddr.h"
-#include "aliens/reactor/ParentHaving.h"
-#include "aliens/reactor/TCPConnectionInfo.h"
+#include "aliens/net/SocketAddr.h"
+#include "aliens/misc/ParentHaving.h"
+#include "aliens/net/TCPConnectionInfo.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
 
-namespace aliens { namespace reactor {
+namespace aliens { namespace net {
 
-class TCPChannel : public FdHandlerBase<TCPChannel> {
+class TCPChannel : public reactor::FdHandlerBase<TCPChannel> {
  public:
-  class EventHandler: public ParentHaving<TCPChannel> {
+  class EventHandler: public misc::ParentHaving<TCPChannel> {
    public:
     virtual void getReadBuffer(void** buff, size_t* buffLen, size_t hint) = 0;
     virtual void readBufferAvailable(void *buff, size_t buffLen) = 0;
@@ -32,7 +32,7 @@ class TCPChannel : public FdHandlerBase<TCPChannel> {
  protected:
   EventHandler *handler_ {nullptr};
   TCPConnectionInfo connInfo_;
-  TCPChannel(FileDescriptor &&, EventHandler*, const TCPConnectionInfo&);
+  TCPChannel(posix::FileDescriptor &&, EventHandler*, const TCPConnectionInfo&);
   void readSome();
 
  public:
@@ -42,21 +42,21 @@ class TCPChannel : public FdHandlerBase<TCPChannel> {
   void sendBuff(io::NonOwnedBufferPtr, async::ErrBack &&errback);
   void shutdown();
   static TCPChannel fromDescriptor(
-    FileDescriptor&&fd, EventHandler *handler,
+    posix::FileDescriptor&&fd, EventHandler *handler,
     const TCPConnectionInfo &info
   );
   static TCPChannel* fromDescriptorPtr(
-    FileDescriptor&&fd, EventHandler *handler,
+    posix::FileDescriptor&&fd, EventHandler *handler,
     const TCPConnectionInfo &info
   );
   static std::shared_ptr<TCPChannel> fromDescriptorShared(
-    FileDescriptor&&fd, EventHandler *handler,
+    posix::FileDescriptor&&fd, EventHandler *handler,
     const TCPConnectionInfo &info
   );
   static std::unique_ptr<TCPChannel> fromDescriptorUnique(
-    FileDescriptor&&fd, EventHandler *handler,
+    posix::FileDescriptor&&fd, EventHandler *handler,
     const TCPConnectionInfo &info
   );
 };
 
-}} // aliens::reactor
+}} // aliens::net

@@ -20,7 +20,7 @@ class TimerFd : public FdHandlerBase<TimerFd> {
   TimerSettings settings_;
   EventHandler *handler_ {nullptr};
 
-  TimerFd(FileDescriptor &&desc, EventHandler *handler);
+  TimerFd(posix::FileDescriptor &&desc, EventHandler *handler);
  public:
   void onReadable();
   void onWritable();

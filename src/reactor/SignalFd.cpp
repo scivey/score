@@ -1,4 +1,5 @@
 #include "aliens/reactor/SignalFd.h"
+#include "aliens/exceptions/macros.h"
 #include <sys/signalfd.h>
 #include <signal.h>
 
@@ -6,7 +7,8 @@
 #include <memory>
 #include <cstdio>
 #include <glog/logging.h>
-#include "aliens/exceptions/macros.h"
+
+using aliens::posix::FileDescriptor;
 
 namespace aliens { namespace reactor {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace aliens { namespace reactor {
+namespace aliens { namespace posix {
 
 class FileDescriptor {
  protected:
@@ -23,4 +23,4 @@ class FileDescriptor {
   ~FileDescriptor();
 };
 
-}} // aliens::reactor
+}} // aliens::posix

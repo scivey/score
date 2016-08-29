@@ -2,6 +2,7 @@
 #include "aliens/macros.h"
 #include <glog/logging.h>
 
+using aliens::posix::FileDescriptor;
 namespace aliens { namespace reactor {
 
 EventFd::EventFd(FileDescriptor &&desc, EventHandler *handler)

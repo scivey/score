@@ -1,4 +1,4 @@
-#include "aliens/reactor/TCPAcceptSocket.h"
+#include "aliens/net/TCPAcceptSocket.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
@@ -9,7 +9,9 @@
 #include <netdb.h>
 #include <glog/logging.h>
 
-namespace aliens { namespace reactor {
+using aliens::posix::FileDescriptor;
+
+namespace aliens { namespace net {
 
 TCPAcceptSocket::TCPAcceptSocket(FileDescriptor &&desc,
     EventHandler *handler)

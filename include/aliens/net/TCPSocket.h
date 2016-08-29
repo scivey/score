@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "aliens/reactor/FileDescriptor.h"
-#include "aliens/reactor/SocketAddr.h"
+#include "aliens/net/SocketAddr.h"
 
 namespace aliens { namespace reactor {
 

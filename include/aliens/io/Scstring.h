@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aliens/vendored/seastar/core/sstring.h"
+#include "aliens/vendored/seastar/core/sstring.hh"
 
 namespace aliens { namespace io {
 

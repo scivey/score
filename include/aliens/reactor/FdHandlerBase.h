@@ -12,7 +12,7 @@ class FdHandlerBase {
   friend class ReflectedEpollTask<T>;
   using EpollTask = ReflectedEpollTask<T>;
  protected:
-  FileDescriptor fd_;
+  posix::FileDescriptor fd_;
   EpollTask epollTask_;
   T* getThis() {
     return (T*) this;
@@ -38,11 +38,11 @@ class FdHandlerBase {
   EpollTask* getEpollTask() {
     return &epollTask_;
   }
-  FdHandlerBase(FileDescriptor &&fd)
-    : fd_(std::forward<FileDescriptor>(fd)) {
+  FdHandlerBase(posix::FileDescriptor &&fd)
+    : fd_(std::forward<posix::FileDescriptor>(fd)) {
     epollTask_.setParent(getThis());
   }
-  FileDescriptor& getFileDescriptor() {
+  posix::FileDescriptor& getFileDescriptor() {
     return fd_;
   }
   int getFdNo() const {
