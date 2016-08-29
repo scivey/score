@@ -4,7 +4,7 @@
 #include <sys/timerfd.h>
 
 #include "aliens/reactor/ReactorThread.h"
-#include "aliens/reactor/FileDescriptor.h"
+#include "aliens/posix/FileDescriptor.h"
 #include "aliens/reactor/SignalFd.h"
 #include "aliens/locks/Synchronized.h"
 #include "aliens/exceptions/macros.h"
@@ -14,7 +14,7 @@ using namespace aliens::mem;
 using namespace aliens::async;
 using namespace aliens::reactor;
 using namespace aliens::locks;
-
+using namespace aliens::posix;
 using namespace std;
 
 

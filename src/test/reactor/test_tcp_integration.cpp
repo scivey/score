@@ -29,6 +29,8 @@ using aliens::io::NonOwnedBufferPtr;
 
 using namespace std;
 using namespace aliens::async;
+using namespace aliens::net;
+using namespace aliens::posix;
 using namespace aliens::reactor;
 using namespace aliens::locks;
 
