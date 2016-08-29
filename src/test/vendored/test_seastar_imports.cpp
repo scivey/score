@@ -4,6 +4,7 @@
 #include "aliens/vendored/seastar/core/bitset-iter.hh"
 #include "aliens/vendored/seastar/core/function_traits.hh"
 #include "aliens/vendored/seastar/core/sstring.hh"
+#include "aliens/vendored/seastar/core/circular_buffer.hh"
 
 /*
   These are just quick sanity checks, not exhaustive tests,
@@ -33,3 +34,22 @@ TEST(TestSeaStarImports, TestSstring) {
   seastar::sstring something {"fish"};
   EXPECT_EQ(4, something.size());
 }
+
+TEST(TestSeaStarImports, TestCircularBuffer) {
+  auto makeVec = []() {
+    return std::vector<size_t> {
+      5, 19, 26, 8
+    };
+  };
+  seastar::circular_buffer<size_t> buff;
+  for (auto entry: makeVec()) {
+    buff.push_back(entry);
+  }
+  std::vector<size_t> result;
+  for (auto entry: buff) {
+    result.push_back(entry);
+  }
+  auto expected = makeVec();
+  EXPECT_EQ(expected, result);
+}
+
