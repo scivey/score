@@ -37,7 +37,7 @@ void TCPChannel::readSome() {
     void *buffPtr {nullptr};
     size_t buffLen {0};
     handler_->getReadBuffer(&buffPtr, &buffLen, kReadBuffSize);
-    CHECK(!!buffPtr);
+    ADCHECK(!!buffPtr);
     ssize_t nr = read(getFdNo(), (char*) buffPtr, buffLen);
     if (nr == -1) {
       if (errno == EAGAIN) {

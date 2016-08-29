@@ -1,5 +1,7 @@
 #include "aliens/reactor/ReactorThread.h"
+#include "aliens/exceptions/macros.h"
 #include "aliens/Maybe.h"
+#include <glog/logging.h>
 
 namespace aliens { namespace reactor {
 
@@ -22,7 +24,7 @@ bool ReactorThread::isRunning() const {
 using EOptions = EpollReactor::Options;
 
 void ReactorThread::start(const EOptions &opts) {
-  CHECK(!isRunning());
+  ACHECK(!isRunning());
   bool expected = false;
   bool desired = true;
   if (running_.compare_exchange_strong(expected, desired)) {

@@ -1,5 +1,5 @@
 #pragma once
-#include <glog/logging.h>
+#include "aliens/exceptions/macros.h"
 
 namespace aliens {
 
@@ -57,19 +57,19 @@ class NullablePointer {
     return !!value_;
   }
   T& value() {
-    CHECK(hasValue());
+    ADCHECK(hasValue());
     return *value_;
   }
   const T& value() const {
-    CHECK(hasValue());
+    ADCHECK(hasValue());
     return *value_;
   }
   T* get() {
-    CHECK(hasValue());
+    ADCHECK(hasValue());
     return value_;
   }
   const T* get() const {
-    CHECK(hasValue());
+    ADCHECK(hasValue());
     return value_;
   }
   bool isEmpty() const {

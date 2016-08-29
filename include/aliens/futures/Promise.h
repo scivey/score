@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "aliens/Maybe.h"
+#include "aliens/macros.h"
 #include "aliens/async/Callback.h"
 
 namespace aliens { namespace futures {

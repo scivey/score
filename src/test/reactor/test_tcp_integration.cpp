@@ -80,7 +80,7 @@ class SomeRequestHandler : public TCPChannel::EventHandler {
  public:
   void onConnectSuccess() override {}
   void onConnectError(int err) override {
-    CHECK(false) << strerror(err);
+    ACHECK(false, strerror(err));
   }
   void onReadableStart() override {
     readSome();
@@ -111,7 +111,7 @@ class SomeRequestHandler : public TCPChannel::EventHandler {
       auto buffPtr = makeStupidBuffer(lastBuff_);
       lastBuff_ = "";
       sendBuff(buffPtr, [](const ErrBack::except_option &err) {
-        CHECK(!err.hasValue());
+        ACHECK(!err.hasValue());
       });
     }
   }
@@ -224,14 +224,14 @@ class ClientHandler : public TCPChannel::EventHandler {
   }
   void onConnectSuccess() override {}
   void onConnectError(int err) override {
-    CHECK(false) << strerror(err);
+    ACHECK(false, strerror(err));
   }
   void onWritable() override {
     if (!sent_) {
       sent_ = true;
       auto buffPtr = makeStupidBuffer(msg_);
       sendBuff(buffPtr, [](const ErrBack::except_option &ex) {
-        CHECK(!ex.hasValue());
+        ACHECK(!ex.hasValue());
       });
     }
   }
@@ -283,7 +283,7 @@ TEST(TestTCPIntegration, Test1) {
   finalBaton.wait();
   react->runInEventThread([react]() {
     react->stop([](const ErrBack::except_option& err) {
-      CHECK(!err.hasValue());
+      ACHECK(!err.hasValue());
     });
   });
   react->join();

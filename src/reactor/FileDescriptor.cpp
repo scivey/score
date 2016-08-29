@@ -1,6 +1,6 @@
 #include "aliens/reactor/FileDescriptor.h"
 #include "aliens/exceptions/exceptions.h"
-#include "aliens/exceptions/macros.h"
+#include "aliens/macros.h"
 
 #include <atomic>
 #include <glog/logging.h>
@@ -22,7 +22,7 @@ void FileDescriptor::maybeClose() {
   }
 }
 FileDescriptor FileDescriptor::fromIntExcept(int fd) {
-  CHECK(fd >= 0);
+  ACHECK(fd >= 0);
   return FileDescriptor(fd);
 }
 FileDescriptor::FileDescriptor(FileDescriptor &&other): fd_(other.fd_) {
@@ -50,7 +50,7 @@ FileDescriptor::operator bool() const {
   return valid();
 }
 void FileDescriptor::makeNonBlocking() {
-  CHECK(valid());
+  ADCHECK(valid());
   int flags, status;
   flags = fcntl(fd_, F_GETFL, 0);
   if (flags == -1) {
@@ -61,7 +61,7 @@ void FileDescriptor::makeNonBlocking() {
   ALIENS_CHECK_SYSCALL(status);
 }
 void FileDescriptor::close() {
-  CHECK(valid());
+  ADCHECK(valid());
   ALIENS_CHECK_SYSCALL(::close(fd_));
 }
 

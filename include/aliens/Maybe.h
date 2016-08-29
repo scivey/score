@@ -1,5 +1,5 @@
 #pragma once
-#include <glog/logging.h>
+#include "aliens/exceptions/macros.h"
 
 namespace aliens {
 
@@ -28,7 +28,7 @@ class Maybe {
   Maybe(){}
   Maybe(Maybe &&other) {
     if (other.hasValue()) {
-      new (&value_) T(std::move(other.value_));
+      new (&value_) T(std::forward<T>(other.value_));
       other.value_.~T();
     }
     state_ = other.state_;
@@ -37,7 +37,7 @@ class Maybe {
   Maybe& operator=(Maybe &&other) {
     maybeDelete();
     if (other.hasValue()) {
-      new (&value_) T(std::move(other.value_));
+      new (&value_) T(std::forward<T>(other.value_));
       other.value_.~T();
     }
     state_ = other.state_;
@@ -45,7 +45,7 @@ class Maybe {
     return *this;
   }
   Maybe(T &&value) {
-    new (&value_) T(std::move(value));
+    new (&value_) T(std::forward<T>(value));
     state_ = State::HAS_VALUE;
   }
   Maybe(const T &value) {
@@ -54,7 +54,7 @@ class Maybe {
   }
   void assign(T &&value) {
     maybeDelete();
-    new (&value_) T(std::move(value));
+    new (&value_) T(std::forward<T>(value));
     state_ = State::HAS_VALUE;
   }
   void assign(const T &value) {
@@ -72,11 +72,11 @@ class Maybe {
     return state_ == State::HAS_VALUE;
   }
   T& value() {
-    CHECK(hasValue());
+    ACHECK(hasValue());
     return value_;
   }
   const T& value() const {
-    CHECK(hasValue());
+    ACHECK(hasValue());
     return value_;
   }
   bool isEmpty() const {

@@ -1,5 +1,5 @@
 #include "aliens/reactor/EventFd.h"
-#include "aliens/exceptions/macros.h"
+#include "aliens/macros.h"
 #include <glog/logging.h>
 
 namespace aliens { namespace reactor {
@@ -36,14 +36,14 @@ void EventFd::onError() {
 }
 
 void EventFd::onReadable() {
-  CHECK(!!handler_);
+  ADCHECK(!!handler_);
   uint64_t eventNo;
-  CHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
+  ADCHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
   handler_->onEvent(eventNo);
 }
 
 void EventFd::write(uint64_t msg) {
-  CHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
+  ADCHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
 }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <array>
+#include "aliens/macros.h"
 #include <glog/logging.h>
 
 namespace aliens {
@@ -17,7 +18,7 @@ class UninitializedArray {
 
   T* privatePointerAt(size_t idx) {
     // doesn't check whether item is initialized.
-    CHECK(idx <= NItems);
+    ADCHECK(idx <= NItems);
     auto base = (T*) ((unsigned char*) data_);
     return base + idx;
   }
@@ -26,7 +27,7 @@ class UninitializedArray {
     return initBitMap_.count();
   }
   T* pointerAt(size_t idx) {
-    CHECK(isInitialized(idx));
+    ADCHECK(isInitialized(idx));
     return privatePointerAt(idx);
   }
   T& refAt(size_t idx) {

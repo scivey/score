@@ -2,7 +2,7 @@
 
 #include <pthread.h>
 #include <memory>
-#include <glog/logging.h>
+#include "aliens/exceptions/macros.h"
 
 namespace aliens {
 
@@ -35,7 +35,7 @@ class ThreadLocalPtr {
   }
   static ThreadLocalPtr create() {
     ThreadLocalPtr instance;
-    CHECK(pthread_key_create(&instance.key_, destructor<T>) == 0);
+    ACHECK(pthread_key_create(&instance.key_, destructor<T>) == 0);
     return instance;
   }
   operator bool() const {
@@ -45,7 +45,7 @@ class ThreadLocalPtr {
     return key_ != 0;
   }
   T* get() {
-    CHECK(good());
+    ADCHECK(good());
     auto instance = pthread_getspecific(key_);
     if (instance == nullptr) {
       T* newInstance = new T;

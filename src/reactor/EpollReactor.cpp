@@ -100,7 +100,7 @@ void EpollReactor::runForDuration(duration_type minDuration) {
 }
 
 void EpollReactor::stop() {
-  CHECK(running_);
+  ACHECK(running_);
   running_ = false;
 }
 

@@ -3,7 +3,7 @@
 #include <memory>
 #include <cstdio>
 #include <glog/logging.h>
-#include "aliens/exceptions/macros.h"
+#include "aliens/macros.h"
 
 namespace aliens { namespace reactor {
 
@@ -14,8 +14,8 @@ TimerFd::TimerFd(FileDescriptor &&desc, TimerFd::EventHandler *handler)
 
 void TimerFd::onReadable() {
   uint64_t nTimeouts {0};
-  CHECK(8 == read(getFdNo(), &nTimeouts, sizeof(uint64_t)));
-  CHECK(!!handler_);
+  ADCHECK(8 == read(getFdNo(), &nTimeouts, sizeof(uint64_t)));
+  ADCHECK(!!handler_);
 
   // nTimeouts should almost always be 1.
   // are there edge cases?

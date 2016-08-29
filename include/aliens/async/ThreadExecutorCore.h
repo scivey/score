@@ -5,6 +5,7 @@
 #include "aliens/async/ExecutorBase.h"
 #include "aliens/NullablePointer.h"
 #include "aliens/Maybe.h"
+#include "aliens/macros.h"
 #include "aliens/locks/Synchronized.h"
 
 
@@ -36,7 +37,7 @@ class ThreadExecutorCore :
     }
   }
   void runLoop() {
-    CHECK(running_.load());
+    ADCHECK(running_.load());
     if (onStarted_.hasValue()) {
       onStarted_.value()();
     }
@@ -64,7 +65,7 @@ class ThreadExecutorCore :
     if (!running_.load()) {
       errBack(std::runtime_error {"stop() called on non-running instance."});
     } else {
-      CHECK(!onClosed_.hasValue());
+      ADCHECK(!onClosed_.hasValue());
       auto wrapper = makeMoveWrapper(errBack);
       auto self = shared_from_this();
       onClosed_.assign([this, wrapper, self]() {
@@ -85,7 +86,7 @@ class ThreadExecutorCore :
         cb(err);
         return;
       }
-      DCHECK(!err.hasValue());
+      ADCHECK(!err.hasValue());
       if (thread_.hasValue()) {
         thread_.value().join();
       }
@@ -103,7 +104,7 @@ class ThreadExecutorCore :
     if (running_.load()) {
       errBack(std::runtime_error {"start() called on already-running instance."});
     } else {
-      CHECK(!onStarted_.hasValue());
+      ADCHECK(!onStarted_.hasValue());
       auto wrapper = makeMoveWrapper(std::move(errBack));
       onStarted_.assign([this, wrapper]() {
         MoveWrapper<ErrBack> wrapped = wrapper;

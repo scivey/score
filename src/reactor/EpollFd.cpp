@@ -1,8 +1,7 @@
 #include "aliens/reactor/EpollFd.h"
 #include <memory>
 #include <sys/epoll.h>
-#include <glog/logging.h>
-#include "aliens/exceptions/macros.h"
+#include "aliens/macros.h"
 
 namespace aliens { namespace reactor {
 
@@ -16,7 +15,7 @@ EpollFd EpollFd::create() {
 }
 
 int EpollFd::get() {
-  CHECK(!!fd_);
+  ADCHECK(!!fd_);
   return fd_.getFdNo();
 }
 

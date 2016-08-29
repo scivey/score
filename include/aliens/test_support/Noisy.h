@@ -5,6 +5,7 @@
 #include <glog/logging.h>
 #include "aliens/ThreadLocalPtr.h"
 #include "aliens/Counter.h"
+#include "aliens/macros.h"
 #include "aliens/SingletonWrapper.h"
 
 namespace aliens { namespace test_support {
@@ -35,7 +36,7 @@ class Noisy {
     }
     void markDestroyed(size_t id) {
       std::lock_guard<std::mutex> lg {mutex_};
-      CHECK(outstanding_.count(id) > 0);
+      ACHECK(outstanding_.count(id) > 0);
       outstanding_.erase(id);
       destroyed_.insert(id);
     }

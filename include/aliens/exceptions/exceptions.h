@@ -19,5 +19,10 @@ class SystemError: public BaseError {
   static SystemError fromErrno(int err, const std::string &msg);
 };
 
+class AssertionError: public BaseError {
+ public:
+  template<typename T>
+  AssertionError(T &&msg): BaseError(std::forward<T>(msg)) {}
+};
 
 }} // aliens::exceptions

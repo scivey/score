@@ -17,7 +17,7 @@ SignalFd::SignalFd(FileDescriptor &&desc, SignalFd::EventHandler *handler)
 
 void SignalFd::onReadable() {
   struct signalfd_siginfo fdsi;
-  CHECK(read(getFdNo(), &fdsi, sizeof(fdsi)) == sizeof(fdsi));
+  ADCHECK(read(getFdNo(), &fdsi, sizeof(fdsi)) == sizeof(fdsi));
   handler_->onSignal(fdsi.ssi_signo);
 }
 
