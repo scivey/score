@@ -75,13 +75,7 @@ void TCPChannel::EventHandler::sendBuff(
 
 void TCPChannel::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
-  auto buffStr = buff.copyToString();
-  LOG(INFO) << "should send : [" << buffStr.size()
-      << "] '" << buffStr << "'";
-  auto fd = getFdNo();
-  // ALIENS_UNUSED(fd);
-  cb();
-  ssize_t nr = ::write(fd, buff.vdata(), buff.size());
+  ssize_t nr = ::write(getFdNo(), buff.vdata(), buff.size());
   ALIENS_CHECK_SYSCALL2(nr, "write()");
   if (nr == buff.size()) {
     cb();

@@ -46,9 +46,6 @@ set(LIB_SRC
     ${SRC}/reactor/EpollFd.cpp
     ${SRC}/reactor/EpollReactor.cpp
     ${SRC}/reactor/SocketAddr.cpp
-    ${SRC}/reactor/AcceptSocketTask.cpp
-    ${SRC}/reactor/ServerSocketTask.cpp
-    ${SRC}/reactor/ClientSocketTask.cpp
     ${SRC}/reactor/TimerFd.cpp
     ${SRC}/reactor/TimerSettings.cpp
     ${SRC}/reactor/EventFd.cpp
@@ -56,9 +53,6 @@ set(LIB_SRC
     ${SRC}/reactor/TCPChannel.cpp
     ${SRC}/reactor/TCPClient.cpp
     ${SRC}/reactor/TCPAcceptSocket.cpp
-    # ${SRC}/reactor/TCPSocket.cpp
-    # ${SRC}/reactor/TCPServerSocket.cpp
-    # ${SRC}/reactor/TCPClientSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
 )
 
@@ -94,9 +88,9 @@ set(TEST_SRC
     ${TEST_DIR}/test_Maybe.cpp
     ${TEST_DIR}/locks/test_ThreadBaton.cpp
     # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
-    ${TEST_DIR}/reactor/test_EpollReactor.cpp
-    ${TEST_DIR}/reactor/test_ReactorThread.cpp
-    ${TEST_DIR}/reactor/test_TCPSocket.cpp
+    # ${TEST_DIR}/reactor/test_EpollReactor.cpp
+    # ${TEST_DIR}/reactor/test_ReactorThread.cpp
+    ${TEST_DIR}/reactor/test_tcp_integration.cpp
     ${TEST_DIR}/reactor/test_TimerFd.cpp
     ${TEST_DIR}/reactor/test_EventFd.cpp
     ${TEST_DIR}/reactor/test_SignalFd.cpp

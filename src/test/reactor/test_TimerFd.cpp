@@ -5,8 +5,6 @@
 
 #include "aliens/reactor/ReactorThread.h"
 #include "aliens/reactor/FileDescriptor.h"
-#include "aliens/reactor/ClientSocketTask.h"
-#include "aliens/reactor/AcceptSocketTask.h"
 #include "aliens/reactor/TimerFd.h"
 #include "aliens/exceptions/macros.h"
 #include "aliens/FixedBuffer.h"

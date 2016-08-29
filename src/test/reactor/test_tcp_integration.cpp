@@ -1,17 +1,12 @@
 #include <glog/logging.h>
 #include <thread>
-#include <pthread.h>
-
-#include "aliens/test_support/Noisy.h"
-
-// #include <spdlog/spdlog.h>
+#include <gtest/gtest.h>
 #include "aliens/FixedBuffer.h"
 #include "aliens/reactor/EpollReactor.h"
 #include "aliens/reactor/ReactorThread.h"
 #include "aliens/reactor/SignalFd.h"
 #include "aliens/reactor/TimerFd.h"
 #include "aliens/reactor/EventFd.h"
-#include "aliens/reactor/TCPSocket.h"
 #include "aliens/reactor/TimerSettings.h"
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/reactor/TCPAcceptSocket.h"
@@ -19,6 +14,7 @@
 #include "aliens/reactor/TCPChannel.h"
 #include "aliens/locks/ThreadBaton.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
+#include "aliens/io/string_utils.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/async/VoidCallback.h"
 #include "aliens/async/Callback.h"
@@ -27,24 +23,16 @@
 #include <signal.h>
 #include <folly/Demangle.h>
 #include <folly/Conv.h>
-
 #include <glog/logging.h>
 
 using aliens::io::NonOwnedBufferPtr;
-
-template<typename T>
-void sayType(const T& ref) {
-  auto demangled = folly::demangle(typeid(T));
-  auto asStr = folly::to<std::string>(demangled);
-  LOG(INFO) << "[type: '" << demangled << "'] : '" << ref << "'";
-}
 
 using namespace std;
 using namespace aliens::async;
 using namespace aliens::reactor;
 using namespace aliens::locks;
 
-
+namespace {
 
 NonOwnedBufferPtr makeStupidBuffer(const std::string &msg) {
   string result = msg;
@@ -55,47 +43,64 @@ NonOwnedBufferPtr makeStupidBuffer(const std::string &msg) {
   return NonOwnedBufferPtr{copied, result.size() - 1};
 }
 
+
+std::string buffStr(void *buff, size_t buffLen) {
+  auto data = (char*) buff;
+  std::string asStr;
+  asStr.reserve(buffLen);
+  for (size_t i = 0; i < buffLen; i++) {
+    asStr.push_back(data[i]);
+  }
+  return asStr;
+}
+
+std::string prettyBuff(void *buff, size_t buffLen) {
+  auto data = (char*) buff;
+  std::string pretty {"'"};
+  for (size_t i = 0; i < buffLen; i++) {
+    char c = data[i];
+    if (c == '\r') {
+      pretty.push_back('\\');
+      pretty.push_back('r');
+    } else if (c == '\n') {
+      pretty.push_back('\\');
+      pretty.push_back('n');
+    } else {
+      pretty.push_back(c);
+    }
+  }
+  pretty.push_back('\'');
+  return pretty;
+}
+
 class SomeRequestHandler : public TCPChannel::EventHandler {
  protected:
   std::string lastBuff_;
   bool isWritable_ {false};
  public:
-  SomeRequestHandler() {
-    LOG(INFO) << "SomeRequestHandler()";
-  }
-  void onConnectSuccess() override {
-    LOG(INFO) << "onConnectSuccess.";
-  }
+  void onConnectSuccess() override {}
   void onConnectError(int err) override {
-    LOG(INFO) << "onConnectError : " << strerror(err);
+    CHECK(false) << strerror(err);
   }
   void onReadableStart() override {
-    LOG(INFO) << "SomeRequestHandler::onReadableStart()";
     readSome();
   }
   void onReadableStop() override {
-    LOG(INFO) << "SomeRequestHandler::onReadableStop()";
+    LOG(INFO) << "server onReadableStop";
   }
   void getReadBuffer(void **buff, size_t *buffLen, size_t hint) override {
-    LOG(INFO) << "getReadBuffer : hint=" << hint;
     void *buffPtr = malloc(hint);
     memset(buffPtr, 0, hint);
     *buff = buffPtr;
     *buffLen = hint;
   }
   void readBufferAvailable(void *buff, size_t buffLen) override {
-    LOG(INFO) << "readBufferAvailable : " << buffLen;
     auto data = (const char*) buff;
-    LOG(INFO) << "\tread: '" << data << "'";
     lastBuff_ = "";
-    for (size_t i = 0; i < buffLen; i++) {
-      char c = data[i];
-      lastBuff_.push_back(c);
+    LOG(INFO) << "server got: " << prettyBuff(buff, buffLen);
+    for (size_t i = 0; i <= buffLen; i++) {
+      lastBuff_.push_back(data[i]);
     }
-    LOG(INFO) << "getFdNo..";
-    getParent()->getFdNo();
-    LOG(INFO) << "/getFdNo..";
-
     if (isWritable_) {
       doEcho();
     }
@@ -106,22 +111,17 @@ class SomeRequestHandler : public TCPChannel::EventHandler {
       auto buffPtr = makeStupidBuffer(lastBuff_);
       lastBuff_ = "";
       sendBuff(buffPtr, [](const ErrBack::except_option &err) {
-        LOG(INFO) << "sendBuff callback";
-        if (err.hasValue()) {
-          LOG(INFO) << "err : " << err.value().what();
-        }
+        CHECK(!err.hasValue());
       });
     }
   }
   void onWritable() override {
-    LOG(INFO) << "onWritable.";
     isWritable_ = true;
     if (!lastBuff_.empty()) {
       doEcho();
     }
   }
   void onEOF() override {
-    LOG(INFO) << "onEOF.";
     shutdown();
   }
 };
@@ -154,13 +154,6 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
     auto channel = TCPChannel::fromDescriptorPtr(std::move(desc),
       handlerFactory_->getHandler(), connInfo
     );
-    // auto serverSock = new TCPServerSocket(TCPServerSocket::fromAccepted(
-    //   std::move(desc), handler, localAddr, remoteAddr
-    // ));
-    LOG(INFO) << "made server socket..";
-    LOG(INFO) << "\t\t server socket "
-              << "{accept_fd=" << getParent()->getFdNo() << "}"
-              << " {server_fd=" << channel->getFdNo() << "}";
     getParent()->getReactor()->addTask(channel->getEpollTask());
   }
   void onAcceptError(int err) override {
@@ -177,55 +170,68 @@ class SomeFactory: public RequestHandlerFactory {
 
 class ClientHandler : public TCPChannel::EventHandler {
  protected:
+  std::string msg_ {"DEFAULT"};
+  VoidCallback onFinished_;
   bool sent_ {false};
   bool gotResponse_ {false};
-  std::string msg_ {"DEFAULT"};
+  std::vector<std::string> responses_;
  public:
-  ClientHandler(){}
-  ClientHandler(const std::string& msg): msg_(msg){}
+  ClientHandler(const std::string& msg, VoidCallback&& cb)
+    : msg_(msg), onFinished_(std::forward<VoidCallback>(cb)) {}
+
+  vector<string> copyResponses() const {
+    vector<string> copied;
+    for (auto &item: responses_) {
+      copied.push_back(item);
+    }
+    return copied;
+  }
+
   void getReadBuffer(void **buff, size_t *buffLen, size_t hint) override {
-    LOG(INFO) << "client getReadBuffer : hint=" << hint;
     void *buffPtr = malloc(hint);
     memset(buffPtr, 0, hint);
     *buff = buffPtr;
     *buffLen = hint;
   }
   void readBufferAvailable(void *buff, size_t buffLen) override {
-    LOG(INFO) << "client readBufferAvailable : " << buffLen;
-    auto data = (const char*) buff;
-    LOG(INFO) << "\tclient read: '" << data << "'";
-    // shutdown();
+    auto asStr = buffStr(buff, buffLen);
+    LOG(INFO) << "client got: " << prettyBuff(buff, buffLen);
+    // auto charPtr = (char*) buff;
+
+    // ostringstream oss;
+    // for (size_t i = 0; i < buffLen; i++) {
+    //   auto c = *charPtr;
+    //   oss << c;
+    //   ++charPtr;
+    // }
+    // auto asStr = oss.str();
+    // LOG(INFO) << "client got: " << asStr;
+    responses_.push_back(asStr);
   }
   void onReadableStart() override {
-    LOG(INFO) << "onReadableStart.";
+    LOG(INFO) << "Client onReadableStart.";
     if (sent_) {
       gotResponse_ = true;
     }
     readSome();
   }
   void onReadableStop() override {
-    LOG(INFO) << "onReadableStop.";
+    LOG(INFO) << "Client onReadableStop.";
     if (gotResponse_) {
+      onFinished_();
       shutdown();
     }
   }
-  void onConnectSuccess() override {
-    LOG(INFO) << "CONNECTED.";
-  }
+  void onConnectSuccess() override {}
   void onConnectError(int err) override {
-    LOG(INFO) << "client err! " << strerror(err);
+    CHECK(false) << strerror(err);
   }
   void onWritable() override {
-    LOG(INFO) << "client onWritable!";
     if (!sent_) {
       sent_ = true;
-      LOG(INFO) << "sending.";
       auto buffPtr = makeStupidBuffer(msg_);
       sendBuff(buffPtr, [](const ErrBack::except_option &ex) {
-        LOG(INFO) << "client sent buffer.";
-        if (ex.hasValue()) {
-          LOG(INFO) << "client err: " << ex.value().what();
-        }
+        CHECK(!ex.hasValue());
       });
     }
   }
@@ -234,16 +240,18 @@ class ClientHandler : public TCPChannel::EventHandler {
   }
 };
 
+}
+
 static const short kPortNum = 9051;
 
-void runServer() {
+
+TEST(TestTCPIntegration, Test1) {
   auto react = ReactorThread::createShared();
   EpollReactor::Options options;
-  options.setWaitTimeout(std::chrono::milliseconds(200));
+  options.setWaitTimeout(std::chrono::milliseconds(10));
   react->start(options);
   ThreadBaton bat1;
   react->runInEventThread([&bat1, react]() {
-    LOG(INFO) << "here.";
     auto acceptor = new TCPAcceptSocket(TCPAcceptSocket::bindPort(
       kPortNum, new AcceptHandler(std::unique_ptr<SomeFactory>(new SomeFactory))
     ));
@@ -254,11 +262,17 @@ void runServer() {
     });
   });
   bat1.wait();
+  ThreadBaton finalBaton;
   ThreadBaton bat2;
-  react->runInEventThread([&bat2, react]() {
+  std::atomic<ClientHandler*> clientHandlerPtr {nullptr};
+  react->runInEventThread([&bat2, react, &clientHandlerPtr, &finalBaton]() {
     SocketAddr addr {"127.0.0.1", kPortNum};
+    auto handler = new ClientHandler("{A_MESSAGE}\r\n", [&finalBaton]() {
+      finalBaton.post();
+    });
+    clientHandlerPtr.store(handler);
     auto client = TCPClient::connectPtr(
-      react->getReactor(), new ClientHandler, addr
+      react->getReactor(), handler, addr
     );
     react->addTask(client->getEpollTask(), [&bat2]() {
       LOG(INFO) << "added client.";
@@ -266,21 +280,17 @@ void runServer() {
     });
   });
   bat2.wait();
-  this_thread::sleep_for(chrono::milliseconds(20000));
+  finalBaton.wait();
   react->runInEventThread([react]() {
     react->stop([](const ErrBack::except_option& err) {
       CHECK(!err.hasValue());
-      LOG(INFO) << "stopped";
     });
   });
   react->join();
-  LOG(INFO) << "runServer() joined.";
-}
-
-
-int main() {
-  google::InstallFailureSignalHandler();
-  LOG(INFO) << "start.";
-  runServer();
-  LOG(INFO) << "end.";
+  auto clientResponses = clientHandlerPtr.load()->copyResponses();
+  EXPECT_EQ(1, clientResponses.size());
+  auto response = aliens::io::trimAsciiWhitespace(
+    clientResponses.at(0)
+  );
+  EXPECT_EQ("{A_MESSAGE}", response);
 }
