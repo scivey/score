@@ -5,6 +5,8 @@
 #include "aliens/reactor/EventFd.h"
 #include "aliens/reactor/ReactorThread.h"
 #include "aliens/async/ErrBack.h"
+#include "aliens/PointerFactory.h"
+
 #include "aliens/mem/util.h"
 #include "aliens/locks/Synchronized.h"
 
@@ -49,7 +51,7 @@ TEST(EventFd, TestSanity) {
   auto reactorThread = ReactorThread::createShared();
   reactorThread->start();
   std::shared_ptr<EventHandler> handler(new EventHandler);
-  auto evFd = EventFd::createShared(handler.get());
+  auto evFd = EventFd::Factory::createShared(handler.get());
   std::atomic<bool> added {false};
   reactorThread->addTask(evFd->getEpollTask(), [&added, evFd, reactorThread](){
     added.store(true);

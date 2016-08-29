@@ -46,11 +46,11 @@ SignalFd SignalFd::create(SignalFd::EventHandler *handler) {
   return SignalFd(FileDescriptor::fromIntExcept(sfd), handler);
 }
 
-std::shared_ptr<SignalFd> SignalFd::createShared(
+SignalFd* SignalFd::createPtr(
     SignalFd::EventHandler *handler) {
-  return std::shared_ptr<SignalFd>(new SignalFd(create(
+  return new SignalFd(create(
     handler
-  )));
+  ));
 }
 
 

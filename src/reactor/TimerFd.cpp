@@ -58,11 +58,11 @@ TimerFd TimerFd::create(const TimerSettings& settings, TimerFd::EventHandler *ha
   return instance;
 }
 
-std::shared_ptr<TimerFd> TimerFd::createShared(
+TimerFd* TimerFd::createPtr(
     const TimerSettings& settings, TimerFd::EventHandler *handler) {
-  return std::shared_ptr<TimerFd>(new TimerFd(create(
+  return new TimerFd(create(
     settings, handler
-  )));
+  ));
 }
 
 

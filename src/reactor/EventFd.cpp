@@ -20,11 +20,11 @@ EventFd EventFd::create(EventFd::EventHandler *handler) {
   return EventFd(std::move(desc), handler);
 }
 
-std::shared_ptr<EventFd> EventFd::createShared(
+EventFd* EventFd::createPtr(
     EventFd::EventHandler *handler) {
-  return std::shared_ptr<EventFd>(new EventFd(create(
+  return new EventFd(create(
     handler
-  )));
+  ));
 }
 
 

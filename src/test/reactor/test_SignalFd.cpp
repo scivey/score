@@ -51,7 +51,7 @@ TEST(TestSignalFd, TestSanity) {
   auto reactorThread = ReactorThread::createShared();
   reactorThread->start();
   std::shared_ptr<Handler> handler(new Handler);
-  auto sigFd = SignalFd::createShared(handler.get());
+  auto sigFd = SignalFd::Factory::createShared(handler.get());
   std::atomic<bool> added {false};
   reactorThread->addTask(sigFd->getEpollTask(), [&added](){
     added.store(true);

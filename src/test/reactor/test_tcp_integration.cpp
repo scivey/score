@@ -153,7 +153,7 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
     connInfo.localAddr = localAddr;
     connInfo.remoteAddr = remoteAddr;
     auto handler = handlerFactory_->getHandler();
-    auto channel = TCPChannel::fromDescriptorPtr(std::move(desc),
+    auto channel = TCPChannel::Factory::createRaw(std::move(desc),
       handlerFactory_->getHandler(), connInfo
     );
     getParent()->getReactor()->addTask(channel->getEpollTask());

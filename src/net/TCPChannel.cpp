@@ -93,7 +93,7 @@ void TCPChannel::shutdown() {
   getFileDescriptor().close();
 }
 
-TCPChannel TCPChannel::fromDescriptor(FileDescriptor &&fd,
+TCPChannel TCPChannel::create(FileDescriptor &&fd,
     EventHandler *handler, const TCPConnectionInfo &info) {
   return TCPChannel(
     std::forward<FileDescriptor>(fd),
@@ -101,7 +101,7 @@ TCPChannel TCPChannel::fromDescriptor(FileDescriptor &&fd,
   );
 }
 
-TCPChannel* TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
+TCPChannel* TCPChannel::createPtr(FileDescriptor &&fd,
     EventHandler *handler, const TCPConnectionInfo &info) {
   return new TCPChannel(
     std::forward<FileDescriptor>(fd),
@@ -109,24 +109,24 @@ TCPChannel* TCPChannel::fromDescriptorPtr(FileDescriptor &&fd,
   );
 }
 
-std::shared_ptr<TCPChannel> TCPChannel::fromDescriptorShared(
-    FileDescriptor &&fd, EventHandler *handler,
-    const TCPConnectionInfo &info) {
-  return std::shared_ptr<TCPChannel>(
-    TCPChannel::fromDescriptorPtr(
-      std::forward<FileDescriptor>(fd), handler, info
-    )
-  );
-}
+// std::shared_ptr<TCPChannel> TCPChannel::fromDescriptorShared(
+//     FileDescriptor &&fd, EventHandler *handler,
+//     const TCPConnectionInfo &info) {
+//   return std::shared_ptr<TCPChannel>(
+//     TCPChannel::fromDescriptorPtr(
+//       std::forward<FileDescriptor>(fd), handler, info
+//     )
+//   );
+// }
 
-std::unique_ptr<TCPChannel> TCPChannel::fromDescriptorUnique(
-    FileDescriptor &&fd, EventHandler *handler,
-    const TCPConnectionInfo &info) {
-  return std::unique_ptr<TCPChannel>(
-    TCPChannel::fromDescriptorPtr(
-      std::forward<FileDescriptor>(fd), handler, info
-    )
-  );
-}
+// std::unique_ptr<TCPChannel> TCPChannel::fromDescriptorUnique(
+//     FileDescriptor &&fd, EventHandler *handler,
+//     const TCPConnectionInfo &info) {
+//   return std::unique_ptr<TCPChannel>(
+//     TCPChannel::fromDescriptorPtr(
+//       std::forward<FileDescriptor>(fd), handler, info
+//     )
+//   );
+// }
 
 }} // aliens::reactor

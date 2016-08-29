@@ -3,7 +3,7 @@
 #include "aliens/exceptions/macros.h"
 #include "aliens/ScopeGuard.h"
 #include "aliens/macros.h"
-
+#include "aliens/PointerFactory.h"
 #include "aliens/net/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -51,7 +51,7 @@ TCPClient TCPClient::connect(
   connInfo.remoteAddr.setPort(addr.getPort());
   return TCPClient(
     reactor,
-    TCPChannel::fromDescriptorUnique(
+    PointerFactory<TCPChannel>::createUnique(
       FileDescriptor::fromIntExcept(sockFd),
       handler, connInfo
     )

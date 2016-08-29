@@ -44,7 +44,7 @@ TEST(TestTimerFd, TestSanity) {
   reactorThread->start();
   std::atomic<size_t> target {0};
   auto handler = makeUnique<Handler>(target);
-  auto timer = TimerFd::createShared(
+  auto timer = TimerFd::Factory::createShared(
     TimerSettings(chrono::milliseconds(5), chrono::milliseconds(5)),
     handler.get()
   );

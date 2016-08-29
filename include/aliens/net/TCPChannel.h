@@ -4,6 +4,8 @@
 #include "aliens/reactor/FdHandlerBase.h"
 #include "aliens/net/SocketAddr.h"
 #include "aliens/ParentHaving.h"
+#include "aliens/PointerFactory.h"
+
 #include "aliens/net/TCPConnectionInfo.h"
 #include "aliens/async/ErrBack.h"
 #include "aliens/io/NonOwnedBufferPtr.h"
@@ -35,25 +37,19 @@ class TCPChannel : public reactor::FdHandlerBase<TCPChannel> {
   TCPChannel(posix::FileDescriptor &&, EventHandler*, const TCPConnectionInfo&);
   void readSome();
 
+  static TCPChannel* createPtr(
+    posix::FileDescriptor&&fd, EventHandler *handler,
+    const TCPConnectionInfo &info
+  );
+  friend class PointerFactory<TCPChannel>;
  public:
+  using Factory = PointerFactory<TCPChannel>;
   void triggerReadable();
   void triggerWritable();
   void triggerError();
   void sendBuff(io::NonOwnedBufferPtr, async::ErrBack &&errback);
   void shutdown();
-  static TCPChannel fromDescriptor(
-    posix::FileDescriptor&&fd, EventHandler *handler,
-    const TCPConnectionInfo &info
-  );
-  static TCPChannel* fromDescriptorPtr(
-    posix::FileDescriptor&&fd, EventHandler *handler,
-    const TCPConnectionInfo &info
-  );
-  static std::shared_ptr<TCPChannel> fromDescriptorShared(
-    posix::FileDescriptor&&fd, EventHandler *handler,
-    const TCPConnectionInfo &info
-  );
-  static std::unique_ptr<TCPChannel> fromDescriptorUnique(
+  static TCPChannel create(
     posix::FileDescriptor&&fd, EventHandler *handler,
     const TCPConnectionInfo &info
   );
