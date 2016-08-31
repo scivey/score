@@ -2,13 +2,22 @@
 
 ROOT=$(git rev-parse --show-toplevel)
 
-pushd ${ROOT}/external/googletest
+EXT=${ROOT}/external
 
-if [[ ! -d "build" ]]; then
-    mkdir build
-    pushd build
-    cmake ../ && make -j8
-    popd
-fi
 
+function cmake-build() {
+    if [[ ! -d "build" ]]; then
+        mkdir build
+        pushd build
+        cmake ../ && make -j8
+        popd
+    fi
+}
+
+pushd ${EXT}/googletest
+cmake-build
+popd
+
+pushd ${EXT}/boringssl
+cmake-build
 popd

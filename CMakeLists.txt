@@ -5,22 +5,31 @@ project(aliens)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0 -mcx16 -march=native")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
+set(BORINGSSL ${EXTERNAL}/boringssl)
 set(GTEST ${EXTERNAL}/googletest)
 set(SPDLOG ${EXTERNAL}/spdlog)
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${BORINGSSL}/include
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
     ${SPDLOG}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     /usr/local/include
 )
 
 link_directories(
-    /usr/local/lib
+    ${BORINGSSL}/build/ssl
+    ${BORINGSSL}/build/crypto
+    ${BORINGSSL}/build/decrepit
     ${GTEST}/build/googlemock
+    /usr/local/lib
 )
 
+set(CRYPTO_LIBS
+    ssl
+    crypto
+)
 
 set(COMMON_LIBS
     folly
@@ -28,6 +37,7 @@ set(COMMON_LIBS
     boost_system
     boost_thread
     glog
+    ${CRYPTO_LIBS}
     pthread
     gcc_s
     atomic
@@ -63,7 +73,7 @@ set(LIB_SRC
     ${SRC}/vendored/smhasher/Bitvec.cpp
     ${SRC}/vendored/smhasher/Bitslice.cpp
     ${SRC}/vendored/smhasher/Random.cpp
-
+    ${SRC}/vendored/http-parser/http_parser.c
 
 )
 
@@ -107,6 +117,8 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_SignalFd.cpp
     ${TEST_DIR}/reactor/test_experimental.cpp
     ${TEST_DIR}/mem/test_LSharedPtr.cpp
+    ${TEST_DIR}/io/test_string_utils.cpp
+    ${TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
     ${TEST_DIR}/vendored/test_seastar_imports.cpp
     ${TEST_DIR}/vendored/test_utf8.cpp

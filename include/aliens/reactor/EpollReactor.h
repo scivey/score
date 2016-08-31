@@ -36,6 +36,7 @@ class EpollReactor {
     virtual void onError() = 0;
     virtual void onReadable() = 0;
     virtual void onWritable() = 0;
+    virtual ~Task() = default;
   };
 
  protected:

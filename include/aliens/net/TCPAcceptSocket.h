@@ -16,13 +16,11 @@ class TCPAcceptSocket : public reactor::FdHandlerBase<TCPAcceptSocket> {
  protected:
   EventHandler *handler_ {nullptr};
   TCPAcceptSocket(posix::FileDescriptor &&, EventHandler*);
-  // static TCPAcceptSocket bindPortPtr(short EventHandler*);
  public:
   void onReadable();
   void onWritable();
   void onError();
   void listen();
-  // std::shared_ptr<TCPAcceptSocket> bindPortShared(short, EventHandler*);
   static TCPAcceptSocket bindPort(short portNo, EventHandler*);
 };
 

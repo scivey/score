@@ -14,3 +14,9 @@
 [submodule "external/variant"]
 	path = external/variant
 	url = https://github.com/eggs-cpp/variant
+[submodule "external/boringssl"]
+	path = external/boringssl
+	url = https://github.com/scivey/boringssl
+[submodule "external/http-parser"]
+	path = external/http-parser
+	url = https://github.com/scivey/http-parser

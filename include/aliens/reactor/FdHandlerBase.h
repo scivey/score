@@ -28,11 +28,11 @@ class FdHandlerBase {
     getThis()->onReadable();
   }
   void triggerWritable() {
-    LOG(INFO) << "triggerWritable";
+    VLOG(100) << "triggerWritable";
     getThis()->onWritable();
   }
   void triggerError() {
-    LOG(INFO) << "triggerError";
+    VLOG(100) << "triggerError";
     getThis()->onError();
   }
   EpollTask* getEpollTask() {
@@ -46,7 +46,6 @@ class FdHandlerBase {
     return fd_;
   }
   int getFdNo() const {
-    LOG(INFO) << "here..";
     return fd_.getFdNo();
   }
   void stop() {
