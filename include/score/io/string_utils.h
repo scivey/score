@@ -40,4 +40,7 @@ std::string joinWith(const std::string& separator,
   return oss.str();
 }
 
+bool isAsciiPunctuation(char c);
+
+
 }} // score::io

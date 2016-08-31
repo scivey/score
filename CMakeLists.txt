@@ -45,7 +45,6 @@ set(COMMON_LIBS
 
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-
 set(GUMBO_PARSER_SOURCES
     ${SRC}/vendored/gumbo-parser/attribute.c
     ${SRC}/vendored/gumbo-parser/char_ref.c
@@ -68,6 +67,18 @@ set(SMHASHER_SOURCES
     ${SRC}/vendored/smhasher/Bitvec.cpp
     ${SRC}/vendored/smhasher/Bitslice.cpp
     ${SRC}/vendored/smhasher/Random.cpp
+    ${SRC}/vendored/smhasher/City.cpp
+    ${SRC}/vendored/smhasher/MurmurHash3.cpp
+)
+
+
+set(SCORE_HTML_SRC
+    ${SRC}/html/GumboOutputWrapper.cpp
+    ${SRC}/html/GumboVectorWrapper.cpp
+    ${SRC}/html/HtmlDom.cpp
+    ${SRC}/html/MetaTags.cpp
+    ${SRC}/html/Node.cpp
+    ${SRC}/html/Tag.cpp
 )
 
 set(SCORE_COMMON_SRC
@@ -75,6 +86,8 @@ set(SCORE_COMMON_SRC
     ${SRC}/FixedBuffer.cpp
     ${SRC}/mem/standard.cpp
     ${SRC}/io/UTF8Iterator.cpp
+    ${SRC}/io/string_utils.cpp
+    ${SRC}/fs/fs.cpp
     ${SRC}/locks/ThreadBaton.cpp
     ${SRC}/exceptions/exceptions.cpp
     ${SRC}/formatters/formatters.cpp
@@ -86,11 +99,13 @@ set(SCORE_COMMON_SRC
     ${SRC}/reactor/TimerSettings.cpp
     ${SRC}/reactor/EventFd.cpp
     ${SRC}/reactor/SignalFd.cpp
+    ${SRC}/hashing/hash_funcs.cpp
     ${SRC}/net/TCPChannel.cpp
     ${SRC}/net/TCPClient.cpp
     ${SRC}/net/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
     ${SRC}/vendored/http-parser/http_parser.c
+    ${SCORE_HTML_SRC}
     ${SMHASHER_SOURCES}
     ${GUMBO_PARSER_SOURCES}
 )
@@ -125,9 +140,6 @@ set(TEST_SRC
     ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
     ${TEST_DIR}/locks/test_ThreadBaton.cpp
-    # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
-    # ${TEST_DIR}/reactor/test_EpollReactor.cpp
-    # ${TEST_DIR}/reactor/test_ReactorThread.cpp
     ${TEST_DIR}/reactor/test_tcp_integration.cpp
     ${TEST_DIR}/reactor/test_TimerFd.cpp
     ${TEST_DIR}/reactor/test_EventFd.cpp
@@ -137,14 +149,24 @@ set(TEST_SRC
     ${TEST_DIR}/io/test_string_utils.cpp
     ${TEST_DIR}/io/test_BytesView.cpp
     ${TEST_DIR}/io/test_UTF8View.cpp
-
+    ${TEST_DIR}/html/test_MetaTags.cpp
+    ${TEST_DIR}/html/test_HtmlDomAndNode.cpp
     ${TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
-    ${TEST_DIR}/vendored/test_seastar_imports.cpp
-    ${TEST_DIR}/vendored/test_utf8.cpp
-    # ${TEST_DIR}/vendored/test_folly_imports.cpp
     ${TEST_DIR}/test_MoveWrapper.cpp
     ${TEST_DIR}/test_casts.cpp
+
+    ${TEST_DIR}/fs/test_fs.cpp
+    ${TEST_DIR}/prettyprint/test_prettyprint.cpp
+
+    ${TEST_DIR}/vendored/test_seastar_imports.cpp
+    ${TEST_DIR}/vendored/test_utf8.cpp
+    ${TEST_DIR}/vendored/test_smhasher_imports.cpp
+    # ${TEST_DIR}/vendored/test_folly_imports.cpp
+    # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
+    # ${TEST_DIR}/reactor/test_EpollReactor.cpp
+    # ${TEST_DIR}/reactor/test_ReactorThread.cpp
+
 )
 
 add_executable(tester
