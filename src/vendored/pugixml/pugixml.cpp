@@ -14,7 +14,7 @@
 #ifndef SOURCE_PUGIXML_CPP
 #define SOURCE_PUGIXML_CPP
 
-#include "pugixml.hpp"
+#include "score/vendored/pugixml/pugixml.hpp"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -122,17 +122,17 @@ using std::memset;
 #endif
 
 #ifdef PUGIXML_HEADER_ONLY
-# define PUGI__NS_BEGIN namespace pugi { namespace impl {
-# define PUGI__NS_END } }
+# define PUGI__NS_BEGIN SCORE_PUGIXML_NS_BEGIN namespace impl {
+# define PUGI__NS_END } SCORE_PUGIXML_NS_END
 # define PUGI__FN inline
 # define PUGI__FN_NO_INLINE inline
 #else
 # if defined(_MSC_VER) && _MSC_VER < 1300 // MSVC6 seems to have an amusing bug with anonymous namespaces inside namespaces
-#   define PUGI__NS_BEGIN namespace pugi { namespace impl {
-#   define PUGI__NS_END } }
+#   define PUGI__NS_BEGIN SCORE_PUGIXML_NS_BEGIN namespace impl {
+#   define PUGI__NS_END } SCORE_PUGIXML_NS_END
 # else
-#   define PUGI__NS_BEGIN namespace pugi { namespace impl { namespace {
-#   define PUGI__NS_END } } }
+#   define PUGI__NS_BEGIN SCORE_PUGIXML_NS_BEGIN namespace impl { namespace {
+#   define PUGI__NS_END } } SCORE_PUGIXML_NS_END
 # endif
 # define PUGI__FN
 # define PUGI__FN_NO_INLINE PUGI__NO_INLINE
@@ -140,8 +140,7 @@ using std::memset;
 
 // uintptr_t
 #if (defined(_MSC_VER) && _MSC_VER < 1600) || (defined(__BORLANDC__) && __BORLANDC__ < 0x561)
-namespace pugi
-{
+SCORE_PUGIXML_NS_BEGIN
 # ifndef _UINTPTR_T_DEFINED
   typedef size_t uintptr_t;
 # endif
@@ -149,7 +148,7 @@ namespace pugi
   typedef unsigned __int8 uint8_t;
   typedef unsigned __int16 uint16_t;
   typedef unsigned __int32 uint32_t;
-}
+SCORE_PUGIXML_NS_END
 #else
 # include <stdint.h>
 #endif
@@ -1019,7 +1018,7 @@ PUGI__NS_END
 #endif
 
 #ifdef PUGIXML_COMPACT
-namespace pugi
+SCORE_PUGIXML_NS_BEGIN
 {
   struct xml_attribute_struct
   {
@@ -1062,10 +1061,9 @@ namespace pugi
 
     impl::compact_pointer<xml_attribute_struct, 11, 0> first_attribute;
   };
-}
+SCORE_PUGIXML_NS_END
 #else
-namespace pugi
-{
+SCORE_PUGIXML_NS_BEGIN
   struct xml_attribute_struct
   {
     xml_attribute_struct(impl::xml_memory_page* page): name(0), value(0), prev_attribute_c(0), next_attribute(0)
@@ -1103,7 +1101,7 @@ namespace pugi
 
     xml_attribute_struct* first_attribute;
   };
-}
+SCORE_PUGIXML_NS_END
 #endif
 
 PUGI__NS_BEGIN
@@ -4946,8 +4944,7 @@ PUGI__NS_BEGIN
   };
 PUGI__NS_END
 
-namespace pugi
-{
+SCORE_PUGIXML_NS_BEGIN
   PUGI__FN xml_writer_file::xml_writer_file(void* file_): file(file_)
   {
   }
@@ -6981,7 +6978,8 @@ namespace pugi
   {
     return impl::xml_memory::deallocate;
   }
-}
+SCORE_PUGIXML_NS_END
+
 
 #if !defined(PUGIXML_NO_STL) && (defined(_MSC_VER) || defined(__ICC))
 namespace std
@@ -11682,8 +11680,7 @@ PUGI__NS_BEGIN
   }
 PUGI__NS_END
 
-namespace pugi
-{
+SCORE_PUGIXML_NS_BEGIN
 #ifndef PUGIXML_NO_EXCEPTIONS
   PUGI__FN xpath_exception::xpath_exception(const xpath_parse_result& result_): _result(result_)
   {
@@ -12421,7 +12418,7 @@ namespace pugi
   {
     return query.evaluate_node(*this);
   }
-}
+SCORE_PUGIXML_NS_END
 
 #endif
 

@@ -81,6 +81,13 @@ set(SCORE_HTML_SRC
     ${SRC}/html/Tag.cpp
 )
 
+set(SCORE_VENDORED_SRC
+    ${SMHASHER_SOURCES}
+    ${GUMBO_PARSER_SOURCES}
+    ${SRC}/vendored/http-parser/http_parser.c
+    ${SRC}/vendored/pugixml/pugixml.cpp
+)
+
 set(SCORE_COMMON_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
@@ -104,10 +111,8 @@ set(SCORE_COMMON_SRC
     ${SRC}/net/TCPClient.cpp
     ${SRC}/net/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
-    ${SRC}/vendored/http-parser/http_parser.c
     ${SCORE_HTML_SRC}
-    ${SMHASHER_SOURCES}
-    ${GUMBO_PARSER_SOURCES}
+    ${SCORE_VENDORED_SRC}
 )
 
 add_library(scorecommon ${SCORE_COMMON_SRC})

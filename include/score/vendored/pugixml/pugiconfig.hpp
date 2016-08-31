@@ -14,6 +14,13 @@
 #ifndef HEADER_PUGICONFIG_HPP
 #define HEADER_PUGICONFIG_HPP
 
+#define SCORE_PUGIXML_NS_BEGIN \
+ namespace score { namespace vendored { namespace pugi {
+
+#define SCORE_PUGIXML_NS_END \
+  }}} // score::vendored::pugi
+
+
 // Uncomment this to enable wchar_t mode
 // #define PUGIXML_WCHAR_MODE
 

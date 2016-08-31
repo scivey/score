@@ -17,7 +17,7 @@
 #endif
 
 // Include user configuration file (this can define various configuration macros)
-#include "pugiconfig.hpp"
+#include "score/vendored/pugixml/pugiconfig.hpp"
 
 #ifndef HEADER_PUGIXML_HPP
 #define HEADER_PUGIXML_HPP
@@ -81,8 +81,8 @@
 # define PUGIXML_CHAR char
 #endif
 
-namespace pugi
-{
+
+SCORE_PUGIXML_NS_BEGIN
   // Character type used for all internal storage and operations; depends on PUGIXML_WCHAR_MODE
   typedef PUGIXML_CHAR char_t;
 
@@ -90,11 +90,11 @@ namespace pugi
   // String type used for operations that work with STL string; depends on PUGIXML_WCHAR_MODE
   typedef std::basic_string<PUGIXML_CHAR, std::char_traits<PUGIXML_CHAR>, std::allocator<PUGIXML_CHAR> > string_t;
 #endif
-}
+SCORE_PUGIXML_NS_END
+
 
 // The PugiXML namespace
-namespace pugi
-{
+SCORE_PUGIXML_NS_BEGIN
   // Tree node types
   enum xml_node_type
   {
@@ -1348,7 +1348,8 @@ namespace pugi
   // Get current memory management functions
   allocation_function PUGIXML_FUNCTION get_memory_allocation_function();
   deallocation_function PUGIXML_FUNCTION get_memory_deallocation_function();
-}
+
+SCORE_PUGIXML_NS_END
 
 #if !defined(PUGIXML_NO_STL) && (defined(_MSC_VER) || defined(__ICC))
 namespace std
