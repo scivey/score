@@ -5,9 +5,6 @@
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "external/hana"]
-	path = external/hana
-	url = https://github.com/boostorg/hana
 [submodule "external/cxxopts"]
 	path = external/cxxopts
 	url = https://github.com/jarro2783/cxxopts
@@ -17,6 +14,3 @@
 [submodule "external/boringssl"]
 	path = external/boringssl
 	url = https://github.com/scivey/boringssl
-[submodule "external/http-parser"]
-	path = external/http-parser
-	url = https://github.com/scivey/http-parser
