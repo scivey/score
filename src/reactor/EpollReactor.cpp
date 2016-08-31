@@ -24,6 +24,7 @@ bool epollEventHasError(const epoll_event &evt) {
 EpollReactor* EpollReactor::Task::getReactor() const {
   return reactor_;
 }
+
 void EpollReactor::Task::setReactor(EpollReactor *reactor) {
   reactor_ = reactor;
 }
@@ -100,7 +101,7 @@ void EpollReactor::runForDuration(duration_type minDuration) {
 }
 
 void EpollReactor::stop() {
-  ACHECK(running_);
+  SCHECK(running_);
   running_ = false;
 }
 

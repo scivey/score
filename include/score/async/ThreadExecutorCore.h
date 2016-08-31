@@ -37,7 +37,7 @@ class ThreadExecutorCore :
     }
   }
   void runLoop() {
-    ADCHECK(running_.load());
+    SDCHECK(running_.load());
     if (onStarted_.hasValue()) {
       onStarted_.value()();
     }
@@ -65,7 +65,7 @@ class ThreadExecutorCore :
     if (!running_.load()) {
       errBack(std::runtime_error {"stop() called on non-running instance."});
     } else {
-      ADCHECK(!onClosed_.hasValue());
+      SDCHECK(!onClosed_.hasValue());
       auto wrapper = makeMoveWrapper(errBack);
       auto self = shared_from_this();
       onClosed_.assign([this, wrapper, self]() {
@@ -86,7 +86,7 @@ class ThreadExecutorCore :
         cb(err);
         return;
       }
-      ADCHECK(!err.hasValue());
+      SDCHECK(!err.hasValue());
       if (thread_.hasValue()) {
         thread_.value().join();
       }
@@ -104,7 +104,7 @@ class ThreadExecutorCore :
     if (running_.load()) {
       errBack(std::runtime_error {"start() called on already-running instance."});
     } else {
-      ADCHECK(!onStarted_.hasValue());
+      SDCHECK(!onStarted_.hasValue());
       auto wrapper = makeMoveWrapper(std::move(errBack));
       onStarted_.assign([this, wrapper]() {
         MoveWrapper<ErrBack> wrapped = wrapper;

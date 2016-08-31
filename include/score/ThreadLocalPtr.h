@@ -35,7 +35,7 @@ class ThreadLocalPtr {
   }
   static ThreadLocalPtr create() {
     ThreadLocalPtr instance;
-    ACHECK(pthread_key_create(&instance.key_, destructor<T>) == 0);
+    SCHECK(pthread_key_create(&instance.key_, destructor<T>) == 0);
     return instance;
   }
   operator bool() const {
@@ -45,7 +45,7 @@ class ThreadLocalPtr {
     return key_ != 0;
   }
   T* get() {
-    ADCHECK(good());
+    SDCHECK(good());
     auto instance = pthread_getspecific(key_);
     if (instance == nullptr) {
       T* newInstance = new T;

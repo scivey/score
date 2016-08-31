@@ -37,7 +37,7 @@ class SimpleHTTPResponseParser: public HTTPParserBase<SimpleHTTPResponseParser> 
   int onHeaderValue(string_view_t data) {
     string_type headerVal;
     data.appendTo(headerVal);
-    ADCHECK(!currentHeader_.empty());
+    SDCHECK(!currentHeader_.empty());
     headers_.insert(std::make_pair(currentHeader_, headerVal));
     currentHeader_ = "";
     return 0;

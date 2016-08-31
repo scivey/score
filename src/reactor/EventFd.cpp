@@ -37,14 +37,14 @@ void EventFd::onError() {
 }
 
 void EventFd::onReadable() {
-  ADCHECK(!!handler_);
+  SDCHECK(!!handler_);
   uint64_t eventNo;
-  ADCHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
+  SDCHECK(8 == read(getFdNo(), &eventNo, sizeof(eventNo)));
   handler_->onEvent(eventNo);
 }
 
 void EventFd::write(uint64_t msg) {
-  ADCHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
+  SDCHECK(8 == ::write(getFdNo(), (void*) &msg, sizeof(msg)));
 }
 
 

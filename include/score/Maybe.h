@@ -72,11 +72,11 @@ class Maybe {
     return state_ == State::HAS_VALUE;
   }
   T& value() {
-    ACHECK(hasValue());
+    SCHECK(hasValue());
     return value_;
   }
   const T& value() const {
-    ACHECK(hasValue());
+    SCHECK(hasValue());
     return value_;
   }
   bool isEmpty() const {

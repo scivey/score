@@ -16,8 +16,8 @@ TimerFd::TimerFd(FileDescriptor &&desc, TimerFd::EventHandler *handler)
 
 void TimerFd::onReadable() {
   uint64_t nTimeouts {0};
-  ADCHECK(8 == read(getFdNo(), &nTimeouts, sizeof(uint64_t)));
-  ADCHECK(!!handler_);
+  SDCHECK(8 == read(getFdNo(), &nTimeouts, sizeof(uint64_t)));
+  SDCHECK(!!handler_);
 
   // nTimeouts should almost always be 1.
   // are there edge cases?

@@ -15,7 +15,7 @@
     } \
   } while (0); \
 
-#define ACHECK(expr, args...) \
+#define SCHECK(expr, args...) \
   do { \
     if (!(expr)) { \
       throw score::exceptions::AssertionError( \
@@ -25,8 +25,8 @@
   } while (0)
 
 #ifndef NDEBUG
-  #define ADCHECK(expr, args...) ACHECK(expr, msg)
+  #define SDCHECK(expr, args...) SCHECK(expr, msg)
 #else
-  #define ADCHECK(expr, args...)
+  #define SDCHECK(expr, args...)
 #endif
 

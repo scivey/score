@@ -18,7 +18,7 @@ class UninitializedArray {
 
   T* privatePointerAt(size_t idx) {
     // doesn't check whether item is initialized.
-    ADCHECK(idx <= NItems);
+    SDCHECK(idx <= NItems);
     auto base = (T*) ((unsigned char*) data_);
     return base + idx;
   }
@@ -27,7 +27,7 @@ class UninitializedArray {
     return initBitMap_.count();
   }
   T* pointerAt(size_t idx) {
-    ADCHECK(isInitialized(idx));
+    SDCHECK(isInitialized(idx));
     return privatePointerAt(idx);
   }
   T& refAt(size_t idx) {

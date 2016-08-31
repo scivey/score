@@ -24,7 +24,7 @@ bool ReactorThread::isRunning() const {
 using EOptions = EpollReactor::Options;
 
 void ReactorThread::start(const EOptions &opts) {
-  ACHECK(!isRunning());
+  SCHECK(!isRunning());
   bool expected = false;
   bool desired = true;
   if (running_.compare_exchange_strong(expected, desired)) {

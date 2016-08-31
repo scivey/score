@@ -42,7 +42,7 @@ class Noisy {
     }
     void markDestroyed(size_t id) {
       std::lock_guard<std::mutex> lg {mutex_};
-      ACHECK(outstanding_.count(id) > 0);
+      SCHECK(outstanding_.count(id) > 0);
       outstanding_.erase(id);
       destroyed_.insert(id);
     }

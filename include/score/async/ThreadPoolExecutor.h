@@ -24,7 +24,7 @@ class ThreadPoolExecutor : public ExecutorBase {
     }
   }
   virtual void setEventHandler(std::shared_ptr<EventHandler> handler) override {
-    ACHECK(!handlerRetrieved_.load());
+    SCHECK(!handlerRetrieved_.load());
     nonDefaultHandler_ = std::move(handler);
   }
   virtual void doStop(ErrBack &&errBack) override {

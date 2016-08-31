@@ -22,7 +22,7 @@ void FileDescriptor::maybeClose() {
   }
 }
 FileDescriptor FileDescriptor::fromIntExcept(int fd) {
-  ACHECK(fd >= 0);
+  SCHECK(fd >= 0);
   return FileDescriptor(fd);
 }
 FileDescriptor::FileDescriptor(FileDescriptor &&other): fd_(other.fd_) {
@@ -50,7 +50,7 @@ FileDescriptor::operator bool() const {
   return valid();
 }
 void FileDescriptor::makeNonBlocking() {
-  ADCHECK(valid());
+  SDCHECK(valid());
   int flags, status;
   flags = fcntl(fd_, F_GETFL, 0);
   if (flags == -1) {
@@ -61,7 +61,7 @@ void FileDescriptor::makeNonBlocking() {
   SCORE_CHECK_SYSCALL(status);
 }
 void FileDescriptor::close() {
-  ADCHECK(valid());
+  SDCHECK(valid());
   SCORE_CHECK_SYSCALL(::close(fd_));
 }
 

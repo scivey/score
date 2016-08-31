@@ -17,7 +17,7 @@ EpollFd EpollFd::create() {
 }
 
 int EpollFd::get() {
-  ADCHECK(!!fd_);
+  SDCHECK(!!fd_);
   return fd_.getFdNo();
 }
 

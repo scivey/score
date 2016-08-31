@@ -57,19 +57,19 @@ class NullablePointer {
     return !!value_;
   }
   T& value() {
-    ADCHECK(hasValue());
+    SDCHECK(hasValue());
     return *value_;
   }
   const T& value() const {
-    ADCHECK(hasValue());
+    SDCHECK(hasValue());
     return *value_;
   }
   T* get() {
-    ADCHECK(hasValue());
+    SDCHECK(hasValue());
     return value_;
   }
   const T* get() const {
-    ADCHECK(hasValue());
+    SDCHECK(hasValue());
     return value_;
   }
   bool isEmpty() const {
