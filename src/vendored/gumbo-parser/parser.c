@@ -21,16 +21,16 @@
 #include <string.h>
 #include <strings.h>
 
-#include "attribute.h"
-#include "error.h"
-#include "gumbo.h"
-#include "insertion_mode.h"
-#include "parser.h"
-#include "tokenizer.h"
-#include "tokenizer_states.h"
-#include "utf8.h"
-#include "util.h"
-#include "vector.h"
+#include "score/vendored/gumbo-parser/attribute.h"
+#include "score/vendored/gumbo-parser/error.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
+#include "score/vendored/gumbo-parser/insertion_mode.h"
+#include "score/vendored/gumbo-parser/parser.h"
+#include "score/vendored/gumbo-parser/tokenizer.h"
+#include "score/vendored/gumbo-parser/tokenizer_states.h"
+#include "score/vendored/gumbo-parser/utf8.h"
+#include "score/vendored/gumbo-parser/util.h"
+#include "score/vendored/gumbo-parser/vector.h"
 
 #define AVOID_UNUSED_VARIABLE_WARNING(i) (void)(i)
 
@@ -575,7 +575,7 @@ static GumboInsertionMode get_appropriate_insertion_mode(
   if (node->v.element.tag_namespace != GUMBO_NAMESPACE_HTML)
     return is_last ?
       GUMBO_INSERTION_MODE_IN_BODY : GUMBO_INSERTION_MODE_INITIAL;
-  
+
   switch (node->v.element.tag) {
     case GUMBO_TAG_SELECT: {
       if (is_last) {

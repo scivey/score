@@ -46,7 +46,31 @@ set(COMMON_LIBS
 set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 
-set(LIB_SRC
+set(GUMBO_PARSER_SOURCES
+    ${SRC}/vendored/gumbo-parser/attribute.c
+    ${SRC}/vendored/gumbo-parser/char_ref.c
+    ${SRC}/vendored/gumbo-parser/error.c
+    ${SRC}/vendored/gumbo-parser/parser.c
+    ${SRC}/vendored/gumbo-parser/string_buffer.c
+    ${SRC}/vendored/gumbo-parser/string_piece.c
+    ${SRC}/vendored/gumbo-parser/tag.c
+    ${SRC}/vendored/gumbo-parser/tokenizer.c
+    ${SRC}/vendored/gumbo-parser/utf8.c
+    ${SRC}/vendored/gumbo-parser/util.c
+    ${SRC}/vendored/gumbo-parser/vector.c
+)
+
+set(SMHASHER_SOURCES
+    ${SRC}/vendored/smhasher/Platform.cpp
+    ${SRC}/vendored/smhasher/sha1.cpp
+    ${SRC}/vendored/smhasher/md5.cpp
+    ${SRC}/vendored/smhasher/Types.cpp
+    ${SRC}/vendored/smhasher/Bitvec.cpp
+    ${SRC}/vendored/smhasher/Bitslice.cpp
+    ${SRC}/vendored/smhasher/Random.cpp
+)
+
+set(SCORE_COMMON_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
     ${SRC}/mem/standard.cpp
@@ -66,19 +90,12 @@ set(LIB_SRC
     ${SRC}/net/TCPClient.cpp
     ${SRC}/net/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
-
-    ${SRC}/vendored/smhasher/Platform.cpp
-    ${SRC}/vendored/smhasher/sha1.cpp
-    ${SRC}/vendored/smhasher/md5.cpp
-    ${SRC}/vendored/smhasher/Types.cpp
-    ${SRC}/vendored/smhasher/Bitvec.cpp
-    ${SRC}/vendored/smhasher/Bitslice.cpp
-    ${SRC}/vendored/smhasher/Random.cpp
     ${SRC}/vendored/http-parser/http_parser.c
-
+    ${SMHASHER_SOURCES}
+    ${GUMBO_PARSER_SOURCES}
 )
 
-add_library(scorecommon ${LIB_SRC})
+add_library(scorecommon ${SCORE_COMMON_SRC})
 set(ALL_LIBS scorecommon ${COMMON_LIBS})
 
 

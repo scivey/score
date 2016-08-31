@@ -9,7 +9,8 @@
                 ".cache",
                 "build",
                 "*.egg-info",
-                "dist"
+                "dist",
+                "tmp"
             ],
             "path": "."
         }

@@ -14,14 +14,14 @@
 //
 // Author: jdtang@google.com (Jonathan Tang)
 
-#include "attribute.h"
+#include "score/vendored/gumbo-parser/attribute.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 
-#include "util.h"
+#include "score/vendored/gumbo-parser/util.h"
 
 struct GumboInternalParser;
 

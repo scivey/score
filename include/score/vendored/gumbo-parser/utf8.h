@@ -35,7 +35,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "gumbo.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
 
 #ifdef __cplusplus
 extern "C" {

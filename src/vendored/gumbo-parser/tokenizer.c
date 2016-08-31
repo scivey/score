@@ -42,24 +42,24 @@
 // prevents parse error position from being messed up by possible mark/resets in
 // temporary buffer manipulation.
 
-#include "tokenizer.h"
+#include "score/vendored/gumbo-parser/tokenizer.h"
 
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "attribute.h"
-#include "char_ref.h"
-#include "error.h"
-#include "gumbo.h"
-#include "parser.h"
-#include "string_buffer.h"
-#include "string_piece.h"
-#include "token_type.h"
-#include "tokenizer_states.h"
-#include "utf8.h"
-#include "util.h"
-#include "vector.h"
+#include "score/vendored/gumbo-parser/attribute.h"
+#include "score/vendored/gumbo-parser/char_ref.h"
+#include "score/vendored/gumbo-parser/error.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
+#include "score/vendored/gumbo-parser/parser.h"
+#include "score/vendored/gumbo-parser/string_buffer.h"
+#include "score/vendored/gumbo-parser/string_piece.h"
+#include "score/vendored/gumbo-parser/token_type.h"
+#include "score/vendored/gumbo-parser/tokenizer_states.h"
+#include "score/vendored/gumbo-parser/utf8.h"
+#include "score/vendored/gumbo-parser/util.h"
+#include "score/vendored/gumbo-parser/vector.h"
 
 // Compared against _script_data_buffer to determine if we're in double-escaped
 // script mode.

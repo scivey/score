@@ -17,7 +17,7 @@
 #ifndef GUMBO_STRING_PIECE_H_
 #define GUMBO_STRING_PIECE_H_
 
-#include "gumbo.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
 
 #ifdef __cplusplus
 extern "C" {

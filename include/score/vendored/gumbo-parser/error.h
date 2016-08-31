@@ -23,10 +23,10 @@
 #endif
 #include <stdint.h>
 
-#include "gumbo.h"
-#include "insertion_mode.h"
-#include "string_buffer.h"
-#include "token_type.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
+#include "score/vendored/gumbo-parser/insertion_mode.h"
+#include "score/vendored/gumbo-parser/string_buffer.h"
+#include "score/vendored/gumbo-parser/token_type.h"
 
 #ifdef __cplusplus
 extern "C" {

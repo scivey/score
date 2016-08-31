@@ -23,9 +23,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "gumbo.h"
-#include "token_type.h"
-#include "tokenizer_states.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
+#include "score/vendored/gumbo-parser/token_type.h"
+#include "score/vendored/gumbo-parser/tokenizer_states.h"
 
 #ifdef __cplusplus
 extern "C" {

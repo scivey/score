@@ -14,18 +14,18 @@
 //
 // Author: jdtang@google.com (Jonathan Tang)
 
-#include "error.h"
+#include "score/vendored/gumbo-parser/error.h"
 
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "gumbo.h"
-#include "parser.h"
-#include "string_buffer.h"
-#include "util.h"
-#include "vector.h"
+#include "score/vendored/gumbo-parser/gumbo.h"
+#include "score/vendored/gumbo-parser/parser.h"
+#include "score/vendored/gumbo-parser/string_buffer.h"
+#include "score/vendored/gumbo-parser/util.h"
+#include "score/vendored/gumbo-parser/vector.h"
 
 // Prints a formatted message to a StringBuffer.  This automatically resizes the
 // StringBuffer as necessary to fit the message.  Returns the number of bytes
