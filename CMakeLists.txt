@@ -50,6 +50,7 @@ set(LIB_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
     ${SRC}/mem/standard.cpp
+    ${SRC}/io/UTF8Iterator.cpp
     ${SRC}/locks/ThreadBaton.cpp
     ${SRC}/exceptions/exceptions.cpp
     ${SRC}/formatters/formatters.cpp
@@ -118,12 +119,15 @@ set(TEST_SRC
     ${TEST_DIR}/reactor/test_experimental.cpp
     ${TEST_DIR}/mem/test_LSharedPtr.cpp
     ${TEST_DIR}/io/test_string_utils.cpp
+    ${TEST_DIR}/io/test_BytesView.cpp
+    ${TEST_DIR}/io/test_UTF8View.cpp
+
     ${TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
     ${TEST_DIR}/vendored/test_seastar_imports.cpp
     ${TEST_DIR}/vendored/test_utf8.cpp
     # ${TEST_DIR}/vendored/test_folly_imports.cpp
-    # ${TEST_DIR}/test_UninitializedArray.cpp
+    ${TEST_DIR}/test_MoveWrapper.cpp
     ${TEST_DIR}/test_casts.cpp
 )
 

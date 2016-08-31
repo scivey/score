@@ -1,6 +1,6 @@
 #include <tuple>
 #include <map>
-#include "aliens/io/ByteStringView.h"
+#include "aliens/io/BytesView.h"
 #include "aliens/macros.h"
 #include "aliens/vendored/http-parser/http_parser.h"
 
@@ -12,7 +12,7 @@ namespace aliens { namespace http {
 template<typename TImpl>
 class HTTPParserBase {
  public:
-  using string_view_t = aliens::io::ByteStringView<char>;
+  using string_view_t = aliens::io::BytesView<char>;
   enum class ParserType {
     REQUEST, RESPONSE, BOTH
   };
