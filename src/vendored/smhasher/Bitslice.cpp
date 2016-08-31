@@ -1,9 +1,9 @@
-#include "aliens/vendored/smhasher/Bitvec.h"
+#include "score/vendored/smhasher/Bitvec.h"
 #include <vector>
 #include <assert.h>
 
 
-ALIENS_SMHASHER_NS_BEGIN
+SCORE_SMHASHER_NS_BEGIN
 // handle xnor
 
 typedef std::vector<uint32_t> slice;
@@ -128,4 +128,4 @@ void foo ( void )
   Bitslice(a,b);
 }
 
-ALIENS_SMHASHER_NS_END
+SCORE_SMHASHER_NS_END

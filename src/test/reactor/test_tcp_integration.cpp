@@ -1,38 +1,38 @@
 #include <glog/logging.h>
 #include <thread>
 #include <gtest/gtest.h>
-#include "aliens/FixedBuffer.h"
-#include "aliens/reactor/EpollReactor.h"
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/reactor/SignalFd.h"
-#include "aliens/reactor/TimerFd.h"
-#include "aliens/reactor/EventFd.h"
-#include "aliens/reactor/TimerSettings.h"
-#include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/net/TCPAcceptSocket.h"
-#include "aliens/net/TCPClient.h"
-#include "aliens/net/TCPChannel.h"
-#include "aliens/locks/ThreadBaton.h"
-#include "aliens/io/NonOwnedBufferPtr.h"
-#include "aliens/io/string_utils.h"
-#include "aliens/async/ErrBack.h"
-#include "aliens/async/VoidCallback.h"
-#include "aliens/async/Callback.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/macros.h"
+#include "score/FixedBuffer.h"
+#include "score/reactor/EpollReactor.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/reactor/SignalFd.h"
+#include "score/reactor/TimerFd.h"
+#include "score/reactor/EventFd.h"
+#include "score/reactor/TimerSettings.h"
+#include "score/reactor/FdHandlerBase.h"
+#include "score/net/TCPAcceptSocket.h"
+#include "score/net/TCPClient.h"
+#include "score/net/TCPChannel.h"
+#include "score/locks/ThreadBaton.h"
+#include "score/io/NonOwnedBufferPtr.h"
+#include "score/io/string_utils.h"
+#include "score/async/ErrBack.h"
+#include "score/async/VoidCallback.h"
+#include "score/async/Callback.h"
+#include "score/exceptions/macros.h"
+#include "score/macros.h"
 #include <signal.h>
 #include <folly/Demangle.h>
 #include <folly/Conv.h>
 #include <glog/logging.h>
 
-using aliens::io::NonOwnedBufferPtr;
+using score::io::NonOwnedBufferPtr;
 
 using namespace std;
-using namespace aliens::async;
-using namespace aliens::net;
-using namespace aliens::posix;
-using namespace aliens::reactor;
-using namespace aliens::locks;
+using namespace score::async;
+using namespace score::net;
+using namespace score::posix;
+using namespace score::reactor;
+using namespace score::locks;
 
 namespace {
 
@@ -291,7 +291,7 @@ TEST(TestTCPIntegration, Test1) {
   react->join();
   auto clientResponses = clientHandlerPtr.load()->copyResponses();
   EXPECT_EQ(1, clientResponses.size());
-  auto response = aliens::io::trimAsciiWhitespace(
+  auto response = score::io::trimAsciiWhitespace(
     clientResponses.at(0)
   );
   EXPECT_EQ("{A_MESSAGE}", response);

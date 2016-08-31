@@ -1,6 +1,6 @@
-#include "aliens/ScopeGuard.h"
+#include "score/ScopeGuard.h"
 
-namespace aliens {
+namespace score {
 
 ScopeGuard::ScopeGuard(typename ScopeGuard::void_func &&func)
   : func_(func) {}
@@ -15,4 +15,4 @@ ScopeGuard::~ScopeGuard() {
   }
 }
 
-} // aliens
+} // score

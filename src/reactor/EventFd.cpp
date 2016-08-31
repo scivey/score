@@ -1,9 +1,9 @@
-#include "aliens/reactor/EventFd.h"
-#include "aliens/macros.h"
+#include "score/reactor/EventFd.h"
+#include "score/macros.h"
 #include <glog/logging.h>
 
-using aliens::posix::FileDescriptor;
-namespace aliens { namespace reactor {
+using score::posix::FileDescriptor;
+namespace score { namespace reactor {
 
 EventFd::EventFd(FileDescriptor &&desc, EventHandler *handler)
   : FdHandlerBase<EventFd>(std::forward<FileDescriptor>(desc)),
@@ -15,7 +15,7 @@ void EventFd::stop() {
 
 EventFd EventFd::create(EventFd::EventHandler *handler) {
   int fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-  ALIENS_CHECK_SYSCALL2(fd, "eventfd()");
+  SCORE_CHECK_SYSCALL2(fd, "eventfd()");
   auto desc = FileDescriptor::fromIntExcept(fd);
   return EventFd(std::move(desc), handler);
 }
@@ -48,4 +48,4 @@ void EventFd::write(uint64_t msg) {
 }
 
 
-}} // aliens::reactor
+}} // score::reactor

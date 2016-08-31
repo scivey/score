@@ -2,18 +2,18 @@
 #include <atomic>
 #include <memory>
 
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/reactor/ClientSocketTask.h"
-#include "aliens/reactor/AcceptSocketTask.h"
-#include "aliens/FixedBuffer.h"
-#include "aliens/mem/util.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/reactor/ClientSocketTask.h"
+#include "score/reactor/AcceptSocketTask.h"
+#include "score/FixedBuffer.h"
+#include "score/mem/util.h"
 
-using namespace aliens::mem;
-using namespace aliens::reactor;
-using namespace aliens::async;
+using namespace score::mem;
+using namespace score::reactor;
+using namespace score::async;
 
 using namespace std;
-using aliens::Buffer;
+using score::Buffer;
 
 namespace {
 
@@ -55,7 +55,7 @@ TEST(TestReactorThread, TestRun1) {
   std::atomic<bool> done {false};
   reactorThread->runInEventThread([task, reactorThread, &done]() {
     task->getSocket().stop();
-    reactorThread->stop([&done, reactorThread, task](const aliens::Maybe<std::exception> &err) {
+    reactorThread->stop([&done, reactorThread, task](const score::Maybe<std::exception> &err) {
       done.store(true);
     });
   });
@@ -119,7 +119,7 @@ TEST(TestReactorThread, TestRun2) {
   std::atomic<bool> done {false};
   reactorThread->runInEventThread([&task, &reactorThread, &done]() {
     task->getSocket().stop();
-    reactorThread->stop([&done](const aliens::Maybe<std::exception> &err) {
+    reactorThread->stop([&done](const score::Maybe<std::exception> &err) {
       done.store(true);
     });
   });

@@ -1,13 +1,13 @@
-#include "aliens/reactor/EpollReactor.h"
-#include "aliens/reactor/EpollFd.h"
-#include "aliens/exceptions/macros.h"
+#include "score/reactor/EpollReactor.h"
+#include "score/reactor/EpollFd.h"
+#include "score/exceptions/macros.h"
 #include <memory>
 #include <glog/logging.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
 
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 using duration_type = typename EpollReactor::duration_type;
 
@@ -51,7 +51,7 @@ void EpollReactor::addTask(Task *task) {
   memset(&evt, 0, sizeof(evt));
   evt.data.ptr = (void*) task;
   evt.events = EPOLLIN | EPOLLOUT | EPOLLET;
-  ALIENS_CHECK_SYSCALL(epoll_ctl(
+  SCORE_CHECK_SYSCALL(epoll_ctl(
     epollFd_.get(), EPOLL_CTL_ADD, task->getFd(), &evt
   ));
   task->setReactor(this);
@@ -116,4 +116,4 @@ duration_type EpollReactor::Options::getWaitTimeout() const {
   return waitTimeout_;
 }
 
-}} // aliens::reactor
+}} // score::reactor

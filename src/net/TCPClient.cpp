@@ -1,10 +1,10 @@
-#include "aliens/net/TCPClient.h"
-#include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/ScopeGuard.h"
-#include "aliens/macros.h"
-#include "aliens/PointerFactory.h"
-#include "aliens/net/SocketAddr.h"
+#include "score/net/TCPClient.h"
+#include "score/reactor/FdHandlerBase.h"
+#include "score/exceptions/macros.h"
+#include "score/ScopeGuard.h"
+#include "score/macros.h"
+#include "score/PointerFactory.h"
+#include "score/net/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -12,17 +12,17 @@
 #include <netdb.h>
 #include <glog/logging.h>
 
-using aliens::net::SocketAddr;
-using aliens::io::NonOwnedBufferPtr;
-using aliens::async::ErrBack;
-using aliens::exceptions::BaseError;
-using aliens::exceptions::SystemError;
-using aliens::reactor::EpollReactor;
-using aliens::posix::FileDescriptor;
+using score::net::SocketAddr;
+using score::io::NonOwnedBufferPtr;
+using score::async::ErrBack;
+using score::exceptions::BaseError;
+using score::exceptions::SystemError;
+using score::reactor::EpollReactor;
+using score::posix::FileDescriptor;
 
 
 
-namespace aliens { namespace net {
+namespace score { namespace net {
 
 using channel_ptr = typename TCPClient::channel_ptr;
 
@@ -39,7 +39,7 @@ TCPClient TCPClient::connect(
     SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,
     protocolPlaceholder
   );
-  ALIENS_CHECK_SYSCALL2(sockFd, "socket()");
+  SCORE_CHECK_SYSCALL2(sockFd, "socket()");
   auto addrIn = addr.to_sockaddr_in();
   socklen_t addrLen = sizeof addrIn;
   int rc = ::connect(sockFd, (struct sockaddr*) &addrIn, addrLen);
@@ -69,4 +69,4 @@ TCPChannel::EpollTask* TCPClient::getEpollTask() {
   return channel_->getEpollTask();
 }
 
-}} // aliens::reactor
+}} // score::reactor

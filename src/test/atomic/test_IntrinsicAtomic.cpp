@@ -2,9 +2,9 @@
 #include <memory>
 #include <thread>
 #include <glog/logging.h>
-#include "aliens/atomic/AtomicUint128.h"
+#include "score/atomic/AtomicUint128.h"
 using namespace std;
-using namespace aliens::atomic;
+using namespace score::atomic;
 
 
 TEST(TestIntrinsicAtomic, TestAtomicUint128) {

@@ -1,4 +1,4 @@
-#include "aliens/locks/Synchronized.h"
+#include "score/locks/Synchronized.h"
 
 #include <gtest/gtest.h>
 #include <thread>
@@ -8,7 +8,7 @@
 #include <vector>
 #include <uv.h>
 
-using aliens::locks::Synchronized;
+using score::locks::Synchronized;
 using namespace std;
 
 TEST(TestSynchronized, TestOneThread) {

@@ -2,20 +2,20 @@
 #include <atomic>
 #include <memory>
 #include <chrono>
-#include "aliens/posix/FileDescriptor.h"
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/reactor/TimerFd.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/FixedBuffer.h"
-#include "aliens/mem/util.h"
+#include "score/posix/FileDescriptor.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/reactor/TimerFd.h"
+#include "score/exceptions/macros.h"
+#include "score/FixedBuffer.h"
+#include "score/mem/util.h"
 
 
-using namespace aliens::mem;
-using namespace aliens::async;
-using namespace aliens::posix;
-using namespace aliens::reactor;
+using namespace score::mem;
+using namespace score::async;
+using namespace score::posix;
+using namespace score::reactor;
 using namespace std;
-using aliens::Buffer;
+using score::Buffer;
 
 
 

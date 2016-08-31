@@ -80,7 +80,7 @@ A million repetitions of "a"
 #include <string.h>
 #include <stdlib.h>
 
-#include "aliens/vendored/smhasher/sha1.h"
+#include "score/vendored/smhasher/sha1.h"
 
 
 #if defined(_MSC_VER)
@@ -89,7 +89,7 @@ A million repetitions of "a"
 #pragma warning(disable : 4100)
 #endif
 
-ALIENS_SMHASHER_NS_BEGIN
+SCORE_SMHASHER_NS_BEGIN
 
 void SHA1_Transform(uint32_t state[5], const uint8_t buffer[64]);
 
@@ -252,4 +252,4 @@ void sha1_32a ( const void * key, int len, uint32_t seed, void * out )
 }
 
 
-ALIENS_SMHASHER_NS_END
+SCORE_SMHASHER_NS_END

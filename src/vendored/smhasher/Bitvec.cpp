@@ -1,10 +1,10 @@
-#include "aliens/vendored/smhasher/Bitvec.h"
-#include "aliens/vendored/smhasher/Random.h"
+#include "score/vendored/smhasher/Bitvec.h"
+#include "score/vendored/smhasher/Random.h"
 
 #include <assert.h>
 #include <stdio.h>
 
-ALIENS_SMHASHER_NS_BEGIN
+SCORE_SMHASHER_NS_BEGIN
 
 #ifndef DEBUG
 #undef assert
@@ -755,5 +755,5 @@ bool test_window ( void )
   return true;
 }
 
-ALIENS_SMHASHER_NS_END
+SCORE_SMHASHER_NS_END
 //-----------------------------------------------------------------------------

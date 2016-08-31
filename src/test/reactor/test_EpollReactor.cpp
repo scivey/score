@@ -18,35 +18,35 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include "aliens/ScopeGuard.h"
-#include "aliens/locks/Synchronized.h"
-#include "aliens/locks/ThreadBaton.h"
-#include "aliens/async/ErrBack.h"
-#include "aliens/async/VoidCallback.h"
-#include "aliens/Maybe.h"
-#include "aliens/MoveWrapper.h"
-#include "aliens/FixedBuffer.h"
-#include "aliens/exceptions/exceptions.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/reactor/FileDescriptor.h"
-#include "aliens/reactor/EpollFd.h"
-#include "aliens/net/SocketAddr.h"
-#include "aliens/reactor/EpollReactor.h"
-#include "aliens/net/TCPSocket.h"
-#include "aliens/reactor/ClientSocketTask.h"
-#include "aliens/reactor/AcceptSocketTask.h"
-#include "aliens/reactor/ServerSocketTask.h"
-#include "aliens/reactor/ReactorThread.h"
+#include "score/ScopeGuard.h"
+#include "score/locks/Synchronized.h"
+#include "score/locks/ThreadBaton.h"
+#include "score/async/ErrBack.h"
+#include "score/async/VoidCallback.h"
+#include "score/Maybe.h"
+#include "score/MoveWrapper.h"
+#include "score/FixedBuffer.h"
+#include "score/exceptions/exceptions.h"
+#include "score/exceptions/macros.h"
+#include "score/reactor/FileDescriptor.h"
+#include "score/reactor/EpollFd.h"
+#include "score/net/SocketAddr.h"
+#include "score/reactor/EpollReactor.h"
+#include "score/net/TCPSocket.h"
+#include "score/reactor/ClientSocketTask.h"
+#include "score/reactor/AcceptSocketTask.h"
+#include "score/reactor/ServerSocketTask.h"
+#include "score/reactor/ReactorThread.h"
 
 using namespace std;
-using namespace aliens::locks;
-using namespace aliens::reactor;
-using aliens::async::ErrBack;
-using aliens::async::VoidCallback;
-using aliens::MoveWrapper;
-using aliens::Buffer;
-using aliens::exceptions::BaseError;
-using aliens::exceptions::SystemError;
+using namespace score::locks;
+using namespace score::reactor;
+using score::async::ErrBack;
+using score::async::VoidCallback;
+using score::MoveWrapper;
+using score::Buffer;
+using score::exceptions::BaseError;
+using score::exceptions::SystemError;
 
 
 TEST(TestEpollReactor, TestConstruction) {
@@ -90,7 +90,7 @@ TEST(TestEpollReactor, TestRun3) {
   ThreadBaton bat2;
   reactorThread->runInEventThread([&task, &reactorThread, &bat2]() {
     task->getSocket().stop();
-    reactorThread->stop([&bat2](const aliens::Maybe<std::exception> &err) {
+    reactorThread->stop([&bat2](const score::Maybe<std::exception> &err) {
       bat2.post();
     });
   });

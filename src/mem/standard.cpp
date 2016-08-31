@@ -1,6 +1,6 @@
-#include "aliens/mem/standard.h"
+#include "score/mem/standard.h"
 #include <cstdlib>
-namespace aliens { namespace mem {
+namespace score { namespace mem {
 
 namespace detail {
 
@@ -25,4 +25,4 @@ void stdFreeImpl(void *ptr) {
 
 } // detail
 
-}} // aliens::mem
+}} // score::mem

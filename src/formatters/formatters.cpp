@@ -1,6 +1,6 @@
-#include "aliens/formatters/formatters.h"
+#include "score/formatters/formatters.h"
 
-namespace aliens { namespace formatters {
+namespace score { namespace formatters {
 
 std::ostream& operator<<(std::ostream &oss, __uint128_t num128) {
   uint64_t low = (uint64_t) num128;
@@ -9,4 +9,4 @@ std::ostream& operator<<(std::ostream &oss, __uint128_t num128) {
   return oss;
 }
 
-}} // aliens::formatters
+}} // score::formatters

@@ -1,4 +1,4 @@
-#include "aliens/UninitializedArray.h"
+#include "score/UninitializedArray.h"
 #include <gtest/gtest.h>
 
 using NoInit = UninitializedArray<int, 32>;

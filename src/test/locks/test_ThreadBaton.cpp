@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <thread>
-#include "aliens/locks/ThreadBaton.h"
+#include "score/locks/ThreadBaton.h"
 
 using namespace std;
-using aliens::locks::ThreadBaton;
+using score::locks::ThreadBaton;
 
 TEST(TestThreadBaton, TestSanity1) {
   ThreadBaton baton;

@@ -1,5 +1,5 @@
-#include "aliens/reactor/SignalFd.h"
-#include "aliens/exceptions/macros.h"
+#include "score/reactor/SignalFd.h"
+#include "score/exceptions/macros.h"
 #include <sys/signalfd.h>
 #include <signal.h>
 
@@ -8,9 +8,9 @@
 #include <cstdio>
 #include <glog/logging.h>
 
-using aliens::posix::FileDescriptor;
+using score::posix::FileDescriptor;
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 
 SignalFd::SignalFd(FileDescriptor &&desc, SignalFd::EventHandler *handler)
@@ -37,12 +37,12 @@ SignalFd SignalFd::create(SignalFd::EventHandler *handler) {
   sigemptyset(&mask);
   sigaddset(&mask, SIGINT);
   sigaddset(&mask, SIGUSR1);
-  // ALIENS_CHECK_SYSCALL2(
+  // SCORE_CHECK_SYSCALL2(
   //   sigprocmask(SIG_BLOCK, &mask, nullptr),
   //   "sigprocmask()"
   // );
   sfd = signalfd(-1, &mask, SFD_NONBLOCK | SFD_CLOEXEC);
-  ALIENS_CHECK_SYSCALL2(sfd, "signalfd()");
+  SCORE_CHECK_SYSCALL2(sfd, "signalfd()");
   return SignalFd(FileDescriptor::fromIntExcept(sfd), handler);
 }
 
@@ -54,4 +54,4 @@ SignalFd* SignalFd::createPtr(
 }
 
 
-}} // aliens::reactor
+}} // score::reactor

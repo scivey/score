@@ -1,18 +1,18 @@
 #include <gtest/gtest.h>
 #include <bitset>
 #include <vector>
-#include "aliens/vendored/seastar/core/bitset-iter.hh"
-#include "aliens/vendored/seastar/core/function_traits.hh"
-#include "aliens/vendored/seastar/core/sstring.hh"
-#include "aliens/vendored/seastar/core/circular_buffer.hh"
+#include "score/vendored/seastar/core/bitset-iter.hh"
+#include "score/vendored/seastar/core/function_traits.hh"
+#include "score/vendored/seastar/core/sstring.hh"
+#include "score/vendored/seastar/core/circular_buffer.hh"
 
 /*
   These are just quick sanity checks, not exhaustive tests,
   since seastar has its own test suite.
 */
 
-namespace bitsets = aliens::vendored::seastar::bitsets;
-namespace seastar = aliens::vendored::seastar;
+namespace bitsets = score::vendored::seastar::bitsets;
+namespace seastar = score::vendored::seastar;
 using namespace std;
 
 TEST(TestSeaStarImports, TestBitsetIter) {

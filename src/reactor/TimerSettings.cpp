@@ -1,7 +1,7 @@
-#include "aliens/reactor/TimerSettings.h"
+#include "score/reactor/TimerSettings.h"
 #include <cstring>
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 namespace detail {
 void convertTime(timespec *target, std::chrono::milliseconds msec) {
@@ -34,4 +34,4 @@ itimerspec* TimerSettings::getTimerSpec() {
   return &timerSpec_;
 }
 
-}} // aliens::reactor
+}} // score::reactor

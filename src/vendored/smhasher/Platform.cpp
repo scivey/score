@@ -1,11 +1,11 @@
-#include "aliens/vendored/smhasher/Platform.h"
+#include "score/vendored/smhasher/Platform.h"
 #include <stdio.h>
 
 #define NS_BEGIN \
-namespace aliens { namespace vendored { namespace smhasher {
+namespace score { namespace vendored { namespace smhasher {
 
 #define NS_END \
-}}} // aliens::vendored::smhasher
+}}} // score::vendored::smhasher
 
 
 NS_BEGIN

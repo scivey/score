@@ -1,5 +1,5 @@
 #include <glog/logging.h>
-#include "aliens/locks/ThreadBaton.h"
+#include "score/locks/ThreadBaton.h"
 #include <chrono>
 #include <thread>
 #include <mutex>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace aliens { namespace locks {
+namespace score { namespace locks {
 
 ThreadBaton::AlreadyPosted::AlreadyPosted()
   : std::runtime_error("AlreadyPosted") {}
@@ -63,4 +63,4 @@ void ThreadBaton::doPost() {
   }
 }
 
-}} // aliens::locks
+}} // score::locks

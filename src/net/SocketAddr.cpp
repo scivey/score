@@ -1,12 +1,12 @@
-#include "aliens/net/SocketAddr.h"
-#include "aliens/exceptions/exceptions.h"
+#include "score/net/SocketAddr.h"
+#include "score/exceptions/exceptions.h"
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 
-using aliens::io::Scstring;
+using score::io::Scstring;
 
-namespace aliens { namespace net {
+namespace score { namespace net {
 
 SocketAddr::SocketAddr(){}
 
@@ -49,4 +49,4 @@ struct sockaddr_in SocketAddr::to_sockaddr_in() const {
   return result;
 }
 
-}} // aliens::net
+}} // score::net

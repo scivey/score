@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "aliens/http/SimpleHTTPResponseParser.h"
-#include "aliens/io/string_utils.h"
+#include "score/http/SimpleHTTPResponseParser.h"
+#include "score/io/string_utils.h"
 
-using namespace aliens::http;
-using namespace aliens::io;
+using namespace score::http;
+using namespace score::io;
 using namespace std;
 
 static const vector<string> requestParts {

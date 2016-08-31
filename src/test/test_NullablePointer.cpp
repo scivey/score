@@ -3,10 +3,10 @@
 #include <atomic>
 #include <memory>
 #include <string>
-#include "aliens/NullablePointer.h"
+#include "score/NullablePointer.h"
 
 using namespace std;
-using aliens::NullablePointer;
+using score::NullablePointer;
 
 TEST(TestNullablePointer, TestSanity) {
   NullablePointer<string> stringPtr;

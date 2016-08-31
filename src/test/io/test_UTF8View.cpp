@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
-#include "aliens/io/UTF8View.h"
-#include "aliens/io/BytesView.h"
+#include "score/io/UTF8View.h"
+#include "score/io/BytesView.h"
 
 using namespace std;
-using namespace aliens::io;
+using namespace score::io;
 
 TEST(TestUTF8View, TestSimple) {
   string text = "this isn\u2019t a test, or is it?";

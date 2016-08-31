@@ -1,9 +1,9 @@
-#include "aliens/net/TCPChannel.h"
-#include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/ScopeGuard.h"
-#include "aliens/macros.h"
-#include "aliens/net/SocketAddr.h"
+#include "score/net/TCPChannel.h"
+#include "score/reactor/FdHandlerBase.h"
+#include "score/exceptions/macros.h"
+#include "score/ScopeGuard.h"
+#include "score/macros.h"
+#include "score/net/SocketAddr.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -11,11 +11,11 @@
 #include <netdb.h>
 #include <glog/logging.h>
 
-using aliens::io::NonOwnedBufferPtr;
-using aliens::async::ErrBack;
-using aliens::exceptions::BaseError;
-using aliens::posix::FileDescriptor;
-namespace aliens { namespace net {
+using score::io::NonOwnedBufferPtr;
+using score::async::ErrBack;
+using score::exceptions::BaseError;
+using score::posix::FileDescriptor;
+namespace score { namespace net {
 
 TCPChannel::TCPChannel(FileDescriptor &&desc,
     EventHandler *handler,
@@ -44,7 +44,7 @@ void TCPChannel::readSome() {
         handler_->onReadableStop();
         break;
       } else {
-        ALIENS_CHECK_SYSCALL2(nr, "read()");
+        SCORE_CHECK_SYSCALL2(nr, "read()");
       }
     } else if (nr == 0) {
       handler_->onReadableStop();
@@ -76,7 +76,7 @@ void TCPChannel::EventHandler::sendBuff(
 void TCPChannel::sendBuff(
     NonOwnedBufferPtr buff, ErrBack &&cb) {
   ssize_t nr = ::write(getFdNo(), buff.vdata(), buff.size());
-  ALIENS_CHECK_SYSCALL2(nr, "write()");
+  SCORE_CHECK_SYSCALL2(nr, "write()");
   if (nr == buff.size()) {
     cb();
   } else {
@@ -129,4 +129,4 @@ TCPChannel* TCPChannel::createPtr(FileDescriptor &&fd,
 //   );
 // }
 
-}} // aliens::reactor
+}} // score::reactor

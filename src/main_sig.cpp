@@ -1,21 +1,21 @@
 #include <glog/logging.h>
 // #include <spdlog/spdlog.h>
-#include "aliens/reactor/EpollReactor.h"
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/reactor/SignalFd.h"
-#include "aliens/reactor/TimerFd.h"
-#include "aliens/reactor/EventFd.h"
+#include "score/reactor/EpollReactor.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/reactor/SignalFd.h"
+#include "score/reactor/TimerFd.h"
+#include "score/reactor/EventFd.h"
 
-#include "aliens/reactor/TimerSettings.h"
-#include "aliens/async/ErrBack.h"
-#include "aliens/async/VoidCallback.h"
-#include "aliens/async/Callback.h"
-#include "aliens/exceptions/macros.h"
+#include "score/reactor/TimerSettings.h"
+#include "score/async/ErrBack.h"
+#include "score/async/VoidCallback.h"
+#include "score/async/Callback.h"
+#include "score/exceptions/macros.h"
 #include <signal.h>
 
 using namespace std;
-using namespace aliens::async;
-using namespace aliens::reactor;
+using namespace score::async;
+using namespace score::reactor;
 
 class CallbackTimerHandler : public TimerFd::EventHandler {
  protected:
@@ -61,7 +61,7 @@ int main() {
   sigemptyset(&mask);
   sigaddset(&mask, SIGINT);
   sigaddset(&mask, SIGUSR1);
-  ALIENS_CHECK_SYSCALL2(
+  SCORE_CHECK_SYSCALL2(
     sigprocmask(SIG_BLOCK, &mask, nullptr),
     "sigprocmask()"
   );

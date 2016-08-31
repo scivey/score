@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(aliens)
+project(score)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0 -mcx16 -march=native")
 
@@ -78,16 +78,15 @@ set(LIB_SRC
 
 )
 
-add_library(alienscommon ${LIB_SRC})
-# set(ALL_LIBS ${COMMON_LIBS})
-set(ALL_LIBS alienscommon ${COMMON_LIBS})
+add_library(scorecommon ${LIB_SRC})
+set(ALL_LIBS scorecommon ${COMMON_LIBS})
 
 
 
 add_executable(runner
     ${SRC}/main.cpp
 )
-add_dependencies(runner alienscommon)
+add_dependencies(runner scorecommon)
 target_link_libraries(runner
     ${ALL_LIBS}
 )
@@ -135,7 +134,7 @@ add_executable(tester
     ${TEST_SRC}
     ${TEST_DIR}/run_tests.cpp
 )
-add_dependencies(tester alienscommon)
+add_dependencies(tester scorecommon)
 target_link_libraries(tester
     gmock
     ${ALL_LIBS}

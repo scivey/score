@@ -1,4 +1,4 @@
-#include "aliens/exceptions/exceptions.h"
+#include "score/exceptions/exceptions.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <cstdio>
@@ -6,7 +6,7 @@
 #include <sstream>
 #include <sys/types.h>
 
-namespace aliens { namespace exceptions {
+namespace score { namespace exceptions {
 
 SystemError::SystemError(int err, const std::string &msg)
   : BaseError(msg), errno_(err) {}
@@ -22,4 +22,4 @@ SystemError SystemError::fromErrno(int err, const std::string &msg) {
   return SystemError(err, oss.str());
 }
 
-}} // aliens::exceptions
+}} // score::exceptions

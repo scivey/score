@@ -1,10 +1,10 @@
-#include "aliens/vendored/smhasher/Types.h"
+#include "score/vendored/smhasher/Types.h"
 
-#include "aliens/vendored/smhasher/Random.h"
+#include "score/vendored/smhasher/Random.h"
 
 #include <stdio.h>
 
-ALIENS_SMHASHER_NS_BEGIN
+SCORE_SMHASHER_NS_BEGIN
 
 uint32_t MurmurOAAT ( const void * blob, int len, uint32_t seed );
 
@@ -147,4 +147,4 @@ void GenerateMixingConstants ( void )
   printf("%d %d %d %d %d %d\n",trials,popfail,bitfail,matchfail,primefail,count);
 }
 
-ALIENS_SMHASHER_NS_END
+SCORE_SMHASHER_NS_END

@@ -2,18 +2,18 @@
 #include <atomic>
 #include <vector>
 #include <glog/logging.h>
-#include "aliens/reactor/EventFd.h"
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/async/ErrBack.h"
-#include "aliens/PointerFactory.h"
+#include "score/reactor/EventFd.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/async/ErrBack.h"
+#include "score/PointerFactory.h"
 
-#include "aliens/mem/util.h"
-#include "aliens/locks/Synchronized.h"
+#include "score/mem/util.h"
+#include "score/locks/Synchronized.h"
 
-using namespace aliens::reactor;
-using namespace aliens::async;
-using namespace aliens::mem;
-using namespace aliens::locks;
+using namespace score::reactor;
+using namespace score::async;
+using namespace score::mem;
+using namespace score::locks;
 using namespace std;
 namespace {
 

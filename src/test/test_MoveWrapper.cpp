@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
-#include "aliens/MoveWrapper.h"
-#include "aliens/test_support/Noisy.h"
+#include "score/MoveWrapper.h"
+#include "score/test_support/Noisy.h"
 
 
-using namespace aliens;
+using namespace score;
 using namespace std;
 
-using Noisy = aliens::test_support::Noisy<9515>;
+using Noisy = score::test_support::Noisy<9515>;
 
 TEST(TestMoveWrapper, TestAssumptions) {
   Noisy::resetReport();

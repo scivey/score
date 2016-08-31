@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include "aliens/test_support/Noisy.h"
-#include "aliens/mem/LSharedPtr.h"
-using namespace aliens::test_support;
-using namespace aliens::mem;
+#include "score/test_support/Noisy.h"
+#include "score/mem/LSharedPtr.h"
+using namespace score::test_support;
+using namespace score::mem;
 using Noise = Noisy<59515>;
 
 TEST(TestSeastarSharedPtr, PreTest) {

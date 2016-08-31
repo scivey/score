@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <string>
-#include "aliens/io/BytesView.h"
+#include "score/io/BytesView.h"
 
 using namespace std;
 
-using BytesView = aliens::io::BytesView<char>;
+using BytesView = score::io::BytesView<char>;
 
 TEST(TestBytesView, EntireString) {
   string text = "this is a test";

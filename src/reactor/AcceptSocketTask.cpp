@@ -1,12 +1,12 @@
-#include "aliens/reactor/AcceptSocketTask.h"
-#include "aliens/reactor/ServerSocketTask.h"
+#include "score/reactor/AcceptSocketTask.h"
+#include "score/reactor/ServerSocketTask.h"
 #include <glog/logging.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netdb.h>
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 void AcceptSocketTask::doAccept() {
   for (;;) {
@@ -74,4 +74,4 @@ void AcceptSocketTask::onAcceptError(int err) {
   LOG(INFO) << "onAcceptError : " << strerror(err);
 }
 
-}} // aliens::reactor
+}} // score::reactor

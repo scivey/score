@@ -1,8 +1,8 @@
-#include "aliens/reactor/ClientSocketTask.h"
+#include "score/reactor/ClientSocketTask.h"
 
-using aliens::async::ErrBack;
+using score::async::ErrBack;
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 void ClientSocketTask::EventHandler::setTask(ClientSocketTask *task) {
   task_ = task;
@@ -53,4 +53,4 @@ int ClientSocketTask::getFd() {
   return sock_.getFdNo();
 }
 
-}} // aliens::reactor
+}} // score::reactor

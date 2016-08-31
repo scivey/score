@@ -1,13 +1,13 @@
-#include "aliens/reactor/TimerFd.h"
+#include "score/reactor/TimerFd.h"
 #include <atomic>
 #include <memory>
 #include <cstdio>
 #include <glog/logging.h>
-#include "aliens/macros.h"
+#include "score/macros.h"
 
-using aliens::posix::FileDescriptor;
+using score::posix::FileDescriptor;
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 
 TimerFd::TimerFd(FileDescriptor &&desc, TimerFd::EventHandler *handler)
@@ -39,14 +39,14 @@ TimerFd TimerFd::create(const TimerSettings& settings, TimerFd::EventHandler *ha
     CLOCK_MONOTONIC,
     TFD_NONBLOCK | TFD_CLOEXEC
   );
-  ALIENS_CHECK_SYSCALL2(fd, "TimerFd::create()");
+  SCORE_CHECK_SYSCALL2(fd, "TimerFd::create()");
   TimerFd instance(FileDescriptor::fromIntExcept(fd), handler);
   instance.settings_ = settings;
   itimerspec previousSettings;
   itimerspec *desiredSettings = instance.settings_.getTimerSpec();
 
   const int kRelativeTimerFlag = 0;
-  ALIENS_CHECK_SYSCALL2(
+  SCORE_CHECK_SYSCALL2(
     timerfd_settime(
       instance.getFdNo(),
       kRelativeTimerFlag,
@@ -66,4 +66,4 @@ TimerFd* TimerFd::createPtr(
 }
 
 
-}} // aliens::reactor
+}} // score::reactor

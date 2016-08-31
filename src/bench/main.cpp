@@ -4,9 +4,9 @@
 #include <memory>
 #include <random>
 #include <benchmark/benchmark.h>
-#include "aliens/mem/standard.h"
+#include "score/mem/standard.h"
 
-using aliens::mem::StandardAllocator;
+using score::mem::StandardAllocator;
 
 const size_t kSmallBatchSize = 10000;
 const size_t kSmallBatchBlockSize = 2e16;

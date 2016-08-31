@@ -1,7 +1,7 @@
-#include "aliens/FixedBuffer.h"
+#include "score/FixedBuffer.h"
 #include <sstream>
 
-namespace aliens { namespace detail {
+namespace score { namespace detail {
 
 std::string buffToString(char *buff, size_t buffLen) {
   std::ostringstream result;
@@ -25,4 +25,4 @@ std::string buffToString(char *buff, size_t buffLen) {
   return result.str();
 }
 
-}} // aliens::detail
+}} // score::detail

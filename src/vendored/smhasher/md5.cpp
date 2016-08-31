@@ -1,8 +1,8 @@
 #include <memory.h>
-#include "aliens/vendored/smhasher/Platform.h"
-#include "aliens/vendored/smhasher/Types.h"
+#include "score/vendored/smhasher/Platform.h"
+#include "score/vendored/smhasher/Types.h"
 
-ALIENS_SMHASHER_NS_BEGIN
+SCORE_SMHASHER_NS_BEGIN
 // "Derived from the RSA Data Security, Inc. MD5 Message Digest Algorithm"
 
 /**
@@ -383,4 +383,4 @@ void md5_32            ( const void * key, int len, uint32_t /*seed*/, void * ou
   *(uint32_t*)out = hash[0];
 }
 
-ALIENS_SMHASHER_NS_END
+SCORE_SMHASHER_NS_END

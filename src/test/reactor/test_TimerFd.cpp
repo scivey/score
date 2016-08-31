@@ -3,21 +3,21 @@
 #include <memory>
 #include <sys/timerfd.h>
 
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/posix/FileDescriptor.h"
-#include "aliens/reactor/TimerFd.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/FixedBuffer.h"
-#include "aliens/mem/util.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/posix/FileDescriptor.h"
+#include "score/reactor/TimerFd.h"
+#include "score/exceptions/macros.h"
+#include "score/FixedBuffer.h"
+#include "score/mem/util.h"
 
-using namespace aliens::mem;
-using namespace aliens::async;
-using namespace aliens::posix;
+using namespace score::mem;
+using namespace score::async;
+using namespace score::posix;
 using namespace std;
-using aliens::Buffer;
+using score::Buffer;
 
 
-using namespace aliens::reactor;
+using namespace score::reactor;
 
 class Handler : public TimerFd::EventHandler {
  protected:

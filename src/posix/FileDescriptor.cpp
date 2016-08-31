@@ -1,15 +1,15 @@
-#include "aliens/posix/FileDescriptor.h"
-#include "aliens/exceptions/exceptions.h"
-#include "aliens/macros.h"
+#include "score/posix/FileDescriptor.h"
+#include "score/exceptions/exceptions.h"
+#include "score/macros.h"
 
 #include <atomic>
 #include <glog/logging.h>
 #include <fcntl.h>
 #include <cstdio>
 
-using namespace aliens::exceptions;
+using namespace score::exceptions;
 
-namespace aliens { namespace posix {
+namespace score { namespace posix {
 
 FileDescriptor::FileDescriptor(){}
 
@@ -54,16 +54,16 @@ void FileDescriptor::makeNonBlocking() {
   int flags, status;
   flags = fcntl(fd_, F_GETFL, 0);
   if (flags == -1) {
-    throw aliens::exceptions::SystemError(errno);
+    throw score::exceptions::SystemError(errno);
   }
   flags |= O_NONBLOCK;
   status = fcntl(fd_, F_SETFL, flags);
-  ALIENS_CHECK_SYSCALL(status);
+  SCORE_CHECK_SYSCALL(status);
 }
 void FileDescriptor::close() {
   ADCHECK(valid());
-  ALIENS_CHECK_SYSCALL(::close(fd_));
+  SCORE_CHECK_SYSCALL(::close(fd_));
 }
 
-}} // aliens::posix
+}} // score::posix
 

@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 #include <functional>
 #include <atomic>
-#include "aliens/Maybe.h"
+#include "score/Maybe.h"
 
 using namespace std;
-using aliens::Maybe;
+using score::Maybe;
 
 TEST(TestMaybe, TestWorks1) {
   Maybe<int> x {17};

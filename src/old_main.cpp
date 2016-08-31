@@ -4,30 +4,30 @@
 #include <atomic>
 
 #include <memory>
-#include "aliens/MoveWrapper.h"
+#include "score/MoveWrapper.h"
 #include <glog/logging.h>
 #include <boost/asio.hpp>
-#include "aliens/FixedBuffer.h"
-#include "aliens/tcp/TCPAcceptServer.h"
-#include "aliens/tcp/TCPSocket.h"
-#include "aliens/tcp/TCPServer.h"
-#include "aliens/tcp/TCPClient.h"
-#include "aliens/async/IOService.h"
-#include "aliens/mem/util.h"
-#include "aliens/tcp/EchoServer.h"
+#include "score/FixedBuffer.h"
+#include "score/tcp/TCPAcceptServer.h"
+#include "score/tcp/TCPSocket.h"
+#include "score/tcp/TCPServer.h"
+#include "score/tcp/TCPClient.h"
+#include "score/async/IOService.h"
+#include "score/mem/util.h"
+#include "score/tcp/EchoServer.h"
 
 using namespace std;
 using asio_tcp = boost::asio::ip::tcp;
-using aliens::Buffer;
-using aliens::io::SocketAddr;
+using score::Buffer;
+using score::io::SocketAddr;
 
-using aliens::tcp::TCPAcceptServer;
-using aliens::tcp::TCPSocket;
-using aliens::tcp::TCPClient;
+using score::tcp::TCPAcceptServer;
+using score::tcp::TCPSocket;
+using score::tcp::TCPClient;
 
-using aliens::async::IOService;
-using aliens::tcp::TCPServer;
-using aliens::tcp::EchoServer;
+using score::async::IOService;
+using score::tcp::TCPServer;
+using score::tcp::EchoServer;
 
 
 class EchoClientHandler: public TCPSocket::EventHandler {
@@ -45,7 +45,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
       auto msg = messages_.back();
       messages_.pop_back();
       LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::mem::makeUnique<Buffer>();
+      auto toSend = score::mem::makeUnique<Buffer>();
       toSend->fillWith(msg);
       write(std::move(toSend));
     }
@@ -59,7 +59,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
   }
   void onWriteSuccess(size_t nr) override {
     LOG(INFO) << "onWriteSuccess : " << nr;
-    read(aliens::mem::makeUnique<Buffer>());
+    read(score::mem::makeUnique<Buffer>());
   }
   void onWriteError(boost::system::error_code ec, size_t nr) override {
     LOG(INFO) << "onWriteError : " << ec << " [" << nr << "]";
@@ -72,7 +72,7 @@ class EchoClientHandler: public TCPSocket::EventHandler {
       auto msg = messages_.back();
       messages_.pop_back();
       LOG(INFO) << "going to send: '" << msg << "'";
-      auto toSend = aliens::mem::makeUnique<Buffer>();
+      auto toSend = score::mem::makeUnique<Buffer>();
       toSend->fillWith(msg);
       write(std::move(toSend));
     }

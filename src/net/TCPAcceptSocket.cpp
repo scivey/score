@@ -1,7 +1,7 @@
-#include "aliens/net/TCPAcceptSocket.h"
-#include "aliens/reactor/FdHandlerBase.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/ScopeGuard.h"
+#include "score/net/TCPAcceptSocket.h"
+#include "score/reactor/FdHandlerBase.h"
+#include "score/exceptions/macros.h"
+#include "score/ScopeGuard.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -9,9 +9,9 @@
 #include <netdb.h>
 #include <glog/logging.h>
 
-using aliens::posix::FileDescriptor;
+using score::posix::FileDescriptor;
 
-namespace aliens { namespace net {
+namespace score { namespace net {
 
 TCPAcceptSocket::TCPAcceptSocket(FileDescriptor &&desc,
     EventHandler *handler)
@@ -68,12 +68,12 @@ TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
   hints.ai_socktype = SOCK_STREAM; // tcp
   hints.ai_flags = AI_PASSIVE; // any interface
   struct addrinfo *result, *rp;
-  aliens::ScopeGuard guard([&result]() {
+  score::ScopeGuard guard([&result]() {
     if (result) {
       freeaddrinfo(result);
     }
   });
-  ALIENS_CHECK_SYSCALL(getaddrinfo(nullptr, portStr.c_str(), &hints, &result));
+  SCORE_CHECK_SYSCALL(getaddrinfo(nullptr, portStr.c_str(), &hints, &result));
   int status, sfd;
   for (rp = result; rp != nullptr; rp = rp->ai_next) {
     sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
@@ -82,12 +82,12 @@ TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
     }
     {
       int shouldReuse = 1;
-      ALIENS_CHECK_SYSCALL(setsockopt(
+      SCORE_CHECK_SYSCALL(setsockopt(
         sfd, SOL_SOCKET, SO_REUSEADDR,
         (const char*) &shouldReuse,
         sizeof(shouldReuse)
       ));
-      ALIENS_CHECK_SYSCALL(setsockopt(
+      SCORE_CHECK_SYSCALL(setsockopt(
         sfd, SOL_SOCKET, SO_REUSEPORT,
         (const char*) &shouldReuse,
         sizeof(shouldReuse)
@@ -116,7 +116,7 @@ TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
 
 void TCPAcceptSocket::listen() {
   LOG(INFO) << "listen()";
-  ALIENS_CHECK_SYSCALL(::listen(getFdNo(), SOMAXCONN));
+  SCORE_CHECK_SYSCALL(::listen(getFdNo(), SOMAXCONN));
 }
 
-}} // aliens::reactor
+}} // score::reactor

@@ -2,11 +2,11 @@
 #include <mutex>
 #include <thread>
 
-#include "aliens/Counter.h"
-#include "aliens/SingletonWrapper.h"
+#include "score/Counter.h"
+#include "score/SingletonWrapper.h"
 
-using aliens::Counter;
-using aliens::SingletonWrapper;
+using score::Counter;
+using score::SingletonWrapper;
 using StaticCounter = SingletonWrapper<Counter<29>>;
 
 TEST(TestSingletonWrapper, SimpleTest) {

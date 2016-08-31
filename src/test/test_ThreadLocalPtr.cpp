@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 #include <mutex>
 #include <thread>
-#include "aliens/ThreadLocalPtr.h"
-#include "aliens/Counter.h"
-#include "aliens/SingletonWrapper.h"
-#include "aliens/test_support/Noisy.h"
+#include "score/ThreadLocalPtr.h"
+#include "score/Counter.h"
+#include "score/SingletonWrapper.h"
+#include "score/test_support/Noisy.h"
 
 using namespace std;
 
-using Noisy = aliens::test_support::Noisy<17>;
+using Noisy = score::test_support::Noisy<17>;
 
 
 TEST(TestLocalPtr, TestSimple) {
@@ -16,7 +16,7 @@ TEST(TestLocalPtr, TestSimple) {
   rep->reset();
   EXPECT_EQ(0, rep->nCreated());
   {
-    auto localPtr = aliens::ThreadLocalPtr<Noisy>::create();
+    auto localPtr = score::ThreadLocalPtr<Noisy>::create();
     {
       EXPECT_EQ(0, rep->nCreated());
       auto x = localPtr.get();

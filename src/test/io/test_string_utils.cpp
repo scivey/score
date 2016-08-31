@@ -2,10 +2,10 @@
 #include <string>
 #include <vector>
 
-#include "aliens/io/string_utils.h"
+#include "score/io/string_utils.h"
 
 using namespace std;
-using namespace aliens::io;
+using namespace score::io;
 
 TEST(TestStringUtils, TestJoinWith) {
   vector<string> parts {"one", "two", "three"};

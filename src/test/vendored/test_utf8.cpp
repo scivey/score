@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include "aliens/vendored/utf8/utf8.h"
+#include "score/vendored/utf8/utf8.h"
 using namespace std;
-namespace utf8 = aliens::vendored::utf8;
+namespace utf8 = score::vendored::utf8;
 
 
 TEST(TestUtf8, TestNotNonsensicalAscii) {

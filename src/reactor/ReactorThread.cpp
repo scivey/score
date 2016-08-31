@@ -1,9 +1,9 @@
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/Maybe.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/exceptions/macros.h"
+#include "score/Maybe.h"
 #include <glog/logging.h>
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 ReactorThread::ReactorThread(){}
 
@@ -96,10 +96,10 @@ void ReactorThread::addTask(EpollReactor::Task *task) {
 
 void ReactorThread::addTask(EpollReactor::Task *task, async::VoidCallback &&cb) {
   auto self = shared_from_this();
-  auto cbWrapper = aliens::makeMoveWrapper(std::forward<async::VoidCallback>(cb));
+  auto cbWrapper = score::makeMoveWrapper(std::forward<async::VoidCallback>(cb));
   runInEventThread([self, this, task, cbWrapper]() {
     addTaskImpl(task);
-    aliens::MoveWrapper<async::VoidCallback> unwrapped = cbWrapper;
+    score::MoveWrapper<async::VoidCallback> unwrapped = cbWrapper;
     async::VoidCallback movedCb = unwrapped.move();
     movedCb();
   });
@@ -111,10 +111,10 @@ void ReactorThread::runInEventThread(async::VoidCallback &&cb) {
 }
 
 void ReactorThread::runInEventThread(async::VoidCallback &&cb, async::ErrBack &&onFinish) {
-  auto cbWrapper = aliens::makeMoveWrapper(
+  auto cbWrapper = score::makeMoveWrapper(
     std::forward<async::VoidCallback>(cb)
   );
-  auto doneWrapper = aliens::makeMoveWrapper(
+  auto doneWrapper = score::makeMoveWrapper(
     std::forward<async::ErrBack>(onFinish)
   );
   auto self = shared_from_this();
@@ -164,4 +164,4 @@ ReactorThread::~ReactorThread() {
   join();
 }
 
-}} // aliens::reactor
+}} // score::reactor

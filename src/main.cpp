@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
-#include "aliens/vendored/seastar/core/shared_ptr.hh"
+#include "score/vendored/seastar/core/shared_ptr.hh"
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 

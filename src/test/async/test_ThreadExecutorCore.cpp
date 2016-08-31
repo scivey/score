@@ -2,11 +2,11 @@
 #include <thread>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "aliens/async/ThreadExecutorCore.h"
-#include "aliens/locks/ThreadBaton.h"
+#include "score/async/ThreadExecutorCore.h"
+#include "score/locks/ThreadBaton.h"
 
-using namespace aliens::async;
-using aliens::locks::ThreadBaton;
+using namespace score::async;
+using score::locks::ThreadBaton;
 using namespace std;
 
 TEST(TestThreadExecutorCore, TestWorks1) {

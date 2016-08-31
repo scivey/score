@@ -1,18 +1,18 @@
-#include "aliens/reactor/EpollFd.h"
+#include "score/reactor/EpollFd.h"
 #include <memory>
 #include <sys/epoll.h>
-#include "aliens/macros.h"
+#include "score/macros.h"
 
-using aliens::posix::FileDescriptor;
+using score::posix::FileDescriptor;
 
-namespace aliens { namespace reactor {
+namespace score { namespace reactor {
 
 EpollFd::EpollFd(FileDescriptor &&descriptor)
   : fd_(std::forward<FileDescriptor>(descriptor)) {}
 
 EpollFd EpollFd::create() {
   int fd = epoll_create1(EPOLL_CLOEXEC);
-  ALIENS_CHECK_SYSCALL(fd);
+  SCORE_CHECK_SYSCALL(fd);
   return EpollFd(FileDescriptor::fromIntExcept(fd));
 }
 
@@ -21,4 +21,4 @@ int EpollFd::get() {
   return fd_.getFdNo();
 }
 
-}} // aliens::reactor
+}} // score::reactor

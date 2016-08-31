@@ -3,18 +3,18 @@
 #include <memory>
 #include <sys/timerfd.h>
 
-#include "aliens/reactor/ReactorThread.h"
-#include "aliens/posix/FileDescriptor.h"
-#include "aliens/reactor/SignalFd.h"
-#include "aliens/locks/Synchronized.h"
-#include "aliens/exceptions/macros.h"
-#include "aliens/mem/util.h"
+#include "score/reactor/ReactorThread.h"
+#include "score/posix/FileDescriptor.h"
+#include "score/reactor/SignalFd.h"
+#include "score/locks/Synchronized.h"
+#include "score/exceptions/macros.h"
+#include "score/mem/util.h"
 
-using namespace aliens::mem;
-using namespace aliens::async;
-using namespace aliens::reactor;
-using namespace aliens::locks;
-using namespace aliens::posix;
+using namespace score::mem;
+using namespace score::async;
+using namespace score::reactor;
+using namespace score::locks;
+using namespace score::posix;
 using namespace std;
 
 
