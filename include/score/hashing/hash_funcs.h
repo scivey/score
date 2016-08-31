@@ -25,8 +25,5 @@ std::pair<uint64_t, uint64_t> murmur3_128(const char *ptr, size_t textLen, uint3
 std::pair<uint64_t, uint64_t> murmur3_128(const std::string&);
 std::pair<uint64_t, uint64_t> murmur3_128(const std::string&, uint32_t seed);
 
-// stolen from boost::hash
-size_t hashCombine(size_t seed, size_t hashedVal);
-
 }} // score::hashing
 

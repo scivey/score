@@ -1,10 +1,10 @@
 #pragma once
+#include <vector>
+#include <map>
+#include <string>
 #include "score/html/HtmlDom.h"
 #include "score/html/Node.h"
 #include "score/html/Tag.h"
-
-#include <map>
-#include <string>
 
 namespace score { namespace html {
 

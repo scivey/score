@@ -82,9 +82,4 @@ pair<uint64_t, uint64_t> murmur3_128(const string &text, uint32_t seed) {
   return murmur3_128(text.data(), text.size(), seed);
 }
 
-size_t hashCombine(size_t seed, size_t hashedVal) {
-  seed ^= hashedVal + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-  return seed;
-}
-
 }} // score::hashing

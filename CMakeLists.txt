@@ -144,6 +144,7 @@ set(TEST_SRC
     ${TEST_DIR}/test_SingletonWrapper.cpp
     ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
+    ${TEST_DIR}/test_DefaultValueMap.cpp
     ${TEST_DIR}/locks/test_ThreadBaton.cpp
     ${TEST_DIR}/reactor/test_tcp_integration.cpp
     ${TEST_DIR}/reactor/test_TimerFd.cpp

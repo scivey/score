@@ -1,7 +1,7 @@
 #pragma once
 #include <gumbo.h>
 #include <string>
-#include "score/util/misc.h"
+#include "score/hashing/util.h"
 
 namespace score { namespace html {
 
@@ -170,7 +170,7 @@ namespace std {
   struct hash<score::html::Tag> {
     using tag_type = score::html::Tag;
     size_t operator()(tag_type tag) const {
-      return score::util::hashEnum(tag);
+      return score::hashing::hashEnum(tag);
     }
   };
 
@@ -178,7 +178,7 @@ namespace std {
   struct hash<GumboTag> {
     using tag_type = GumboTag;
     size_t operator()(tag_type tag) const {
-      return score::util::hashEnum(tag);
+      return score::hashing::hashEnum(tag);
     }
   };
 }
