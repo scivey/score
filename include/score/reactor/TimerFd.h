@@ -1,20 +1,24 @@
 #pragma once
 
 #include <sys/timerfd.h>
+#include <glog/logging.h>
 #include "score/reactor/EpollReactor.h"
 #include "score/reactor/TimerSettings.h"
 #include "score/reactor/FdHandlerBase.h"
 #include "score/reactor/ReflectedEpollTask.h"
 #include "score/PointerFactory.h"
+#include "score/ParentHaving.h"
+
 namespace score { namespace reactor {
 
 class TimerFd : public FdHandlerBase<TimerFd> {
  public:
 
-  class EventHandler {
+  class EventHandler: public ParentHaving<TimerFd> {
    public:
     virtual void onTick() = 0;
     virtual ~EventHandler() = default;
+    virtual void stop();
   };
  protected:
   TimerSettings settings_;
@@ -29,6 +33,10 @@ class TimerFd : public FdHandlerBase<TimerFd> {
   void onWritable();
   void onError();
   static TimerFd create(const TimerSettings&, EventHandler *handler);
+
+  // ~TimerFd() {
+  //   LOG(INFO) << "~TimerFd()";
+  // }
 };
 
 }} // score::reactor

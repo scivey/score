@@ -48,11 +48,25 @@ void ReactorThread::start(const EOptions &opts) {
             func.value()();
           }
         }
-        auto queueHandle = toRun_.getHandle();
-        while (!queueHandle->empty()) {
-          async::VoidCallback func = std::move(queueHandle->front());
-          queueHandle->pop();
-          func();
+        // auto queueHandle = toRun_.getHandle();
+        // while (!queueHandle->empty()) {
+        //   async::VoidCallback func = std::move(queueHandle->front());
+        //   queueHandle->pop();
+        //   func();
+        // }
+      }
+      for (;;) {
+        Maybe<async::VoidCallback> func;
+        {
+          auto doneHandle = onFinishedCallbacks_.getHandle();
+          if (doneHandle->empty()) {
+            break;
+          }
+          func.assign(std::move(doneHandle->front()));
+          doneHandle->pop();
+        }
+        if (func.hasValue()) {
+          func.value()();
         }
       }
       if (onStopped_.hasValue()) {
@@ -162,6 +176,11 @@ void ReactorThread::join() {
 
 ReactorThread::~ReactorThread() {
   join();
+}
+
+void ReactorThread::pushOnFinished(async::VoidCallback &&cb) {
+  auto handle = onFinishedCallbacks_.getHandle();
+  handle->push(std::forward<async::VoidCallback>(cb));
 }
 
 }} // score::reactor

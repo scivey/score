@@ -12,7 +12,9 @@ namespace score { namespace reactor {
 
 TimerFd::TimerFd(FileDescriptor &&desc, TimerFd::EventHandler *handler)
   : FdHandlerBase<TimerFd>(std::forward<FileDescriptor>(desc)),
-    handler_(handler) {}
+    handler_(handler) {
+  handler_->setParent(this);
+}
 
 void TimerFd::onReadable() {
   uint64_t nTimeouts {0};
@@ -65,5 +67,8 @@ TimerFd* TimerFd::createPtr(
   ));
 }
 
+void TimerFd::EventHandler::stop() {
+  this->getParent()->stop();
+}
 
 }} // score::reactor

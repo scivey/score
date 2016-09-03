@@ -25,6 +25,7 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   std::atomic<bool> joined_ {false};
   score::Maybe<async::ErrBack> onStopped_;
   locks::Synchronized<std::queue<async::VoidCallback>> toRun_;
+  locks::Synchronized<std::queue<async::VoidCallback>> onFinishedCallbacks_;
  public:
   static std::shared_ptr<ReactorThread> createShared();
   EpollReactor* getReactor();
@@ -41,6 +42,7 @@ class ReactorThread : public std::enable_shared_from_this<ReactorThread> {
   void addTask(EpollReactor::Task *task, async::VoidCallback &&cb);
   void runInEventThread(async::VoidCallback &&cb);
   void runInEventThread(async::VoidCallback &&cb, async::ErrBack &&onFinish);
+  void pushOnFinished(async::VoidCallback &&cb);
   void join();
   ~ReactorThread();
 };

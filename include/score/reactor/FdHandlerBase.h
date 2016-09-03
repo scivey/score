@@ -4,6 +4,8 @@
 #include <glog/logging.h>
 #include "score/reactor/ReflectedEpollTask.h"
 #include "score/reactor/EpollReactor.h"
+#include "score/PointerFactory.h"
+
 namespace score { namespace reactor {
 
 template<typename T>
