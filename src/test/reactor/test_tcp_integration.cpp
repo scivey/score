@@ -1,6 +1,8 @@
 #include <glog/logging.h>
 #include <thread>
 #include <gtest/gtest.h>
+#include <stdexcept>
+#include <exception>
 #include "score/FixedBuffer.h"
 #include "score/reactor/EpollReactor.h"
 #include "score/reactor/ReactorThread.h"
@@ -88,7 +90,7 @@ class SomeRequestHandler : public TCPChannel::EventHandler {
     readSome();
   }
   void onReadableStop() override {
-    LOG(INFO) << "server onReadableStop";
+    VLOG(50) << "server onReadableStop";
   }
   void getReadBuffer(void **buff, size_t *buffLen, size_t hint) override {
     void *buffPtr = malloc(hint);
@@ -99,7 +101,7 @@ class SomeRequestHandler : public TCPChannel::EventHandler {
   void readBufferAvailable(void *buff, size_t buffLen) override {
     auto data = (const char*) buff;
     lastBuff_ = "";
-    LOG(INFO) << "server got: " << prettyBuff(buff, buffLen);
+    VLOG(50) << "server got: " << prettyBuff(buff, buffLen);
     for (size_t i = 0; i <= buffLen; i++) {
       lastBuff_.push_back(data[i]);
     }
@@ -144,7 +146,6 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
     : handlerFactory_(std::forward<std::unique_ptr<RequestHandlerFactory>>(factory)){}
 
   void onAcceptSuccess(int sfd, const char *hostName, const char *portNo) override {
-    LOG(INFO) << "onAcceptSuccess : [" << sfd << "] : " << hostName << ":" << portNo;
     auto desc = FileDescriptor::fromIntExcept(sfd);
     desc.makeNonBlocking();
     SocketAddr localAddr("127.0.0.1", 9999);
@@ -159,7 +160,9 @@ class AcceptHandler : public TCPAcceptSocket::EventHandler {
     getParent()->getReactor()->addTask(channel->getEpollTask());
   }
   void onAcceptError(int err) override {
-    LOG(INFO) << "onAcceptError [" << err << "]";
+    std::ostringstream msg;
+    msg << "accept error: " << err;
+    throw std::runtime_error(msg.str());
   }
 };
 
@@ -197,28 +200,15 @@ class ClientHandler : public TCPChannel::EventHandler {
   }
   void readBufferAvailable(void *buff, size_t buffLen) override {
     auto asStr = buffStr(buff, buffLen);
-    LOG(INFO) << "client got: " << prettyBuff(buff, buffLen);
-    // auto charPtr = (char*) buff;
-
-    // ostringstream oss;
-    // for (size_t i = 0; i < buffLen; i++) {
-    //   auto c = *charPtr;
-    //   oss << c;
-    //   ++charPtr;
-    // }
-    // auto asStr = oss.str();
-    // LOG(INFO) << "client got: " << asStr;
     responses_.push_back(asStr);
   }
   void onReadableStart() override {
-    LOG(INFO) << "Client onReadableStart.";
     if (sent_) {
       gotResponse_ = true;
     }
     readSome();
   }
   void onReadableStop() override {
-    LOG(INFO) << "Client onReadableStop.";
     if (gotResponse_) {
       onFinished_();
       shutdown();
@@ -237,9 +227,7 @@ class ClientHandler : public TCPChannel::EventHandler {
       });
     }
   }
-  void onEOF() override {
-    LOG(INFO) << "onEOF.";
-  }
+  void onEOF() override {}
 };
 
 }
@@ -259,7 +247,6 @@ TEST(TestTCPIntegration, Test1) {
     ));
     acceptor->listen();
     react->addTask(acceptor->getEpollTask(), [&bat1]() {
-      LOG(INFO) << "added acceptor.";
       bat1.post();
     });
   });
@@ -277,7 +264,6 @@ TEST(TestTCPIntegration, Test1) {
       react->getReactor(), handler, addr
     );
     react->addTask(client->getEpollTask(), [&bat2]() {
-      LOG(INFO) << "added client.";
       bat2.post();
     });
   });

@@ -65,7 +65,7 @@ void TCPChannel::triggerWritable() {
 }
 
 void TCPChannel::triggerError() {
-  LOG(INFO) << "onError [" << errno << "]";
+  VLOG(50) << "onError [" << errno << "]";
 }
 
 void TCPChannel::EventHandler::sendBuff(
@@ -89,7 +89,7 @@ void TCPChannel::EventHandler::shutdown() {
 }
 
 void TCPChannel::shutdown() {
-  LOG(INFO) << "TCPChannel::shutdown()";
+  VLOG(50) << "TCPChannel::shutdown()";
   getFileDescriptor().close();
 }
 
@@ -109,24 +109,5 @@ TCPChannel* TCPChannel::createPtr(FileDescriptor &&fd,
   );
 }
 
-// std::shared_ptr<TCPChannel> TCPChannel::fromDescriptorShared(
-//     FileDescriptor &&fd, EventHandler *handler,
-//     const TCPConnectionInfo &info) {
-//   return std::shared_ptr<TCPChannel>(
-//     TCPChannel::fromDescriptorPtr(
-//       std::forward<FileDescriptor>(fd), handler, info
-//     )
-//   );
-// }
-
-// std::unique_ptr<TCPChannel> TCPChannel::fromDescriptorUnique(
-//     FileDescriptor &&fd, EventHandler *handler,
-//     const TCPConnectionInfo &info) {
-//   return std::unique_ptr<TCPChannel>(
-//     TCPChannel::fromDescriptorPtr(
-//       std::forward<FileDescriptor>(fd), handler, info
-//     )
-//   );
-// }
 
 }} // score::reactor

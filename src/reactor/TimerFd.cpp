@@ -29,11 +29,11 @@ void TimerFd::onReadable() {
 }
 
 void TimerFd::onWritable() {
-  LOG(INFO) << "TimerFd::onWritable";
+  VLOG(50) << "TimerFd::onWritable";
 }
 
 void TimerFd::onError() {
-  LOG(INFO) << "TimerFd::onError";
+  VLOG(50) << "TimerFd::onError";
 }
 
 TimerFd TimerFd::create(const TimerSettings& settings, TimerFd::EventHandler *handler) {

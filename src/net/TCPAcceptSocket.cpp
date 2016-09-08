@@ -21,7 +21,7 @@ TCPAcceptSocket::TCPAcceptSocket(FileDescriptor &&desc,
 }
 
 void TCPAcceptSocket::onReadable() {
-  LOG(INFO) << "onReadable";
+  VLOG(50) << "onReadable";
   for (;;) {
     struct sockaddr inAddr;
     socklen_t inLen;
@@ -50,11 +50,11 @@ void TCPAcceptSocket::onReadable() {
 }
 
 void TCPAcceptSocket::onWritable() {
-  LOG(INFO) << "onWritable";
+  VLOG(50) << "onWritable";
 }
 
 void TCPAcceptSocket::onError() {
-  LOG(INFO) << "onError [" << errno << "]";
+  VLOG(50) << "onError [" << errno << "]";
 }
 
 TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
@@ -115,7 +115,6 @@ TCPAcceptSocket TCPAcceptSocket::bindPort(short portNo,
 }
 
 void TCPAcceptSocket::listen() {
-  LOG(INFO) << "listen()";
   SCORE_CHECK_SYSCALL(::listen(getFdNo(), SOMAXCONN));
 }
 

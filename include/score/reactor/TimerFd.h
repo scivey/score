@@ -34,9 +34,6 @@ class TimerFd : public FdHandlerBase<TimerFd> {
   void onError();
   static TimerFd create(const TimerSettings&, EventHandler *handler);
 
-  // ~TimerFd() {
-  //   LOG(INFO) << "~TimerFd()";
-  // }
 };
 
 }} // score::reactor

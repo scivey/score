@@ -26,7 +26,7 @@ class FdHandlerBase {
     return taskReactor;
   }
   void triggerReadable() {
-    LOG(INFO) << "triggerReadable";
+    VLOG(100) << "triggerReadable";
     getThis()->onReadable();
   }
   void triggerWritable() {

@@ -21,3 +21,7 @@ popd
 pushd ${EXT}/boringssl
 cmake-build
 popd
+
+pushd ${EXT}/libcharsetdetect
+cmake-build
+popd

@@ -14,6 +14,7 @@ include_directories(
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
     ${SPDLOG}/include
+    ${EXTERNAL}/libcharsetdetect
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     /usr/local/include
 )
@@ -23,6 +24,7 @@ link_directories(
     ${BORINGSSL}/build/crypto
     ${BORINGSSL}/build/decrepit
     ${GTEST}/build/googlemock
+    ${EXTERNAL}/libcharsetdetect/build/build
     /usr/local/lib
 )
 
@@ -38,6 +40,7 @@ set(COMMON_LIBS
     boost_thread
     glog
     curl
+    charsetdetect
     ${CRYPTO_LIBS}
     pthread
     gcc_s
@@ -73,6 +76,15 @@ set(SMHASHER_SOURCES
 )
 
 
+
+set(SCORE_VENDORED_SRC
+    ${SMHASHER_SOURCES}
+    ${GUMBO_PARSER_SOURCES}
+    ${SRC}/vendored/http-parser/http_parser.c
+    ${SRC}/vendored/pugixml/pugixml.cpp
+)
+
+
 set(SCORE_HTML_SRC
     ${SRC}/html/GumboOutputWrapper.cpp
     ${SRC}/html/GumboVectorWrapper.cpp
@@ -82,11 +94,15 @@ set(SCORE_HTML_SRC
     ${SRC}/html/Tag.cpp
 )
 
-set(SCORE_VENDORED_SRC
-    ${SMHASHER_SOURCES}
-    ${GUMBO_PARSER_SOURCES}
-    ${SRC}/vendored/http-parser/http_parser.c
-    ${SRC}/vendored/pugixml/pugixml.cpp
+
+set(SCORE_ENCODING_SRC
+    ${SRC}/encodings/Encoding.cpp
+    ${SRC}/encodings/detection.cpp
+    ${SRC}/encodings/LibCharsetDetectorHandle.cpp
+    ${SRC}/encodings/EncodingNormalizer.cpp
+    ${SRC}/encodings/IConvHandle.cpp
+    ${SRC}/encodings/IConvException.cpp
+    ${SRC}/encodings/IConverter.cpp
 )
 
 set(SCORE_COMMON_SRC
@@ -114,6 +130,7 @@ set(SCORE_COMMON_SRC
     ${SRC}/reactor/ReactorThread.cpp
     ${SCORE_HTML_SRC}
     ${SCORE_VENDORED_SRC}
+    ${SCORE_ENCODING_SRC}
 )
 
 add_library(scorecommon ${SCORE_COMMON_SRC})
@@ -138,20 +155,22 @@ target_link_libraries(bencher
 )
 
 set(TEST_DIR ${SRC}/test)
+
+
+
 set(TEST_SRC
-    ${TEST_DIR}/test_nothing.cpp
     ${TEST_DIR}/test_ScopeGuard.cpp
     ${TEST_DIR}/test_ThreadLocalPtr.cpp
     ${TEST_DIR}/test_SingletonWrapper.cpp
     ${TEST_DIR}/test_NullablePointer.cpp
     ${TEST_DIR}/test_Maybe.cpp
+    ${TEST_DIR}/test_MoveWrapper.cpp
     ${TEST_DIR}/test_DefaultValueMap.cpp
     ${TEST_DIR}/locks/test_ThreadBaton.cpp
     ${TEST_DIR}/reactor/test_tcp_integration.cpp
     ${TEST_DIR}/reactor/test_TimerFd.cpp
     ${TEST_DIR}/reactor/test_EventFd.cpp
     ${TEST_DIR}/reactor/test_SignalFd.cpp
-    ${TEST_DIR}/reactor/test_experimental.cpp
     ${TEST_DIR}/mem/test_LSharedPtr.cpp
     ${TEST_DIR}/io/test_string_utils.cpp
     ${TEST_DIR}/io/test_BytesView.cpp
@@ -160,8 +179,7 @@ set(TEST_SRC
     ${TEST_DIR}/html/test_HtmlDomAndNode.cpp
     ${TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
     ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
-    ${TEST_DIR}/test_MoveWrapper.cpp
-    ${TEST_DIR}/test_casts.cpp
+    ${TEST_DIR}/encodings/test_IConverter.cpp
 
     ${TEST_DIR}/fs/test_fs.cpp
     ${TEST_DIR}/prettyprint/test_prettyprint.cpp
@@ -169,6 +187,8 @@ set(TEST_SRC
     ${TEST_DIR}/vendored/test_seastar_imports.cpp
     ${TEST_DIR}/vendored/test_utf8.cpp
     ${TEST_DIR}/vendored/test_smhasher_imports.cpp
+
+    # ${TEST_DIR}/reactor/test_experimental.cpp
     # ${TEST_DIR}/vendored/test_folly_imports.cpp
     # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
     # ${TEST_DIR}/reactor/test_EpollReactor.cpp

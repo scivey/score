@@ -1,6 +1,7 @@
 #include "score/fs/fs.h"
 #include <fstream>
 #include <streambuf>
+#include "score/macros.h"
 
 using namespace std;
 
@@ -15,6 +16,18 @@ bool readFileSync(const string &filePath, string &result) {
     istreambuf_iterator<char>()
   );
   return true;
+}
+
+string readFileSync(const string &filePath) {
+  string result;
+  SCHECK(readFileSync(filePath, result));
+  return result;
+}
+
+void writeFileSync(const string &fpath, const string &body) {
+  ofstream ofs {fpath};
+  ofs << body;
+  ofs.close();
 }
 
 }} // score::fs

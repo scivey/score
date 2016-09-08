@@ -17,7 +17,7 @@ FileDescriptor::FileDescriptor(int fd): fd_(fd){}
 
 void FileDescriptor::maybeClose() {
   if (fd_ > 0) {
-    LOG(INFO) << "close(" << fd_ << ")";
+    VLOG(50) << "close(" << fd_ << ")";
     ::close(fd_);
     fd_ = 0;
   }

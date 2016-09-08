@@ -5,3 +5,9 @@
 [submodule "external/boringssl"]
 	path = external/boringssl
 	url = https://github.com/scivey/boringssl
+[submodule "external/libcharsetdetect"]
+	path = external/libcharsetdetect
+	url = https://github.com/scivey/libcharsetdetect
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = git@github.com:gabime/spdlog
