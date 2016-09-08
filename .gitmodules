@@ -2,27 +2,6 @@
 	path = external/googletest
 	url = git@github.com:google/googletest
     commit = ec44c6c1675c25b9827aacd08c02433cccde7780
-[submodule "external/spdlog"]
-	path = external/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "external/cxxopts"]
-	path = external/cxxopts
-	url = https://github.com/jarro2783/cxxopts
-[submodule "external/variant"]
-	path = external/variant
-	url = https://github.com/eggs-cpp/variant
 [submodule "external/boringssl"]
 	path = external/boringssl
 	url = https://github.com/scivey/boringssl
-[submodule "external/kiss-templates"]
-	path = external/kiss-templates
-	url = https://github.com/rbock/kiss-templates
-[submodule "external/Mustache"]
-	path = external/Mustache
-	url = https://github.com/kainjow/Mustache
-[submodule "external/sparsehash"]
-	path = external/sparsehash
-	url = https://github.com/sparsehash/sparsehash
-[submodule "external/ctemplate"]
-	path = external/ctemplate
-	url = https://github.com/OlafvdSpek/ctemplate

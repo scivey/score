@@ -37,6 +37,7 @@ set(COMMON_LIBS
     boost_system
     boost_thread
     glog
+    curl
     ${CRYPTO_LIBS}
     pthread
     gcc_s
