@@ -1,7 +1,7 @@
 #include "score/encodings/LibCharsetDetectorHandle.h"
 #include "score/macros.h"
 #include <string>
-#include <charsetdetect.h>
+#include "score/vendored/lgpl/charsetdetect/charsetdetect.h"
 
 namespace score { namespace encodings {
 

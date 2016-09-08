@@ -14,7 +14,7 @@ include_directories(
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
     ${SPDLOG}/include
-    ${EXTERNAL}/libcharsetdetect
+    # ${EXTERNAL}/libcharsetdetect
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     /usr/local/include
 )
@@ -24,7 +24,7 @@ link_directories(
     ${BORINGSSL}/build/crypto
     ${BORINGSSL}/build/decrepit
     ${GTEST}/build/googlemock
-    ${EXTERNAL}/libcharsetdetect/build/build
+    # ${EXTERNAL}/libcharsetdetect/build/build
     /usr/local/lib
 )
 
@@ -40,7 +40,7 @@ set(COMMON_LIBS
     boost_thread
     glog
     curl
-    charsetdetect
+    # charsetdetect
     ${CRYPTO_LIBS}
     pthread
     gcc_s
@@ -76,10 +76,18 @@ set(SMHASHER_SOURCES
 )
 
 
+set(VENDORED_CHARSET_ROOT ${SRC}/vendored/lgpl/charsetdetect)
+FILE(GLOB CHARSETDETECT_SOURCES ${VENDORED_CHARSET_ROOT}/base/*.cpp)
+set(CHARSETDETECT_SOURCES
+    ${CHARSETDETECT_SOURCES} ${VENDORED_CHARSET_ROOT}/charsetdetect.cpp
+)
+
+
 
 set(SCORE_VENDORED_SRC
     ${SMHASHER_SOURCES}
     ${GUMBO_PARSER_SOURCES}
+    ${CHARSETDETECT_SOURCES}
     ${SRC}/vendored/http-parser/http_parser.c
     ${SRC}/vendored/pugixml/pugixml.cpp
 )
