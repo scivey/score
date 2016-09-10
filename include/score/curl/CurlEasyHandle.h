@@ -64,9 +64,12 @@ class CurlEasyHandle {
     instance.handlePtr_ = easyHandle;
     return instance;
   }
-  void setURL(const std::string &url) {
+  void setUrl(const std::string &url) {
     url_ = url;
     setOpt(CURLOPT_URL, url_.c_str());
+  }
+  const std::string& getUrl() {
+    return url_;
   }
   CURL* getCurlHandle() {
     SDCHECK(valid());
