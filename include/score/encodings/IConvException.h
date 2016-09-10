@@ -17,7 +17,7 @@ class IConvException: public score::exceptions::BaseError {
 };
 
 
-#define THROW_ICONV_ERR(err) \
+#define SCORE_THROW_ICONV_ERR(err) \
   throw IConvException::fromErrno(err, __LINE__, __FILE__)
 
 }} // expr2::encodings

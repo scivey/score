@@ -30,7 +30,7 @@ IConvHandle IConvHandle::create(const IConvOptions &options) {
   auto fromStr = stringOfEncoding(options.fromEncoding);
   instance.handle_ = iconv_open(toStr.c_str(), fromStr.c_str());
   if ( ( (int64_t) instance.handle_ ) <= 0 ) {
-    THROW_ICONV_ERR(errno);
+    SCORE_THROW_ICONV_ERR(errno);
   }
   return instance;
 }
@@ -53,7 +53,7 @@ void IConvHandle::feed(IConvFeedParams *params) {
   );
   const size_t kIConvErrorValue = (size_t)(-1);
   if (nr == kIConvErrorValue) {
-    THROW_ICONV_ERR(errno);
+    SCORE_THROW_ICONV_ERR(errno);
   }
 }
 

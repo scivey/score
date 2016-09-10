@@ -3,7 +3,6 @@
 #include <map>
 #include <sstream>
 #include <string>
-#include <glog/logging.h>
 #include "score/io/Scstring.h"
 #include "score/http/HTTPParserBase.h"
 #include "score/Maybe.h"
