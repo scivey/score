@@ -40,6 +40,7 @@ set(COMMON_LIBS
     boost_thread
     glog
     curl
+    event
     # charsetdetect
     ${CRYPTO_LIBS}
     pthread
@@ -113,6 +114,11 @@ set(SCORE_ENCODING_SRC
     ${SRC}/encodings/IConverter.cpp
 )
 
+set(SCORE_CURL_SRC
+    ${SRC}/curl/CurlError.cpp
+    ${SRC}/curl/RealCurlAPI.cpp
+)
+
 set(SCORE_COMMON_SRC
     ${SRC}/ScopeGuard.cpp
     ${SRC}/FixedBuffer.cpp
@@ -137,6 +143,7 @@ set(SCORE_COMMON_SRC
     ${SRC}/net/TCPAcceptSocket.cpp
     ${SRC}/reactor/ReactorThread.cpp
     ${SCORE_HTML_SRC}
+    ${SCORE_CURL_SRC}
     ${SCORE_VENDORED_SRC}
     ${SCORE_ENCODING_SRC}
 )
