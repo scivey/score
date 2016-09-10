@@ -3,10 +3,10 @@
 
 namespace score { namespace curl {
 
-CurlMError CurlMError::fromCode(CURLMcode code) {
+CurlMultiError CurlMultiError::fromCode(CURLMcode code) {
   std::ostringstream msg;
-  msg << "CURLMError [" << code << "] : '" << curl_multi_strerror(code) << "'";
-  return CurlMError(msg.str());
+  msg << "CurlMultiError [" << code << "] : '" << curl_multi_strerror(code) << "'";
+  return CurlMultiError(msg.str());
 }
 
 CurlEasyError CurlEasyError::fromCode(CURLcode code) {

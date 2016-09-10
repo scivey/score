@@ -116,7 +116,7 @@ set(SCORE_ENCODING_SRC
 
 set(SCORE_CURL_SRC
     ${SRC}/curl/CurlError.cpp
-    ${SRC}/curl/RealCurlAPI.cpp
+    ${SRC}/curl/detail/RealCurlAPI.cpp
 )
 
 set(SCORE_COMMON_SRC
@@ -198,6 +198,7 @@ set(TEST_SRC
 
     ${TEST_DIR}/fs/test_fs.cpp
     ${TEST_DIR}/prettyprint/test_prettyprint.cpp
+    ${TEST_DIR}/curl/test_CurlEasyHandle.cpp
 
     ${TEST_DIR}/vendored/test_seastar_imports.cpp
     ${TEST_DIR}/vendored/test_utf8.cpp

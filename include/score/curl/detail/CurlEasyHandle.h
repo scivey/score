@@ -5,7 +5,7 @@
 #include <string>
 #include "score/macros.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 // sfinae wrapper around CURL
 template<typename TCurlAPI>
@@ -83,4 +83,4 @@ class CurlEasyHandle {
   }
 };
 
-}} // score::curl
+}}} // score::curl::detail

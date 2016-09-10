@@ -4,23 +4,23 @@
 
 namespace score { namespace curl {
 
-class CurlBaseError : public score::exceptions::BaseError {
+class CurlError : public score::exceptions::BaseError {
  public:
   template<typename T>
-  CurlBaseError(const T& msg): score::exceptions::BaseError(msg){}
+  CurlError(const T& msg): score::exceptions::BaseError(msg){}
 };
 
-class CurlMError: public CurlBaseError {
+class CurlMultiError: public CurlError {
  public:
   template<typename T>
-  CurlMError(const T&msg): CurlBaseError(msg){}
-  static CurlMError fromCode(CURLMcode code);
+  CurlMultiError(const T&msg): CurlError(msg){}
+  static CurlMultiError fromCode(CURLMcode code);
 };
 
-class CurlEasyError: public CurlBaseError {
+class CurlEasyError: public CurlError {
  public:
   template<typename T>
-  CurlEasyError(const T&msg): CurlBaseError(msg){}
+  CurlEasyError(const T&msg): CurlError(msg){}
   static CurlEasyError fromCode(CURLcode code);
 };
 

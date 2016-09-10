@@ -5,11 +5,11 @@
 #include <event2/event.h>
 #include <stdexcept>
 #include <exception>
-#include "score/curl/CurlMultiHandle.h"
-#include "score/curl/CurlResponse.h"
-#include "score/curl/AsyncCurlerContext.h"
+#include "score/curl/CurlError.h"
+#include "score/curl/detail/CurlMultiHandle.h"
+#include "score/curl/detail/AsyncCurlerContext.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 template<typename TCurlApi>
 class AsyncRequestContext {
@@ -23,7 +23,7 @@ class AsyncRequestContext {
     virtual void onFinished() = 0;
     virtual size_t onReadBody(char *data, size_t size, size_t nMembers) = 0;
     virtual size_t onReadHeader(char *data, size_t size, size_t nMembers) = 0;
-    virtual void onError(const std::exception &err) = 0;
+    virtual void onError(const CurlError &err) = 0;
     virtual char* getErrorBuffer() = 0;
   };
 
@@ -101,4 +101,4 @@ class AsyncRequestContext {
 
 };
 
-}} // score::curl
+}}} // score::curl::detail

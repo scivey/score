@@ -1,7 +1,7 @@
-#include "score/curl/RealCurlAPI.h"
+#include "score/curl/detail/RealCurlAPI.h"
 #include <glog/logging.h>
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 CURL* RealCurlAPI::easy_init() {
   return curl_easy_init();
@@ -41,4 +41,5 @@ CURLMsg* RealCurlAPI::multi_info_read(CURLM *handle, int *nRemaining) {
   return curl_multi_info_read(handle, nRemaining);
 }
 
-}} // score::curl
+}}} // score::curl::detail
+

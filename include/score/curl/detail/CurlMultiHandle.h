@@ -3,10 +3,10 @@
 #include <chrono>
 #include <thread>
 #include <curl/curl.h>
-#include "score/curl/CurlEasyHandle.h"
+#include "score/curl/detail/CurlEasyHandle.h"
 #include "score/macros.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 // sfinae wrapper around CURLM
 
@@ -76,4 +76,4 @@ class CurlMultiHandle {
   }
 };
 
-}} // score::curl
+}}} // score::curl::detail

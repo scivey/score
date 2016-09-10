@@ -3,12 +3,11 @@
 #include <map>
 #include <memory>
 #include <event2/event.h>
-#include "score/curl/AsyncSocketContext.h"
-#include "score/curl/CurlMultiHandle.h"
-#include "score/curl/CurlResponse.h"
-#include "score/curl/AsyncRequestContext.h"
+#include "score/curl/detail/AsyncSocketContext.h"
+#include "score/curl/detail/CurlMultiHandle.h"
+#include "score/curl/detail/AsyncRequestContext.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 template<typename TCurlAPI>
 void AsyncCurlerContext<TCurlAPI>::libeventEventCallback(int fd, short kind, void *pdata) {
@@ -156,4 +155,4 @@ AsyncCurlerContext<TCurlAPI>* AsyncCurlerContext<TCurlAPI>::createNew(event_base
 }
 
 
-}} // score::curl
+}}} // score::curl::detail

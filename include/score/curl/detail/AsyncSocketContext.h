@@ -5,12 +5,11 @@
 #include <folly/futures/Promise.h>
 #include <folly/futures/Future.h>
 #include <event2/event.h>
-#include "score/curl/CurlMultiHandle.h"
-#include "score/curl/CurlEasyHandle.h"
-#include "score/curl/AsyncCurlerContext.h"
-#include "score/curl/CurlResponse.h"
+#include "score/curl/detail/CurlMultiHandle.h"
+#include "score/curl/detail/CurlEasyHandle.h"
+#include "score/curl/detail/AsyncCurlerContext.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 template<typename TCurlApi>
 class AsyncSocketContext {
@@ -97,4 +96,4 @@ AsyncSocketContext<TCurlApi>::~AsyncSocketContext() {
   }
 }
 
-}} // score::curl
+}}} // score::curl::detail

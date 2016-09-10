@@ -2,7 +2,7 @@
 #include <curl/curl.h>
 #include "score/curl/CurlError.h"
 
-namespace score { namespace curl {
+namespace score { namespace curl { namespace detail {
 
 struct RealCurlAPI {
   static CURL* easy_init();
@@ -43,7 +43,7 @@ struct RealCurlAPI {
       const T& value) {
     auto rc = curl_multi_setopt(handle, option, value);
     if (rc != CURLM_OK) {
-      throw CurlMError::fromCode(rc);
+      throw CurlMultiError::fromCode(rc);
     }
     return rc;
   }
@@ -54,7 +54,7 @@ struct RealCurlAPI {
   static CURLMcode multi_socket_action(CURLM *handle, int opt, TValue val, int* numPtr) {
     auto rc = curl_multi_socket_action(handle, opt, val, numPtr);
     if (rc != CURLM_OK) {
-      throw CurlMError::fromCode(rc);
+      throw CurlMultiError::fromCode(rc);
     }
     return rc;
   }
@@ -62,4 +62,4 @@ struct RealCurlAPI {
   static CURLMsg* multi_info_read(CURLM *handle, int *nRemaining);
 };
 
-}} // score::curl
+}}} // score::curl::detail

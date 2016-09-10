@@ -1,12 +1,13 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <sstream>
 
 namespace score { namespace curl {
 
-struct CurlResponse {
+struct RawCurlResponse {
   std::vector<std::string> rawHeaders;
-  std::string body;
+  std::ostringstream bodyBuffer;
 };
 
 }} // score::curl
