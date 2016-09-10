@@ -202,3 +202,38 @@ target_link_libraries(run_core_tests
     gmock
     ${ALL_LIBS}
 )
+
+
+
+
+
+
+set(SCORE_NLP_SRC_DIR ${SCORE_ROOT_SRC}/score_nlp)
+
+set(VENDORED_LIBSTEMMER_ROOT ${SCORE_NLP_SRC_DIR}/vendored/libstemmer)
+FILE(GLOB LIBSTEMMER_SOURCES ${VENDORED_LIBSTEMMER_ROOT}/**/*.c)
+set(LIBSTEMMER_SOURCES ${LIBSTEMMER_SOURCES} ${VENDORED_LIBSTEMMER_ROOT}/libstemmer_utf8.c)
+
+set(SCORE_NLP_SRC
+    ${LIBSTEMMER_SOURCES}
+    ${SCORE_NLP_SRC_DIR}/stemming/SbStemmerWrapper.cpp
+    ${SCORE_NLP_SRC_DIR}/stemming/StemmerManager.cpp
+    ${SCORE_NLP_SRC_DIR}/stemming/Utf8Stemmer.cpp
+    ${SCORE_NLP_SRC_DIR}/Language.cpp
+)
+
+add_library(score_nlp ${SCORE_NLP_SRC})
+add_dependencies(score_nlp score_core)
+target_link_libraries(score_nlp ${COMMON_LIBS} score_core)
+
+
+set(SCORE_NLP_TEST_SRC
+    ${SCORE_NLP_SRC_DIR}/test/stemming/test_Utf8Stemmer.cpp
+    ${SCORE_NLP_SRC_DIR}/test/run_tests.cpp
+)
+
+add_executable(run_nlp_tests
+    ${SCORE_NLP_TEST_SRC}
+)
+add_dependencies(run_nlp_tests score_nlp)
+target_link_libraries(run_nlp_tests gmock ${COMMON_LIBS} score_core score_nlp)

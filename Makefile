@@ -18,8 +18,16 @@ bench: create-bencher
 create-core-tests: cm deps
 	cd build && make run_core_tests -j8
 
-test: create-core-tests
+test-core: create-core-tests
 	./build/run_core_tests
+
+create-nlp-tests: cm deps
+	cd build && make run_nlp_tests -j8
+
+test-nlp: create-nlp-tests
+	./build/run_nlp_tests
+
+test: test-nlp test-core
 
 clean:
 	rm -rf build

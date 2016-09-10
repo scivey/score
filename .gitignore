@@ -4,6 +4,7 @@ __pycache__
 *.tmp
 *.log
 tmp
+tmp-visible
 *~
 build
 .build

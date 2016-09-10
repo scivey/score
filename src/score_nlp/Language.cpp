@@ -1,4 +1,4 @@
-#include "score/nlp/Language.h"
+#include "score_nlp/Language.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
