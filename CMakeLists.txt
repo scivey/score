@@ -14,7 +14,6 @@ include_directories(
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
     ${SPDLOG}/include
-    # ${EXTERNAL}/libcharsetdetect
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     /usr/local/include
 )
@@ -24,7 +23,6 @@ link_directories(
     ${BORINGSSL}/build/crypto
     ${BORINGSSL}/build/decrepit
     ${GTEST}/build/googlemock
-    # ${EXTERNAL}/libcharsetdetect/build/build
     /usr/local/lib
 )
 
@@ -41,43 +39,43 @@ set(COMMON_LIBS
     glog
     curl
     event
-    # charsetdetect
     ${CRYPTO_LIBS}
     pthread
     gcc_s
     atomic
 )
 
-set(SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SCORE_ROOT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SCORE_CORE_SRC ${SCORE_ROOT_SRC}/score)
 
 set(GUMBO_PARSER_SOURCES
-    ${SRC}/vendored/gumbo-parser/attribute.c
-    ${SRC}/vendored/gumbo-parser/char_ref.c
-    ${SRC}/vendored/gumbo-parser/error.c
-    ${SRC}/vendored/gumbo-parser/parser.c
-    ${SRC}/vendored/gumbo-parser/string_buffer.c
-    ${SRC}/vendored/gumbo-parser/string_piece.c
-    ${SRC}/vendored/gumbo-parser/tag.c
-    ${SRC}/vendored/gumbo-parser/tokenizer.c
-    ${SRC}/vendored/gumbo-parser/utf8.c
-    ${SRC}/vendored/gumbo-parser/util.c
-    ${SRC}/vendored/gumbo-parser/vector.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/attribute.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/char_ref.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/error.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/parser.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/string_buffer.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/string_piece.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/tag.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/tokenizer.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/utf8.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/util.c
+    ${SCORE_CORE_SRC}/vendored/gumbo-parser/vector.c
 )
 
 set(SMHASHER_SOURCES
-    ${SRC}/vendored/smhasher/Platform.cpp
-    ${SRC}/vendored/smhasher/sha1.cpp
-    ${SRC}/vendored/smhasher/md5.cpp
-    ${SRC}/vendored/smhasher/Types.cpp
-    ${SRC}/vendored/smhasher/Bitvec.cpp
-    ${SRC}/vendored/smhasher/Bitslice.cpp
-    ${SRC}/vendored/smhasher/Random.cpp
-    ${SRC}/vendored/smhasher/City.cpp
-    ${SRC}/vendored/smhasher/MurmurHash3.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/Platform.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/sha1.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/md5.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/Types.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/Bitvec.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/Bitslice.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/Random.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/City.cpp
+    ${SCORE_CORE_SRC}/vendored/smhasher/MurmurHash3.cpp
 )
 
 
-set(VENDORED_CHARSET_ROOT ${SRC}/vendored/lgpl/charsetdetect)
+set(VENDORED_CHARSET_ROOT ${SCORE_CORE_SRC}/vendored/lgpl/charsetdetect)
 FILE(GLOB CHARSETDETECT_SOURCES ${VENDORED_CHARSET_ROOT}/base/*.cpp)
 set(CHARSETDETECT_SOURCES
     ${CHARSETDETECT_SOURCES} ${VENDORED_CHARSET_ROOT}/charsetdetect.cpp
@@ -89,135 +87,118 @@ set(SCORE_VENDORED_SRC
     ${SMHASHER_SOURCES}
     ${GUMBO_PARSER_SOURCES}
     ${CHARSETDETECT_SOURCES}
-    ${SRC}/vendored/http-parser/http_parser.c
-    ${SRC}/vendored/pugixml/pugixml.cpp
+    ${SCORE_CORE_SRC}/vendored/http-parser/http_parser.c
+    ${SCORE_CORE_SRC}/vendored/pugixml/pugixml.cpp
 )
 
 
 set(SCORE_HTML_SRC
-    ${SRC}/html/GumboOutputWrapper.cpp
-    ${SRC}/html/GumboVectorWrapper.cpp
-    ${SRC}/html/HtmlDom.cpp
-    ${SRC}/html/MetaTags.cpp
-    ${SRC}/html/Node.cpp
-    ${SRC}/html/Tag.cpp
+    ${SCORE_CORE_SRC}/html/GumboOutputWrapper.cpp
+    ${SCORE_CORE_SRC}/html/GumboVectorWrapper.cpp
+    ${SCORE_CORE_SRC}/html/HtmlDom.cpp
+    ${SCORE_CORE_SRC}/html/MetaTags.cpp
+    ${SCORE_CORE_SRC}/html/Node.cpp
+    ${SCORE_CORE_SRC}/html/Tag.cpp
 )
 
 
 set(SCORE_ENCODING_SRC
-    ${SRC}/encodings/Encoding.cpp
-    ${SRC}/encodings/detection.cpp
-    ${SRC}/encodings/LibCharsetDetectorHandle.cpp
-    ${SRC}/encodings/EncodingNormalizer.cpp
-    ${SRC}/encodings/IConvHandle.cpp
-    ${SRC}/encodings/IConvException.cpp
-    ${SRC}/encodings/IConverter.cpp
+    ${SCORE_CORE_SRC}/encodings/Encoding.cpp
+    ${SCORE_CORE_SRC}/encodings/detection.cpp
+    ${SCORE_CORE_SRC}/encodings/LibCharsetDetectorHandle.cpp
+    ${SCORE_CORE_SRC}/encodings/EncodingNormalizer.cpp
+    ${SCORE_CORE_SRC}/encodings/IConvHandle.cpp
+    ${SCORE_CORE_SRC}/encodings/IConvException.cpp
+    ${SCORE_CORE_SRC}/encodings/IConverter.cpp
 )
 
 set(SCORE_CURL_SRC
-    ${SRC}/curl/CurlError.cpp
-    ${SRC}/curl/detail/RealCurlAPI.cpp
+    ${SCORE_CORE_SRC}/curl/CurlError.cpp
+    ${SCORE_CORE_SRC}/curl/detail/RealCurlAPI.cpp
 )
 
 set(SCORE_COMMON_SRC
-    ${SRC}/ScopeGuard.cpp
-    ${SRC}/FixedBuffer.cpp
-    ${SRC}/mem/standard.cpp
-    ${SRC}/io/UTF8Iterator.cpp
-    ${SRC}/io/string_utils.cpp
-    ${SRC}/fs/fs.cpp
-    ${SRC}/locks/ThreadBaton.cpp
-    ${SRC}/exceptions/exceptions.cpp
-    ${SRC}/formatters/formatters.cpp
-    ${SRC}/posix/FileDescriptor.cpp
-    ${SRC}/net/SocketAddr.cpp
-    ${SRC}/reactor/EpollFd.cpp
-    ${SRC}/reactor/EpollReactor.cpp
-    ${SRC}/reactor/TimerFd.cpp
-    ${SRC}/reactor/TimerSettings.cpp
-    ${SRC}/reactor/EventFd.cpp
-    ${SRC}/reactor/SignalFd.cpp
-    ${SRC}/hashing/hash_funcs.cpp
-    ${SRC}/net/TCPChannel.cpp
-    ${SRC}/net/TCPClient.cpp
-    ${SRC}/net/TCPAcceptSocket.cpp
-    ${SRC}/reactor/ReactorThread.cpp
+    ${SCORE_CORE_SRC}/ScopeGuard.cpp
+    ${SCORE_CORE_SRC}/FixedBuffer.cpp
+    ${SCORE_CORE_SRC}/mem/standard.cpp
+    ${SCORE_CORE_SRC}/io/UTF8Iterator.cpp
+    ${SCORE_CORE_SRC}/io/string_utils.cpp
+    ${SCORE_CORE_SRC}/fs/fs.cpp
+    ${SCORE_CORE_SRC}/locks/ThreadBaton.cpp
+    ${SCORE_CORE_SRC}/exceptions/exceptions.cpp
+    ${SCORE_CORE_SRC}/formatters/formatters.cpp
+    ${SCORE_CORE_SRC}/posix/FileDescriptor.cpp
+    ${SCORE_CORE_SRC}/net/SocketAddr.cpp
+    ${SCORE_CORE_SRC}/reactor/EpollFd.cpp
+    ${SCORE_CORE_SRC}/reactor/EpollReactor.cpp
+    ${SCORE_CORE_SRC}/reactor/TimerFd.cpp
+    ${SCORE_CORE_SRC}/reactor/TimerSettings.cpp
+    ${SCORE_CORE_SRC}/reactor/EventFd.cpp
+    ${SCORE_CORE_SRC}/reactor/SignalFd.cpp
+    ${SCORE_CORE_SRC}/hashing/hash_funcs.cpp
+    ${SCORE_CORE_SRC}/net/TCPChannel.cpp
+    ${SCORE_CORE_SRC}/net/TCPClient.cpp
+    ${SCORE_CORE_SRC}/net/TCPAcceptSocket.cpp
+    ${SCORE_CORE_SRC}/reactor/ReactorThread.cpp
     ${SCORE_HTML_SRC}
     ${SCORE_CURL_SRC}
     ${SCORE_VENDORED_SRC}
     ${SCORE_ENCODING_SRC}
 )
 
-add_library(scorecommon ${SCORE_COMMON_SRC})
-set(ALL_LIBS scorecommon ${COMMON_LIBS})
-
+add_library(score_core ${SCORE_COMMON_SRC})
+set(ALL_LIBS score_core ${COMMON_LIBS})
 
 
 add_executable(runner
-    ${SRC}/main.cpp
+    ${SCORE_ROOT_SRC}/main.cpp
 )
-add_dependencies(runner scorecommon)
+add_dependencies(runner score_core)
 target_link_libraries(runner
     ${ALL_LIBS}
 )
 
-add_executable(bencher
-    ${SRC}/bench/main.cpp
-)
-target_link_libraries(bencher
-    benchmark
-    ${ALL_LIBS}
-)
 
-set(TEST_DIR ${SRC}/test)
-
-
+set(CORE_TEST_DIR ${SCORE_CORE_SRC}/test)
 
 set(TEST_SRC
-    ${TEST_DIR}/test_ScopeGuard.cpp
-    ${TEST_DIR}/test_ThreadLocalPtr.cpp
-    ${TEST_DIR}/test_SingletonWrapper.cpp
-    ${TEST_DIR}/test_NullablePointer.cpp
-    ${TEST_DIR}/test_Maybe.cpp
-    ${TEST_DIR}/test_MoveWrapper.cpp
-    ${TEST_DIR}/test_DefaultValueMap.cpp
-    ${TEST_DIR}/locks/test_ThreadBaton.cpp
-    ${TEST_DIR}/reactor/test_tcp_integration.cpp
-    ${TEST_DIR}/reactor/test_TimerFd.cpp
-    ${TEST_DIR}/reactor/test_EventFd.cpp
-    ${TEST_DIR}/reactor/test_SignalFd.cpp
-    ${TEST_DIR}/mem/test_LSharedPtr.cpp
-    ${TEST_DIR}/io/test_string_utils.cpp
-    ${TEST_DIR}/io/test_BytesView.cpp
-    ${TEST_DIR}/io/test_UTF8View.cpp
-    ${TEST_DIR}/html/test_MetaTags.cpp
-    ${TEST_DIR}/html/test_HtmlDomAndNode.cpp
-    ${TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
-    ${TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
-    ${TEST_DIR}/encodings/test_IConverter.cpp
-
-    ${TEST_DIR}/fs/test_fs.cpp
-    ${TEST_DIR}/prettyprint/test_prettyprint.cpp
-    ${TEST_DIR}/curl/test_CurlEasyHandle.cpp
-
-    ${TEST_DIR}/vendored/test_seastar_imports.cpp
-    ${TEST_DIR}/vendored/test_utf8.cpp
-    ${TEST_DIR}/vendored/test_smhasher_imports.cpp
-
-    # ${TEST_DIR}/reactor/test_experimental.cpp
-    # ${TEST_DIR}/vendored/test_folly_imports.cpp
-    # ${TEST_DIR}/async/test_ThreadExecutorCore.cpp
-    # ${TEST_DIR}/reactor/test_EpollReactor.cpp
-    # ${TEST_DIR}/reactor/test_ReactorThread.cpp
+    ${CORE_TEST_DIR}/test_ScopeGuard.cpp
+    ${CORE_TEST_DIR}/test_ThreadLocalPtr.cpp
+    ${CORE_TEST_DIR}/test_SingletonWrapper.cpp
+    ${CORE_TEST_DIR}/test_NullablePointer.cpp
+    ${CORE_TEST_DIR}/test_Maybe.cpp
+    ${CORE_TEST_DIR}/test_MoveWrapper.cpp
+    ${CORE_TEST_DIR}/test_DefaultValueMap.cpp
+    ${CORE_TEST_DIR}/locks/test_ThreadBaton.cpp
+    ${CORE_TEST_DIR}/reactor/test_tcp_integration.cpp
+    ${CORE_TEST_DIR}/reactor/test_TimerFd.cpp
+    ${CORE_TEST_DIR}/reactor/test_EventFd.cpp
+    ${CORE_TEST_DIR}/reactor/test_SignalFd.cpp
+    ${CORE_TEST_DIR}/mem/test_LSharedPtr.cpp
+    ${CORE_TEST_DIR}/io/test_string_utils.cpp
+    ${CORE_TEST_DIR}/io/test_BytesView.cpp
+    ${CORE_TEST_DIR}/io/test_UTF8View.cpp
+    ${CORE_TEST_DIR}/html/test_MetaTags.cpp
+    ${CORE_TEST_DIR}/html/test_HtmlDomAndNode.cpp
+    ${CORE_TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
+    ${CORE_TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
+    ${CORE_TEST_DIR}/encodings/test_IConverter.cpp
+    ${CORE_TEST_DIR}/fs/test_fs.cpp
+    ${CORE_TEST_DIR}/prettyprint/test_prettyprint.cpp
+    ${CORE_TEST_DIR}/curl/test_CurlEasyHandle.cpp
+    ${CORE_TEST_DIR}/vendored/test_seastar_imports.cpp
+    ${CORE_TEST_DIR}/vendored/test_utf8.cpp
+    ${CORE_TEST_DIR}/vendored/test_smhasher_imports.cpp
 
 )
 
-add_executable(tester
+add_executable(run_core_tests
     ${TEST_SRC}
-    ${TEST_DIR}/run_tests.cpp
+    ${CORE_TEST_DIR}/run_tests.cpp
 )
-add_dependencies(tester scorecommon)
-target_link_libraries(tester
+
+add_dependencies(run_core_tests score_core)
+target_link_libraries(run_core_tests
     gmock
     ${ALL_LIBS}
 )

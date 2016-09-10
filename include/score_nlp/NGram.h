@@ -2,8 +2,8 @@
 #include <tuple>
 #include <array>
 #include <sstream>
-#include "score/hashing/util.h"
 #include "score/macros.h"
+#include "score/hashing/util.h"
 #include "score/prettyprint/prettyprint_predef.h"
 
 namespace score { namespace nlp {

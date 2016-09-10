@@ -15,11 +15,11 @@ run: create-runner
 bench: create-bencher
 	./build/bencher
 
-create-tester: cm deps
-	cd build && make tester -j8
+create-core-tests: cm deps
+	cd build && make run_core_tests -j8
 
-test: create-tester
-	./build/tester
+test: create-core-tests
+	./build/run_core_tests
 
 clean:
 	rm -rf build
@@ -27,5 +27,5 @@ clean:
 deps:
 	bash scripts/deps.sh
 
-.PHONY: clean run create-bencher create-runner deps create-tester test
+.PHONY: clean run create-bencher create-runner deps create-core-tests test
 
