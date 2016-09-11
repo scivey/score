@@ -38,6 +38,10 @@
 #include "score/vendored/lgpl/charsetdetect/nscore.h"
 #include "score/vendored/lgpl/charsetdetect/base/JpCntx.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wchar-subscripts"
+#pragma GCC diagnostic ignored "-Wlogical-op-parentheses"
+
 //This is hiragana 2-char sequence table, the number in each cell represents its frequency category
 char jp2CharContext[83][83] =
 {
@@ -229,3 +233,4 @@ PRInt32 EUCJPContextAnalysis::GetOrder(const char* str, PRUint32 *charLen)
 }
 
 
+#pragma GCC diagnostic pop

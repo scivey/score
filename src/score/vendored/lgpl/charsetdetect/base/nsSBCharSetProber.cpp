@@ -38,6 +38,9 @@
 #include <stdio.h>
 #include "score/vendored/lgpl/charsetdetect/base/nsSBCharSetProber.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wchar-subscripts"
+
 nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
 {
   unsigned char order;
@@ -124,3 +127,5 @@ void nsSingleByteCharSetProber::DumpStatus()
   printf("  SBCS: %1.3f [%s]\r\n", GetConfidence(), GetCharSetName());
 }
 #endif
+
+#pragma GCC diagnostic pop

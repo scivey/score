@@ -38,6 +38,10 @@
 #ifndef __JPCNTX_H__
 #define __JPCNTX_H__
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wchar-subscripts"
+
+
 #define NUM_OF_CATEGORY 6
 
 #include "score/vendored/lgpl/charsetdetect/nscore.h"
@@ -132,6 +136,8 @@ protected:
     return -1;
   }
 };
+
+#pragma GCC diagnostic pop
 
 #endif /* __JPCNTX_H__ */
 
