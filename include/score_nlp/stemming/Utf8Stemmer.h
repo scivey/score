@@ -13,6 +13,8 @@ public:
   Utf8Stemmer(Language lang);
   size_t getStemPos(const char *toStem, size_t length);
   size_t getStemPos(const std::string&);
+  void stemInPlace(std::string&);
+  std::string stem(const std::string&);
 };
 
 }}} // score::nlp::stemming

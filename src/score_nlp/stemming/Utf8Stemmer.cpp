@@ -18,5 +18,16 @@ size_t Utf8Stemmer::getStemPos(const string &text) {
   return stemmer_.getStemPos(text);
 }
 
+void Utf8Stemmer::stemInPlace(string &text) {
+  auto idx = getStemPos(text);
+  text.resize(idx);
+}
+
+std::string Utf8Stemmer::stem(const string &text) {
+  string copied = text;
+  stemInPlace(copied);
+  return copied;
+}
+
 }}} // score::nlp::stemming
 
