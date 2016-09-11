@@ -89,6 +89,7 @@ set(SCORE_VENDORED_SRC
     ${CHARSETDETECT_SOURCES}
     ${SCORE_CORE_SRC}/vendored/http-parser/http_parser.c
     ${SCORE_CORE_SRC}/vendored/pugixml/pugixml.cpp
+    ${SCORE_CORE_SRC}/vendored/modp_b64/modp_b64.cc
 )
 
 FILE(GLOB SCORE_COMMON_SRC
