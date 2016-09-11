@@ -73,6 +73,8 @@ Language languageFromCode(const std::string&);
 
 const std::vector<Language>& getAllLanguages();
 
+const char* detectLanguageName(const std::string&);
+
 }} // score::nlp
 
 

@@ -233,6 +233,7 @@ target_link_libraries(score_nlp ${COMMON_LIBS} score_core)
 
 set(SCORE_NLP_TEST_SRC
     ${SCORE_NLP_SRC_DIR}/test/stemming/test_Utf8Stemmer.cpp
+    ${SCORE_NLP_SRC_DIR}/test/test_Language.cpp
     ${SCORE_NLP_SRC_DIR}/test/run_tests.cpp
 )
 
