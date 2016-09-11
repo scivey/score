@@ -27,7 +27,14 @@ create-nlp-tests: cm deps
 test-nlp: create-nlp-tests
 	./build/run_nlp_tests
 
-test: test-nlp test-core
+
+create-extract-tests: cm deps
+	cd build && make run_extract_tests -j8
+
+test-extract: create-extract-tests
+	./build/run_extract_tests
+
+test: test-nlp test-core test-extract
 
 clean:
 	rm -rf build
@@ -36,4 +43,5 @@ deps:
 	bash scripts/deps.sh
 
 .PHONY: clean run create-bencher create-runner deps create-core-tests test
+.PHONY: test-extract test-nlp test-core
 

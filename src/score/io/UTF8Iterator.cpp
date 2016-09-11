@@ -1,4 +1,5 @@
 #include "score/io/UTF8Iterator.h"
+#include "score/vendored/utf8/utf8/unchecked.h"
 
 namespace score { namespace io {
 

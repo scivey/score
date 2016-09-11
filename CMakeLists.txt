@@ -91,59 +91,28 @@ set(SCORE_VENDORED_SRC
     ${SCORE_CORE_SRC}/vendored/pugixml/pugixml.cpp
 )
 
-
-set(SCORE_HTML_SRC
-    ${SCORE_CORE_SRC}/html/GumboOutputWrapper.cpp
-    ${SCORE_CORE_SRC}/html/GumboVectorWrapper.cpp
-    ${SCORE_CORE_SRC}/html/HtmlDom.cpp
-    ${SCORE_CORE_SRC}/html/MetaTags.cpp
-    ${SCORE_CORE_SRC}/html/Node.cpp
-    ${SCORE_CORE_SRC}/html/Tag.cpp
+FILE(GLOB SCORE_COMMON_SRC
+    ${SCORE_CORE_SRC}/*.cpp
+    ${SCORE_CORE_SRC}/curl/**/*.cpp
+    ${SCORE_CORE_SRC}/curl/*.cpp
+    ${SCORE_CORE_SRC}/encodings/*.cpp
+    ${SCORE_CORE_SRC}/html/*.cpp
+    ${SCORE_CORE_SRC}/fs/*.cpp
+    ${SCORE_CORE_SRC}/io/*.cpp
+    ${SCORE_CORE_SRC}/locks/*.cpp
+    ${SCORE_CORE_SRC}/mem/*.cpp
+    ${SCORE_CORE_SRC}/posix/*.cpp
+    ${SCORE_CORE_SRC}/reactor/*.cpp
+    ${SCORE_CORE_SRC}/unicode/*.cpp
+    ${SCORE_CORE_SRC}/net/*.cpp
+    ${SCORE_CORE_SRC}/hashing/*.cpp
+    ${SCORE_CORE_SRC}/exceptions/*.cpp
 )
 
-
-set(SCORE_ENCODING_SRC
-    ${SCORE_CORE_SRC}/encodings/Encoding.cpp
-    ${SCORE_CORE_SRC}/encodings/detection.cpp
-    ${SCORE_CORE_SRC}/encodings/LibCharsetDetectorHandle.cpp
-    ${SCORE_CORE_SRC}/encodings/EncodingNormalizer.cpp
-    ${SCORE_CORE_SRC}/encodings/IConvHandle.cpp
-    ${SCORE_CORE_SRC}/encodings/IConvException.cpp
-    ${SCORE_CORE_SRC}/encodings/IConverter.cpp
-)
-
-set(SCORE_CURL_SRC
-    ${SCORE_CORE_SRC}/curl/CurlError.cpp
-    ${SCORE_CORE_SRC}/curl/detail/RealCurlAPI.cpp
-)
 
 set(SCORE_COMMON_SRC
-    ${SCORE_CORE_SRC}/ScopeGuard.cpp
-    ${SCORE_CORE_SRC}/FixedBuffer.cpp
-    ${SCORE_CORE_SRC}/mem/standard.cpp
-    ${SCORE_CORE_SRC}/io/UTF8Iterator.cpp
-    ${SCORE_CORE_SRC}/io/string_utils.cpp
-    ${SCORE_CORE_SRC}/fs/fs.cpp
-    ${SCORE_CORE_SRC}/locks/ThreadBaton.cpp
-    ${SCORE_CORE_SRC}/exceptions/exceptions.cpp
-    ${SCORE_CORE_SRC}/formatters/formatters.cpp
-    ${SCORE_CORE_SRC}/posix/FileDescriptor.cpp
-    ${SCORE_CORE_SRC}/net/SocketAddr.cpp
-    ${SCORE_CORE_SRC}/reactor/EpollFd.cpp
-    ${SCORE_CORE_SRC}/reactor/EpollReactor.cpp
-    ${SCORE_CORE_SRC}/reactor/TimerFd.cpp
-    ${SCORE_CORE_SRC}/reactor/TimerSettings.cpp
-    ${SCORE_CORE_SRC}/reactor/EventFd.cpp
-    ${SCORE_CORE_SRC}/reactor/SignalFd.cpp
-    ${SCORE_CORE_SRC}/hashing/hash_funcs.cpp
-    ${SCORE_CORE_SRC}/net/TCPChannel.cpp
-    ${SCORE_CORE_SRC}/net/TCPClient.cpp
-    ${SCORE_CORE_SRC}/net/TCPAcceptSocket.cpp
-    ${SCORE_CORE_SRC}/reactor/ReactorThread.cpp
-    ${SCORE_HTML_SRC}
-    ${SCORE_CURL_SRC}
+    ${SCORE_COMMON_SRC}
     ${SCORE_VENDORED_SRC}
-    ${SCORE_ENCODING_SRC}
 )
 
 add_library(score_core ${SCORE_COMMON_SRC})
@@ -161,40 +130,15 @@ target_link_libraries(runner
 
 set(CORE_TEST_DIR ${SCORE_CORE_SRC}/test)
 
-set(TEST_SRC
-    ${CORE_TEST_DIR}/test_ScopeGuard.cpp
-    ${CORE_TEST_DIR}/test_ThreadLocalPtr.cpp
-    ${CORE_TEST_DIR}/test_SingletonWrapper.cpp
-    ${CORE_TEST_DIR}/test_NullablePointer.cpp
-    ${CORE_TEST_DIR}/test_Maybe.cpp
-    ${CORE_TEST_DIR}/test_MoveWrapper.cpp
-    ${CORE_TEST_DIR}/test_DefaultValueMap.cpp
-    ${CORE_TEST_DIR}/locks/test_ThreadBaton.cpp
-    ${CORE_TEST_DIR}/reactor/test_tcp_integration.cpp
-    ${CORE_TEST_DIR}/reactor/test_TimerFd.cpp
-    ${CORE_TEST_DIR}/reactor/test_EventFd.cpp
-    ${CORE_TEST_DIR}/reactor/test_SignalFd.cpp
-    ${CORE_TEST_DIR}/mem/test_LSharedPtr.cpp
-    ${CORE_TEST_DIR}/io/test_string_utils.cpp
-    ${CORE_TEST_DIR}/io/test_BytesView.cpp
-    ${CORE_TEST_DIR}/io/test_UTF8View.cpp
-    ${CORE_TEST_DIR}/html/test_MetaTags.cpp
-    ${CORE_TEST_DIR}/html/test_HtmlDomAndNode.cpp
-    ${CORE_TEST_DIR}/http/test_SimpleHTTPResponseParser.cpp
-    ${CORE_TEST_DIR}/atomic/test_IntrinsicAtomic.cpp
-    ${CORE_TEST_DIR}/encodings/test_IConverter.cpp
-    ${CORE_TEST_DIR}/fs/test_fs.cpp
-    ${CORE_TEST_DIR}/prettyprint/test_prettyprint.cpp
-    ${CORE_TEST_DIR}/curl/test_CurlEasyHandle.cpp
-    ${CORE_TEST_DIR}/vendored/test_seastar_imports.cpp
-    ${CORE_TEST_DIR}/vendored/test_utf8.cpp
-    ${CORE_TEST_DIR}/vendored/test_smhasher_imports.cpp
-
+FILE(GLOB CORE_TEST_SRC
+    ${CORE_TEST_DIR}/*.cpp
+    ${CORE_TEST_DIR}/**/*.cpp
 )
 
+
 add_executable(run_core_tests
-    ${TEST_SRC}
-    ${CORE_TEST_DIR}/run_tests.cpp
+    ${CORE_TEST_SRC}
+    ${SCORE_ROOT_SRC}/run_tests.cpp
 )
 
 add_dependencies(run_core_tests score_core)
@@ -202,8 +146,6 @@ target_link_libraries(run_core_tests
     gmock
     ${ALL_LIBS}
 )
-
-
 
 
 
@@ -217,13 +159,17 @@ set(LIBSTEMMER_SOURCES ${LIBSTEMMER_SOURCES} ${VENDORED_LIBSTEMMER_ROOT}/libstem
 set(VENDORED_CLD2_ROOT ${SCORE_NLP_SRC_DIR}/vendored/cld2)
 FILE(GLOB CLD2_SOURCES ${VENDORED_CLD2_ROOT}/**/*.cc)
 
+FILE(GLOB SCORE_NLP_SRC
+    ${SCORE_NLP_SRC_DIR}/stemming/*.cpp
+    ${SCORE_NLP_SRC_DIR}/stopwords/*.cpp
+    ${SCORE_NLP_SRC_DIR}/tokenize/*.cpp
+)
+
 set(SCORE_NLP_SRC
+    ${SCORE_NLP_SRC}
+    ${SCORE_NLP_SRC_DIR}/Language.cpp
     ${LIBSTEMMER_SOURCES}
     ${CLD2_SOURCES}
-    ${SCORE_NLP_SRC_DIR}/stemming/SbStemmerWrapper.cpp
-    ${SCORE_NLP_SRC_DIR}/stemming/StemmerManager.cpp
-    ${SCORE_NLP_SRC_DIR}/stemming/Utf8Stemmer.cpp
-    ${SCORE_NLP_SRC_DIR}/Language.cpp
 )
 
 add_library(score_nlp ${SCORE_NLP_SRC})
@@ -231,14 +177,52 @@ add_dependencies(score_nlp score_core)
 target_link_libraries(score_nlp ${COMMON_LIBS} score_core)
 
 
-set(SCORE_NLP_TEST_SRC
-    ${SCORE_NLP_SRC_DIR}/test/stemming/test_Utf8Stemmer.cpp
-    ${SCORE_NLP_SRC_DIR}/test/test_Language.cpp
-    ${SCORE_NLP_SRC_DIR}/test/run_tests.cpp
+FILE(GLOB SCORE_NLP_TEST_SRC
+    ${SCORE_NLP_SRC_DIR}/test/*.cpp
+    ${SCORE_NLP_SRC_DIR}/test/**/*.cpp
 )
 
 add_executable(run_nlp_tests
     ${SCORE_NLP_TEST_SRC}
+    ${SCORE_ROOT_SRC}/run_tests.cpp
 )
 add_dependencies(run_nlp_tests score_nlp)
 target_link_libraries(run_nlp_tests gmock ${COMMON_LIBS} score_core score_nlp)
+
+
+
+
+
+
+
+set(SCORE_EXTRACT_SRC_DIR ${SCORE_ROOT_SRC}/score_extract)
+
+FILE(GLOB SCORE_EXTRACT_SRC
+    ${SCORE_EXTRACT_SRC_DIR}/goose/*.cpp
+)
+add_library(score_extract ${SCORE_EXTRACT_SRC})
+add_dependencies(score_extract score)
+add_dependencies(score_extract score_nlp)
+target_link_libraries(score_extract ${COMMON_LIBS} score_core score_nlp)
+
+FILE(GLOB SCORE_EXTRACT_TEST_SRC
+    ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
+    ${SCORE_EXTRACT_SRC_DIR}/test/**/*.cpp
+)
+
+add_executable(run_extract_tests
+    ${SCORE_EXTRACT_TEST_SRC}
+    ${SCORE_ROOT_SRC}/run_tests.cpp
+)
+
+add_dependencies(run_extract_tests score_extract)
+target_link_libraries(run_extract_tests
+    gmock
+    ${COMMON_LIBS}
+    score_extract
+    score_core
+    score_nlp
+)
+
+
+

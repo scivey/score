@@ -6,7 +6,6 @@
 #include <exception>
 #include <stdexcept>
 #include <vector>
-#include <uv.h>
 
 using score::locks::Synchronized;
 using namespace std;
