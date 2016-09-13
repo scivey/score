@@ -21,40 +21,28 @@
 #include <spdlog/spdlog.h>
 
 #include "score/macros.h"
-#include "score/curl/RawCurlResponse.h"
-#include "score/curl/SimpleCurler.h"
-#include "score/curl/CurlError.h"
+#include <unicode/brkiter.h>
 
-#include "score/folly_util/EBThread.h"
-
-#include <folly/Optional.h>
-#include <folly/ExceptionWrapper.h>
-
-
-using folly::Optional;
-using folly::exception_wrapper;
-
-using namespace score;
 using namespace std;
-using namespace score::curl;
-using EBT = score::folly_util::EBThread<folly::EventBase>;
+
+void attempt(const UnicodeString& str) {
+  UErrorCode status = U_ZERO_ERROR;
+  BreakIterator* bi = BreakIterator::createWordInstance(
+    Locale::getUS(), status
+  );
+  bi->setText(str);
+  int32_t p = bi->first();
+  while (p != BreakIterator::DONE) {
+    LOG(INFO) << "boundary at : " << p;
+    p = bi->next();
+  }
+  delete bi;
+
+}
 
 int main() {
   google::InstallFailureSignalHandler();
-  auto ebt = EBT::createShared();
-  ebt->start();
-  ebt->getBase()->runInEventBaseThread([ebt]() {
-    auto curler = SimpleCurler::createPtr(ebt->getBase());
-    curler->getUrl("http://localhost", [](Optional<exception_wrapper> err, Optional<RawCurlResponse> res) {
-      LOG(INFO) << "done.";
-      LOG(INFO) << folly::format("has error? {}   has res? {}",
-        err.hasValue(), res.hasValue()
-      );
-      if (res.hasValue()) {
-        LOG(INFO) << res.value().bodyBuffer.str();
-      }
-    });
-  });
-  ebt->join();
+  UnicodeString someStr = "this is a test";
+  attempt(someStr);
   LOG(INFO) << "end.";
 }

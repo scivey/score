@@ -66,6 +66,7 @@ enum class Language {
 };
 
 std::string stringOfLanguage(Language lang);
+const char* getLanguageCode(Language lang);
 
 std::string englishNameOfLanguage(Language lang);
 

@@ -36,10 +36,13 @@ set(COMMON_LIBS
     wangle
     boost_system
     boost_thread
+    icuuc
+    icudata
     glog
     curl
     event
     ${CRYPTO_LIBS}
+    dl
     pthread
     gcc_s
     atomic

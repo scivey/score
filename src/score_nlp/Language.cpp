@@ -9,7 +9,7 @@ using namespace std;
 
 namespace score { namespace nlp {
 
-std::string stringOfLanguage(Language lang) {
+const char* getLanguageCode(Language lang) {
   switch(lang) {
     case Language::AF : return "af";
     case Language::AR : return "ar";
@@ -69,6 +69,10 @@ std::string stringOfLanguage(Language lang) {
     case Language::ZH_TW : return "zh_tw";
     default : return "NOT_RECOGNIZED";
   }
+}
+
+std::string stringOfLanguage(Language lang) {
+  return std::string {getLanguageCode(lang)};
 }
 
 
