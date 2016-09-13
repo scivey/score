@@ -19,3 +19,18 @@ TEST(TestICUWordBreakView, TestBasicEnglish) {
   }
   EXPECT_EQ(expected, actual);
 }
+
+TEST(TestICUWordBreakView, TestBasicGerman) {
+  UnicodeString someStr = "Hallo, wie geht's?";
+  std::vector<int32_t> expected {
+    0, 5, 6, 7, 10, 11, 17, 18
+  };
+  auto breakView = ICUWordBreakView::create(Language::DE);
+  EXPECT_TRUE(breakView.valid());
+  breakView.setText(someStr);
+  std::vector<int32_t> actual;
+  for (auto idx: breakView) {
+    actual.push_back(idx);
+  }
+  EXPECT_EQ(expected, actual);
+}
