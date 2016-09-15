@@ -16,7 +16,7 @@ bool ICUWordBreakView::valid() const {
 }
 
 bool ICUWordBreakView::hasText() const {
-  return !!target_;
+  return !!textRef_;
 }
 
 ICUWordBreakView::Iterator ICUWordBreakView::begin() {
@@ -30,12 +30,12 @@ ICUWordBreakView::Iterator ICUWordBreakView::end() {
   return Iterator(this);
 }
 
-void ICUWordBreakView::setText(icu_52::UnicodeString *target) {
-  SDCHECK(valid());
-  target_ = target;
-  atEnd_ = false;
-  breakIter_->setText(*target_);
-}
+// void ICUWordBreakView::setText(UnicodeString *target) {
+//   SDCHECK(valid());
+//   target_ = target;
+//   atEnd_ = false;
+//   breakIter_->setText(*target_);
+// }
 
 int32_t ICUWordBreakView::getNext() {
   SDCHECK(valid());
@@ -46,14 +46,23 @@ int32_t ICUWordBreakView::getNext() {
   return nxt;
 }
 
-void ICUWordBreakView::setText(icu_52::UnicodeString &target) {
-  setText(&target);
+void ICUWordBreakView::reset() {
+  if (valid() && textRef_) {
+    UErrorCode status = U_ZERO_ERROR;
+    breakIter_->setText(textRef_.getUText(), status);
+    SCHECK(U_SUCCESS(status));
+  }
 }
 
-void ICUWordBreakView::reset() {
-  if (valid() && target_) {
-    setText(target_);
-  }
+void ICUWordBreakView::setText(UTF8UTextRef &&textRef) {
+  SDCHECK(valid());
+  textRef_ = std::move(textRef);
+  reset();
+}
+
+void ICUWordBreakView::setText(const char *buff, size_t buffLen) {
+  SDCHECK(valid());
+  setText(UTF8UTextRef::fromUTF8(buff, buffLen));
 }
 
 ICUWordBreakView ICUWordBreakView::create(Language lang) {

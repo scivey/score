@@ -1,12 +1,16 @@
+#include <string>
+#include <vector>
+
 #include <gtest/gtest.h>
 #include <unicode/brkiter.h>
 #include "score_nlp/tokenize/ICUWordBreakView.h"
 
+using namespace std;
 using score::nlp::tokenize::ICUWordBreakView;
 using score::nlp::Language;
 
 TEST(TestICUWordBreakView, TestBasicEnglish) {
-  UnicodeString someStr = "this is a test";
+  string someStr = "this is a test";
   std::vector<int32_t> expected {
     0, 4, 5, 7, 8, 9, 10, 14
   };
@@ -21,7 +25,7 @@ TEST(TestICUWordBreakView, TestBasicEnglish) {
 }
 
 TEST(TestICUWordBreakView, TestBasicGerman) {
-  UnicodeString someStr = "Hallo, wie geht's?";
+  string someStr = "Hallo, wie geht's?";
   std::vector<int32_t> expected {
     0, 5, 6, 7, 10, 11, 17, 18
   };

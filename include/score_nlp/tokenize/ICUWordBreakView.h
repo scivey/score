@@ -2,28 +2,35 @@
 #include <set>
 #include <memory>
 #include <unicode/brkiter.h>
+#include <unicode/utext.h>
 #include "score_nlp/Language.h"
-
+#include "score_nlp/UTF8UTextRef.h"
 
 namespace score { namespace nlp { namespace tokenize {
 
 class ICUWordBreakView {
- public:
  protected:
   Language language_;
   std::unique_ptr<icu_52::BreakIterator> breakIter_;
-  ICUWordBreakView(Language lang, std::unique_ptr<icu_52::BreakIterator> breakIter);
-  icu_52::UnicodeString *target_ {nullptr};
   bool atEnd_ {false};
+  UTF8UTextRef textRef_;
 
+  ICUWordBreakView(Language lang, std::unique_ptr<icu_52::BreakIterator> breakIter);
   int32_t getNext();
 
  public:
   bool valid() const;
   bool hasText() const;
   static ICUWordBreakView create(Language lang);
-  void setText(icu_52::UnicodeString &target);
-  void setText(icu_52::UnicodeString *target);
+
+  void setText(UTF8UTextRef &&textRef);
+  void setText(const char*, size_t);
+
+  template<typename TStr>
+  void setText(const TStr &aString) {
+    setText(aString.c_str(), aString.size());
+  }
+
   void reset();
   class Iterator {
    protected:

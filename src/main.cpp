@@ -25,24 +25,25 @@
 
 using namespace std;
 
-void attempt(const UnicodeString& str) {
+void attempt(const string& str) {
   UErrorCode status = U_ZERO_ERROR;
-  BreakIterator* bi = BreakIterator::createWordInstance(
+  UText *ut = nullptr;
+  ut = utext_openUTF8(ut, str.c_str(), str.size(), &status);
+  auto bi = BreakIterator::createWordInstance(
     Locale::getUS(), status
   );
-  bi->setText(str);
+  bi->setText(ut, status);
   int32_t p = bi->first();
   while (p != BreakIterator::DONE) {
     LOG(INFO) << "boundary at : " << p;
     p = bi->next();
   }
   delete bi;
-
 }
 
 int main() {
   google::InstallFailureSignalHandler();
-  UnicodeString someStr = "this is a test";
+  string someStr = "this is a test";
   attempt(someStr);
   LOG(INFO) << "end.";
 }
