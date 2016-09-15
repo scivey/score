@@ -21,29 +21,20 @@
 #include <spdlog/spdlog.h>
 
 #include "score/macros.h"
+#include "score/iter/IterTrailer.h"
+
 #include <unicode/brkiter.h>
 
+using namespace score::iter;
 using namespace std;
-
-void attempt(const string& str) {
-  UErrorCode status = U_ZERO_ERROR;
-  UText *ut = nullptr;
-  ut = utext_openUTF8(ut, str.c_str(), str.size(), &status);
-  auto bi = BreakIterator::createWordInstance(
-    Locale::getUS(), status
-  );
-  bi->setText(ut, status);
-  int32_t p = bi->first();
-  while (p != BreakIterator::DONE) {
-    LOG(INFO) << "boundary at : " << p;
-    p = bi->next();
-  }
-  delete bi;
-}
 
 int main() {
   google::InstallFailureSignalHandler();
   string someStr = "this is a test";
-  attempt(someStr);
+  std::vector<int> something {5, 7, 3, 9, 10};
+  auto trailer = iterTrailing(something);
+  for (auto elem: trailer) {
+    LOG(INFO) << elem.first << "\t" << elem.second;
+  }
   LOG(INFO) << "end.";
 }
