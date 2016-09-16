@@ -14,8 +14,8 @@ class IterTrailer {
   TCollection &ref_;
  public:
   IterTrailer(TCollection &ref): ref_(ref) {}
-  iterator begin();
-  iterator end();
+  iterator begin() const;
+  iterator end() const;
 };
 
 template<typename TIter>
@@ -81,12 +81,12 @@ class TrailingIterator {
 
 
 template<typename TCollection>
-typename IterTrailer<TCollection>::iterator IterTrailer<TCollection>::begin() {
+typename IterTrailer<TCollection>::iterator IterTrailer<TCollection>::begin() const {
   return iterator::create(ref_);
 }
 
 template<typename TCollection>
-typename IterTrailer<TCollection>::iterator IterTrailer<TCollection>::end() {
+typename IterTrailer<TCollection>::iterator IterTrailer<TCollection>::end() const {
   return iterator::createEnd(ref_);
 }
 

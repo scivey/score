@@ -97,10 +97,6 @@ class Synchronized {
     mutex_.lock();
     mutex_.unlock();
   }
-  // T* operator->() {
-
-  //   // return getHandle().operator->();
-  // }
 
 };
 
