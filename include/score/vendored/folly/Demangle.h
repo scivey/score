@@ -20,7 +20,7 @@
 
 #pragma once
 #include <typeinfo>
-#include <string>
+#include "score/vendored/folly/portability/Config.h"
 
 namespace score { namespace vendored { namespace folly {
 
@@ -35,8 +35,8 @@ namespace score { namespace vendored { namespace folly {
  *
  * This function may allocate memory (and therefore throw std::bad_alloc).
  */
-std::string demangle(const char* name);
-inline std::string demangle(const std::type_info& type) {
+sf_string_t demangle(const char* name);
+inline sf_string_t demangle(const std::type_info& type) {
   return demangle(type.name());
 }
 
