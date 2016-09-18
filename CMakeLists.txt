@@ -84,12 +84,17 @@ set(CHARSETDETECT_SOURCES
     ${CHARSETDETECT_SOURCES} ${VENDORED_CHARSET_ROOT}/charsetdetect.cpp
 )
 
+FILE(GLOB VENDORED_FOLLY_SOURCES
+    ${SCORE_CORE_SRC}/vendored/folly/*.cpp
+    ${SCORE_CORE_SRC}/vendored/folly/**/*.cpp
+)
 
 
 set(SCORE_VENDORED_SRC
     ${SMHASHER_SOURCES}
     ${GUMBO_PARSER_SOURCES}
     ${CHARSETDETECT_SOURCES}
+    ${VENDORED_FOLLY_SOURCES}
     ${SCORE_CORE_SRC}/vendored/http-parser/http_parser.c
     ${SCORE_CORE_SRC}/vendored/pugixml/pugixml.cpp
     ${SCORE_CORE_SRC}/vendored/modp_b64/modp_b64.cc
@@ -137,6 +142,8 @@ set(CORE_TEST_DIR ${SCORE_CORE_SRC}/test)
 FILE(GLOB CORE_TEST_SRC
     ${CORE_TEST_DIR}/*.cpp
     ${CORE_TEST_DIR}/**/*.cpp
+    ${CORE_TEST_DIR}/vendored/folly/*.cpp
+
 )
 
 
