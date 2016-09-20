@@ -18,7 +18,7 @@
 
 #include <stdexcept>
 
-namespace folly {
+namespace score { namespace vendored { namespace folly {
 
 template <class T>
 Try<T>::Try(Try<T>&& t) noexcept : contains_(t.contains_) {
@@ -173,4 +173,4 @@ makeTryWith(F&& f) {
   }
 }
 
-} // folly
+}}} // score::vendored::folly

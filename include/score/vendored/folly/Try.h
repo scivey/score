@@ -117,7 +117,7 @@ class Try {
    *
    * @param ep The exception_pointer. Will be rethrown.
    */
-  FOLLY_DEPRECATED("use Try(exception_wrapper)")
+  SCORE_FOLLY_DEPRECATED("use Try(exception_wrapper)")
   explicit Try(std::exception_ptr ep)
     : contains_(Contains::EXCEPTION) {
     try {
@@ -290,7 +290,7 @@ class Try<void> {
    *
    * @param ep The exception_pointer. Will be rethrown.
    */
-  FOLLY_DEPRECATED("use Try(exception_wrapper)")
+  SCORE_FOLLY_DEPRECATED("use Try(exception_wrapper)")
   explicit Try(std::exception_ptr ep) : hasValue_(false) {
     try {
       std::rethrow_exception(ep);

@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "score/folly/Traits-lite.h"
-#include "score/folly/portability/Memory.h"
+#include "score/vendored/folly/Traits-lite.h"
+#include "score/vendored/folly/portability/Memory.h"
 
 #include <cstddef>
 #include <cstdlib>
