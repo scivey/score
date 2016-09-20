@@ -17,8 +17,8 @@ std::string stringOfEncoding(Encoding enc) {
   }
 }
 
-Maybe<Encoding> encodingOfString(const std::string &label) {
-  Maybe<Encoding> result;
+Optional<Encoding> encodingOfString(const std::string &label) {
+  Optional<Encoding> result;
   if (label == "gb18030") {
     result.assign(Encoding::GB18030);
   } else if (label == "utf8") {

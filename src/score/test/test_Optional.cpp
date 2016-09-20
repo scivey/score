@@ -1,26 +1,26 @@
 #include <gtest/gtest.h>
 #include <functional>
 #include <atomic>
-#include "score/Maybe.h"
+#include "score/Optional.h"
 
 using namespace std;
-using score::Maybe;
+using score::Optional;
 
-TEST(TestMaybe, TestWorks1) {
-  Maybe<int> x {17};
+TEST(TestOptional, TestWorks1) {
+  Optional<int> x {17};
   EXPECT_EQ(17, x.value());
   EXPECT_TRUE(x.hasValue());
 }
 
-TEST(TestMaybe, TestWorks2) {
-  Maybe<int> x;
+TEST(TestOptional, TestWorks2) {
+  Optional<int> x;
   EXPECT_FALSE(x.hasValue());
 }
 
-TEST(TestMaybe, TestMoving) {
-  Maybe<int> x;
+TEST(TestOptional, TestMoving) {
+  Optional<int> x;
   EXPECT_FALSE(x.hasValue());
-  Maybe<int> y {26};
+  Optional<int> y {26};
   EXPECT_TRUE(y.hasValue());
   EXPECT_EQ(26, y.value());
   x.assign(std::move(y));

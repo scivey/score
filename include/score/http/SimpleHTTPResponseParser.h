@@ -5,7 +5,7 @@
 #include <string>
 #include "score/io/Scstring.h"
 #include "score/http/HTTPParserBase.h"
-#include "score/Maybe.h"
+#include "score/Optional.h"
 
 namespace score { namespace http {
 
@@ -76,8 +76,8 @@ class SimpleHTTPResponseParser: public HTTPParserBase<SimpleHTTPResponseParser> 
   const string_type& getBody() const {
     return body_;
   }
-  Maybe<string_type> getHeader(const string_type& headerName) const {
-    Maybe<string_type> result;
+  Optional<string_type> getHeader(const string_type& headerName) const {
+    Optional<string_type> result;
     auto found = headers_.find(headerName);
     if (found != headers_.end()) {
       result.assign(found->second);

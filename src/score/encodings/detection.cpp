@@ -40,7 +40,7 @@ const char* detectEncodingStr(const string& text) {
   return detectorHandle.csdClose();
 }
 
-Maybe<Encoding> detectEncoding(const std::string& text) {
+Optional<Encoding> detectEncoding(const std::string& text) {
   std::string encodingName = detectEncodingStr(text);
   boost::algorithm::to_lower(encodingName);
   auto result = encodingOfString(encodingName);
