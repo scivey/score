@@ -1,34 +1,59 @@
 #include "score/encodings/Encoding.h"
+#include "score/encodings/EncodingException.h"
+#include "score/ExceptionWrapper.h"
+#include "score/io/Scstring.h"
+#include "score/macros.h"
+
+#include <map>
+
+using std::map;
+using std::ostringstream;
+
+using score::encodings::Encoding;
+using score::io::Scstring;
+
+#include "score/encodings/detail/Encoding-list.h"
+#define X(encoding_sym, encoding_name) \
+  { Encoding::encoding_sym, encoding_name }
+
+map<Encoding, const char*> encodingToStringMap {
+  SCORE_ENCODING_LIST_DETAIL
+};
+
+#undef X
+
+#define X(encoding_sym, encoding_name) \
+  { score::io::Scstring { encoding_name }, Encoding::encoding_sym }
+
+map<score::io::Scstring, Encoding> stringToEncodingMap {
+  SCORE_ENCODING_LIST_DETAIL
+};
+
+#undef X
+#undef SCORE_ENCODING_LIST_DETAIL
 
 namespace score { namespace encodings {
 
-std::string stringOfEncoding(Encoding enc) {
-  switch(enc) {
-    case Encoding::UTF8:
-      return "utf8";
-    case Encoding::GB18030:
-      return "gb18030";
-    case Encoding::ASCII:
-      return "ascii";
-    case Encoding::WINDOWS_1252:
-      return "windows-1252";
-    default:
-      return "UNKNOWN_ENCODING";
-  }
+
+const char* cStringOfEncoding(Encoding enc) {
+  auto found = encodingToStringMap.find(enc);
+  SDCHECK(found != encodingToStringMap.end());
+  return found->second;
 }
 
-Optional<Encoding> encodingOfString(const std::string &label) {
-  Optional<Encoding> result;
-  if (label == "gb18030") {
-    result.assign(Encoding::GB18030);
-  } else if (label == "utf8") {
-    result.assign(Encoding::UTF8);
-  } else if (label == "ascii") {
-    result.assign(Encoding::ASCII);
-  } else if (label == "windows-1252") {
-    result.assign(Encoding::WINDOWS_1252);
+std::string stringOfEncoding(Encoding enc) {
+  return std::string(cStringOfEncoding(enc));
+}
+
+Try<Encoding> encodingFromName(const char *buff, size_t buffLen) {
+  Scstring toFind {buff, buffLen};
+  auto found = stringToEncodingMap.find(toFind);
+  if (found == stringToEncodingMap.end()) {
+    ostringstream msg;
+    msg << "Could not find encoding : '" << toFind << "'";
+    return Try<Encoding>{ makeExceptionWrapper<BadEncodingName>(msg.str()) };
   }
-  return result;
+  return Try<Encoding> {found->second};
 }
 
 }} // score::encodings

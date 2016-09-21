@@ -40,11 +40,11 @@ const char* detectEncodingStr(const string& text) {
   return detectorHandle.csdClose();
 }
 
-Optional<Encoding> detectEncoding(const std::string& text) {
+Try<Encoding> detectEncoding(const std::string& text) {
   std::string encodingName = detectEncodingStr(text);
   boost::algorithm::to_lower(encodingName);
-  auto result = encodingOfString(encodingName);
-  if (!result.hasValue()) {
+  auto result = encodingFromName(encodingName);
+  if (result.hasException()) {
     LOG(INFO) << "unknown encoding: " << encodingName;
   }
   return result;

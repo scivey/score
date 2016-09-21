@@ -1,0 +1,34 @@
+
+#define SCORE_ENCODING_LIST_DETAIL \
+  X(ASCII, "ascii"), \
+  X(BIG_5, "big5"), \
+  X(EUC_JP, "euc-jp"), \
+  X(EUC_KR, "euc-kr"), \
+  X(GB18030, "gb18030"), \
+  X(HZ_GB_2312, "hz-gb-2312"), \
+  X(IBM855, "ibm8555"), \
+  X(IBM866, "ibm866"), \
+  X(ISO_2022_CN, "iso-2022-cn"), \
+  X(ISO_2022_JP, "iso-2022-jp"), \
+  X(ISO_2022_KR, "iso-2022-kr"), \
+  X(ISO_8859_2, "iso-8859-2"), \
+  X(ISO_8859_5, "iso-8859-5"), \
+  X(ISO_8859_7, "iso-8859-7"), \
+  X(ISO_8859_8, "iso-8859-8"), \
+  X(KOI8_R, "koi8-r"), \
+  X(SHIFT_JIS, "shift_jis"), \
+  X(TIS_620, "tis-620"), \
+  X(UTF_16BE, "utf-16be"), \
+  X(UTF_16LE, "utf-16le"), \
+  X(UTF_32BE, "utf-32be"), \
+  X(UTF_32LE, "utf-32le"), \
+  X(UTF_8, "utf-8"), \
+  X(WINDOWS_1250, "windows-1250"), \
+  X(WINDOWS_1251, "windows-1251"), \
+  X(WINDOWS_1252, "windows-1252"), \
+  X(WINDOWS_1253, "windows-1253"), \
+  X(WINDOWS_1255, "windows-1255"), \
+  X(X_EUC_TW, "x-euc-tw"), \
+  X(X_ISO_10646_UCS_4_2143, "x-iso-10646-ucs-4-2143"), \
+  X(X_ISO_10646_UCS_4_3412, "x-iso-10646-ucs-4-3412"), \
+  X(X_MAC_CYRILLIC, "x-mac-cyrillic")

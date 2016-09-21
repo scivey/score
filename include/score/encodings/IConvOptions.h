@@ -9,8 +9,8 @@ namespace score { namespace encodings {
 
 
 struct IConvOptions {
-  Encoding toEncoding {Encoding::UTF8};
-  Encoding fromEncoding {Encoding::UTF8};
+  Encoding toEncoding {Encoding::UTF_8};
+  Encoding fromEncoding {Encoding::UTF_8};
 };
 
 }} // score::encodings
