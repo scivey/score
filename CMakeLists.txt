@@ -104,6 +104,8 @@ FILE(GLOB SCORE_COMMON_SRC
     ${SCORE_CORE_SRC}/*.cpp
     ${SCORE_CORE_SRC}/curl/**/*.cpp
     ${SCORE_CORE_SRC}/curl/*.cpp
+    ${SCORE_CORE_SRC}/url/*.cpp
+    ${SCORE_CORE_SRC}/url/**/*.cpp
     ${SCORE_CORE_SRC}/encodings/*.cpp
     ${SCORE_CORE_SRC}/html/*.cpp
     ${SCORE_CORE_SRC}/fs/*.cpp
