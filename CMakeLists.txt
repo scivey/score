@@ -8,9 +8,10 @@ set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(BORINGSSL ${EXTERNAL}/boringssl)
 set(GTEST ${EXTERNAL}/googletest)
 set(SPDLOG ${EXTERNAL}/spdlog)
-
+set(RE2 ${EXTERNAL}/re2)
 include_directories(
     ${BORINGSSL}/include
+    ${RE2}/build/include
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
     ${SPDLOG}/include
@@ -22,6 +23,7 @@ link_directories(
     ${BORINGSSL}/build/ssl
     ${BORINGSSL}/build/crypto
     ${BORINGSSL}/build/decrepit
+    ${RE2}/build
     ${GTEST}/build/googlemock
     /usr/local/lib
 )
@@ -34,6 +36,7 @@ set(CRYPTO_LIBS
 set(COMMON_LIBS
     folly
     wangle
+    re2
     boost_system
     boost_thread
     icuuc
@@ -113,6 +116,7 @@ FILE(GLOB SCORE_COMMON_SRC
     ${SCORE_CORE_SRC}/locks/*.cpp
     ${SCORE_CORE_SRC}/mem/*.cpp
     ${SCORE_CORE_SRC}/posix/*.cpp
+    ${SCORE_CORE_SRC}/re/*.cpp
     ${SCORE_CORE_SRC}/reactor/*.cpp
     ${SCORE_CORE_SRC}/unicode/*.cpp
     ${SCORE_CORE_SRC}/net/*.cpp
@@ -145,7 +149,6 @@ FILE(GLOB CORE_TEST_SRC
     ${CORE_TEST_DIR}/*.cpp
     ${CORE_TEST_DIR}/**/*.cpp
     ${CORE_TEST_DIR}/vendored/folly/*.cpp
-
 )
 
 

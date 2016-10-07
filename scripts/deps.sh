@@ -14,10 +14,21 @@ function cmake-build() {
     fi
 }
 
-pushd ${EXT}/googletest
-cmake-build
-popd
+function copy-re2-headers() {
+    pushd ${EXT}/re2/build
+    if [[ ! -d include ]]; then
+        mkdir -p include/re2
+        cp ../re2/*.h include/re2
+    fi
+    popd
+}
 
-pushd ${EXT}/boringssl
-cmake-build
-popd
+LIBS="googletest boringssl re2"
+
+for lib in ${LIBS}; do
+    pushd ${EXT}/${lib}
+    cmake-build
+    popd
+done
+
+copy-re2-headers

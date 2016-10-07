@@ -8,3 +8,7 @@
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = git@github.com:gabime/spdlog
+[submodule "external/re2"]
+	path = external/re2
+	url = https://github.com/google/re2
+    commit = 002bf983f203b355873408ffe78bae4f28cf51d4
