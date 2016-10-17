@@ -264,6 +264,15 @@ target_link_libraries(run_async_tests
 
 
 set(SCORE_CURL_SRC_DIR ${SCORE_ROOT_SRC}/score_curl)
+
+FILE(GLOB SCORE_CURL_SRC
+    ${SCORE_CURL_SRC_DIR}/*.cpp
+)
+
+add_library(score_curl ${SCORE_CURL_SRC})
+add_dependencies(score_curl score_async score_core)
+target_link_libraries(score_curl score_async score_core)
+
 FILE(GLOB SCORE_CURL_TEST_SRC
     ${SCORE_CURL_SRC_DIR}/test/*.cpp
 )
@@ -272,11 +281,12 @@ add_executable(run_curl_tests
     ${SCORE_ROOT_SRC}/run_tests.cpp
 )
 
-add_dependencies(run_curl_tests score_async)
+add_dependencies(run_curl_tests score_curl)
 target_link_libraries(run_curl_tests
     gmock
     ${COMMON_LIBS}
     score_async
+    score_curl
     score_core
 )
 

@@ -22,67 +22,19 @@ class EventCurler {
   multi_ptr_t multi_ {nullptr};
   size_t nPending_ {0};
 
-  void initTimer() {
-    ctx_->getWheel()->addRepeating([this]() {
-      update();
-    }, std::chrono::milliseconds{50});
-  }
-  void bindToMulti() {
-    multi_->bindCallbacks();
-    multi_->setSocketHandler([](CURL *easy, curl_socket_t sockFd, int what, void *pdata) {
-      return 0;
-    });
-    multi_->setTimerHandler([this](long timeoutMsec) {
-      ctx_->getWheel()->addOneShot([this]() {
-        update();
-      }, std::chrono::milliseconds(timeoutMsec));
-      return 0;
-    });
-  }
-  EventCurler(ctx_t *ctx, multi_ptr_t&& multi)
-    : ctx_(ctx), multi_(std::move(multi)) {}
-  void update() {
-    auto nPending = perform();
-    if (nPending < nPending_) {
-      int nRemaining = 0;
-      CURLMsg *msg {nullptr};
-      do {
-        msg = curl_multi_info_read(multi_->get(), &nRemaining);
-        if (!!msg && msg->msg == CURLMSG_DONE) {
-          auto easyHandle = msg->easy_handle;
-          auto original = Easy::fromOwnedEasyHandle(easyHandle);
-          original->onFinished();
-          delete original;
-        }
-      } while (!!msg && nRemaining > 0);
-    }
-    nPending_ = nPending;
-  }
+  void initTimer();
+  void bindToMulti();
+  EventCurler(ctx_t *ctx, multi_ptr_t&& multi);
+  void update();
  public:
-  static EventCurler* createNew(ctx_t *ctx) {
-    auto curler = new EventCurler(ctx, multi_ptr_t {multi_t::createNew()});
-    curler->initTimer();
-    curler->bindToMulti();
-    return curler;
-  }
-  int perform() {
-    return multi_->perform();
-  }
+  static EventCurler* createNew(ctx_t *ctx);
+  int perform();
 
  protected:
-  void addHandle(Easy *handle) {
-    handle->bindCallbacks();
-    multi_->addHandle(handle);
-  }
+  void addHandle(Easy *handle);
  public:
 
-  void getURL(const string_t& url, get_cb_t cb) {
-    auto easy = Easy::createNew();
-    easy->setURL(url);
-    easy->setDoneCallback(cb);
-    addHandle(easy);
-    perform();
-  }
+  void getURL(const string_t& url, get_cb_t cb);
 
   template<typename TCallable,
     typename = typename std::enable_if<!std::is_same<get_cb_t, TCallable>::value, TCallable>::type>
@@ -98,9 +50,7 @@ class EventCurler {
     getURL(url, cb);
   }
 
-  multi_t* getMulti() {
-    return multi_.get();
-  }
+  multi_t* getMulti();
 };
 
 }} // score::curl
