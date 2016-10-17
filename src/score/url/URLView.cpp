@@ -62,6 +62,18 @@ piece_t URLView::fragment() const {
   return getComponent(URLComponent::FRAGMENT);
 }
 
+folly::Optional<size_t> URLView::fragmentOffset() const {
+  folly::Optional<size_t> result;
+  auto frag = fragment();
+  if (!frag.hasValue()) {
+    return result;
+  }
+  uintptr_t fragPtr = (uintptr_t) frag.value().data();
+  uintptr_t basePtr = (uintptr_t) buff_;
+  result.assign((fragPtr - basePtr) - 1);
+  return result;
+}
+
 folly::Optional<int16_t> URLView::port() const {
   folly::Optional<int16_t> result;
   if (parsed_.valid()) {

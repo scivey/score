@@ -7,9 +7,11 @@
 #include "score_curl/EventCurler.h"
 #include "score/html/HtmlDom.h"
 #include "score/util/misc.h"
+#include "score/url/URLView.h"
 
 using namespace std;
 using namespace score::html;
+using score::url::URLView;
 namespace util = score::util;
 
 bool isGoodLink(const std::string &link) {
@@ -35,13 +37,7 @@ set<string> extractLinks(const std::string& data) {
     body.dfs([&links](const Node& node) {
       if (node.isElement() && node.hasTag(Tag::A) && node.hasAttr("href")) {
         auto link = node.getAttr("href");
-        if (link.size() < 3) {
-          return;
-        }
-        if (link.find("?") == 0) {
-          return;
-        }
-        if (links.count(link) == 0) {
+        if (isGoodLink(link) && links.count(link) == 0) {
           links.insert(link);
         }
       }
@@ -50,16 +46,47 @@ set<string> extractLinks(const std::string& data) {
   return links;
 }
 
+std::set<std::string> extractLinksFromSameDomain(const string& domain, const string& html) {
+  auto links = extractLinks(html);
+  std::set<std::string> result;
+  for (auto& link: links) {
+    auto viewOpt = URLView::parse(link);
+    if (!viewOpt.hasException()) {
+      auto view = viewOpt.value();
+      auto host = view.host();
+      if (host.hasValue()) {
+        string hostName = folly::to<std::string>(host.value());
+        if (hostName != domain) {
+          continue;
+        }
+        string toAdd = link;
+        if (view.fragment().hasValue()) {
+          auto ffs = view.fragmentOffset();
+          if (ffs.hasValue()) {
+            toAdd = link.substr(0, ffs.value());
+          }
+        }
+        if (result.count(toAdd) == 0) {
+          result.insert(toAdd);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+
 void tryLinks() {
   auto ctx = util::createShared<score::async::EventContext>();
   auto curler = util::createShared<score::curl::EventCurler>(ctx.get());
-  curler->getURL("http://jezebel.com", [](string result) {
+  curler->getURL("http://jezebel.com", [&curler](string result) {
     LOG(INFO) << "got result: " << result.substr(0, 200);
-    auto links = extractLinks(result);
+    auto links = extractLinksFromSameDomain("jezebel.com", result);
     for (auto link: links) {
-      LOG(INFO) << "link: " << link;
+      curler->getURL(link, [link](string result) {
+        LOG(INFO) << "got: " << link;
+      });
     }
-    LOG(INFO) << "here. " << links.size();
   });
   for (;;) {
     ctx->getBase()->runForever();

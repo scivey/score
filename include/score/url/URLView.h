@@ -40,6 +40,7 @@ class URLView {
   piece_t fragment() const;
   folly::Optional<int16_t> port() const;
 
+  folly::Optional<size_t> fragmentOffset() const;
 
   template<typename TString,
     typename = decltype(std::declval<TString>().c_str())
