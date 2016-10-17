@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
-#include "evs/logging.h"
+#include "score/logging.h"
 
-namespace evs { namespace events2 { namespace wheel {
+namespace score { namespace async { namespace wheel {
 
 template<typename T>
 class FixedVector {
@@ -45,11 +45,10 @@ class DynamicWheelBuffer {
  public:
   using value_type = T;
  protected:
-  EVS_DISABLE_COPY_AND_ASSIGN(DynamicWheelBuffer);
+  SCORE_DISABLE_COPY_AND_ASSIGN(DynamicWheelBuffer);
   FixedVector<T> buff_;
   size_t currentIndex_ {0};
   size_t getRealIndex(size_t idx) const {
-    // EVS_INFO("currentIndex: {}, buffSize : {}", currentIndex_, buff_.size());
     return (currentIndex_ + idx) % buff_.size();
   }
   DynamicWheelBuffer(FixedVector<T> &&buff): buff_(std::move(buff)) {}
@@ -85,4 +84,4 @@ class DynamicWheelBuffer {
   }
 };
 
-}}} // evs::events2::wheel
+}}} // score::async::wheel

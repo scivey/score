@@ -5,11 +5,11 @@
 #include <glog/logging.h>
 #include <atomic>
 #include <folly/ProducerConsumerQueue.h>
-#include "evs/events2/VoidCallback.h"
-#include "evs/events2/EventFDChannel.h"
-#include "evs/events2/EvBase.h"
+#include "score_async/VoidCallback.h"
+#include "score_async/EventFDChannel.h"
+#include "score_async/EvBase.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 using EBWorkQueue = folly::ProducerConsumerQueue<VoidCallback>;
@@ -52,7 +52,7 @@ class EB2Thread {
       while (!running_.load()) {
         this_thread::sleep_for(chrono::milliseconds(5));
       }
-      events::TimerSettings settings {std::chrono::milliseconds (100)};
+      TimerSettings settings {std::chrono::milliseconds (100)};
       auto loopDuration = settings.toTimeVal();
       for (;;) {
         base_->runFor(&loopDuration);
@@ -106,4 +106,4 @@ class EB2Thread {
   }
 };
 
-}} // evs::events2
+}} // score::async

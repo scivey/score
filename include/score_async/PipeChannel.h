@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include "evs/exceptions/PosixError.h"
+#include "score/exceptions/PosixError.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 class PipeChannel {
@@ -28,7 +28,7 @@ class PipeChannel {
 
     static SafePipe create() {
       fd_t fds[2];
-      EVS_MAKE_POSIX_CALL(pipe2(fds, O_CLOEXEC | O_NONBLOCK));
+      SCORE_MAKE_POSIX_CALL(pipe2(fds, O_CLOEXEC | O_NONBLOCK));
       SafePipe result;
       return SafePipe(ReadFD(fds[0]), WriteFD(fds[1]));
     }

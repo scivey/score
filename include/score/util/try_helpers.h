@@ -66,7 +66,7 @@ struct is_try<score::Try<T>>: std::true_type {
 
 template<typename TIn, typename TCallable,
   typename = typename std::enable_if<
-    !is_folly_try<typename std::result_of<TCallable(TIn)>::type>::value,
+    !is_try<typename std::result_of<TCallable(TIn)>::type>::value,
     TIn
   >::type>
 score::Try<typename std::result_of<TCallable(TIn)>::type> doWithValue(
@@ -86,7 +86,7 @@ score::Try<typename std::result_of<TCallable(TIn)>::type> doWithValue(
 
 template<typename TIn, typename TCallable,
   typename = typename std::enable_if<
-    is_folly_try<typename std::result_of<TCallable(TIn)>::type>::value,
+    is_try<typename std::result_of<TCallable(TIn)>::type>::value,
     TIn
   >::type>
 auto doWithValue(score::Try<TIn>&& prevTry, TCallable&& func)

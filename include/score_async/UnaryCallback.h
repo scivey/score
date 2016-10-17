@@ -4,7 +4,7 @@
 #include <glog/logging.h>
 #include <type_traits>
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 template<typename T>
 class UnaryCallback {
@@ -68,4 +68,4 @@ class UnaryCallback {
   }
 };
 
-}} // evs::events2
+}} // score::async

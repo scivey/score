@@ -1,9 +1,9 @@
 #pragma once
-#include "evs/macros.h"
-#include "evs/EVSError.h"
+#include "score/macros.h"
+#include "score/exceptions/ScoreError.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
-EVS_DECLARE_EXCEPTION(EventError, evs::EVSError);
+SCORE_DECLARE_EXCEPTION(EventError, score::exceptions::ScoreError);
 
 }}

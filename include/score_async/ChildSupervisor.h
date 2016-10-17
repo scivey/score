@@ -5,12 +5,12 @@
 #include <folly/FBString.h>
 #include <folly/FBVector.h>
 #include <glog/logging.h>
-#include "evs/events2/EventContext.h"
+#include "score_async/EventContext.h"
 #include "evs/exceptions/PosixError.h"
-#include "evs/macros.h"
-#include "evs/logging.h"
+#include "score/macros.h"
+#include "score/logging.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 class ChildSupervisor {
@@ -67,7 +67,7 @@ class ChildSupervisor {
   };
 
   using child_map_t = std::unordered_map<pid_t, ChildHandle>;
-  EVS_DISABLE_COPY_AND_ASSIGN(ChildSupervisor);
+  SCORE_DISABLE_COPY_AND_ASSIGN(ChildSupervisor);
  protected:
   context_ptr_t context_ {nullptr};
   child_map_t children_;
@@ -76,11 +76,11 @@ class ChildSupervisor {
   void onSigChild() {
     int rc {0};
     auto childPid = waitpid(-1, &rc, WNOHANG);
-    EVS_CHECK_POSIX_CALL(childPid, "waitpid()");
+    SCORE_CHECK_POSIX_CALL(childPid, "waitpid()");
     if (childPid == 0) {
-      EVS_INFO("onSigChild : no change found in children?.");
+      SCORE_INFO("onSigChild : no change found in children?.");
     } else {
-      EVS_INFO("onSigChild: {} / {}", childPid, rc);
+      SCORE_INFO("onSigChild: {} / {}", childPid, rc);
     }
   }
  public:
@@ -108,18 +108,18 @@ class ChildSupervisor {
       }
       argPtrs.push_back(nullptr);
       auto argPtrArray = (char * const*) argPtrs.data();
-      EVS_MAKE_POSIX_CALL(execve(args.filename.c_str(), argPtrArray, nullptr));
+      SCORE_MAKE_POSIX_CALL(execve(args.filename.c_str(), argPtrArray, nullptr));
   }
  public:
   void addChild(const ChildArgs& args) {
     CHECK(hasStarted());
     auto childPid = fork();
-    EVS_CHECK_POSIX_CALL(childPid, "fork()");
+    SCORE_CHECK_POSIX_CALL(childPid, "fork()");
     if (childPid == 0) {
       // this is the child
       childExec(args);
     } else {
-      EVS_INFO("adding child pid: {}", childPid);
+      SCORE_INFO("adding child pid: {}", childPid);
       ChildHandle childHandle { childPid, args };
       children_.insert(std::make_pair(childPid, std::move(childHandle)));
     }
@@ -127,4 +127,4 @@ class ChildSupervisor {
 };
 
 
-}} // evs::events2
+}} // score::async

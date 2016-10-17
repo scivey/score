@@ -1,10 +1,10 @@
 #pragma once
 
 #include <glog/logging.h>
-#include "evs/events2/BaseEvent.h"
-#include "evs/events2/VoidCallback.h"
+#include "score_async/BaseEvent.h"
+#include "score_async/VoidCallback.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 class TimerEvent: public BaseEvent<TimerEvent> {
@@ -37,4 +37,4 @@ class TimerEvent: public BaseEvent<TimerEvent> {
 };
 
 
-}} // evs::events2
+}} // score::async

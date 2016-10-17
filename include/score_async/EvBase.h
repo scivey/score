@@ -3,11 +3,11 @@
 #include <memory>
 #include <event2/event.h>
 #include <queue>
-#include "evs/util/util.h"
-#include "evs/events/TimerSettings.h"
-#include "evs/events2/EvBaseCore.h"
+#include "score/util/misc.h"
+#include "score/TimerSettings.h"
+#include "score_async/EvBaseCore.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class EvBase {
  public:
@@ -33,7 +33,7 @@ class EvBase {
   void runFor(timeval *tv) {
     base_.runFor(tv);
   }
-  void runFor(const events::TimerSettings &settings) {
+  void runFor(const TimerSettings &settings) {
     timeval tv = settings.toTimeVal();
     runFor(&tv);
   }
@@ -42,4 +42,4 @@ class EvBase {
   }
 };
 
-}} // evs::events2
+}} // score::async

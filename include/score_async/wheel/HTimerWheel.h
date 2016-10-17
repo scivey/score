@@ -3,42 +3,52 @@
 #include <memory>
 #include <vector>
 #include <glog/logging.h>
-#include "evs/events2/EvBase.h"
-#include "evs/events2/TimerEvent.h"
-#include "evs/events2/VoidCallback.h"
-#include "evs/events/TimerSettings.h"
-#include "evs/events2/wheel/WheelBuffer.h"
-#include "evs/events2/wheel/SimpleTimerWheel.h"
-#include "evs/macros.h"
-#include "evs/logging.h"
+#include "score_async/EvBase.h"
+#include "score_async/TimerEvent.h"
+#include "score_async/VoidCallback.h"
+#include "score/TimerSettings.h"
+#include "score_async/wheel/WheelBuffer.h"
+#include "score_async/wheel/DynamicWheelBuffer.h"
+#include "score/macros.h"
+#include "score/logging.h"
 
-namespace evs { namespace events2 { namespace wheel {
+namespace score { namespace async { namespace wheel {
 
-#define HH_BUCKET1_RES 5
-#define HH_BUCKET1_SLOTS 5
-#define HH_BUCKET2_RES 25
-#define HH_BUCKET2_SLOTS 4
-
-#define HH_BUCKET3_RES 100
-#define HH_BUCKET3_SLOTS 5
-
-#define HH_BUCKET4_RES 500
-#define HH_BUCKET4_SLOTS 4
-
-#define HH_TICK1_COUNTER 5
-#define HH_TICK2_COUNTER 4
-#define HH_TICK3_COUNTER 5
-
-class HTimerWheel2 {
+class HTimerWheel {
  public:
-  using base_t = evs::events2::EvBase;
-  using timer_settings_t = evs::events::TimerSettings;
-  using timer_t = evs::events2::TimerEvent;
+  using base_t = score::async::EvBase;
+  using timer_settings_t = score::TimerSettings;
+  using timer_t = score::async::TimerEvent;
   using timer_ptr_t = std::unique_ptr<timer_t>;
-  using cb_t = evs::events2::VoidCallback;
+  using cb_t = score::async::VoidCallback;
   using clock_t = std::chrono::steady_clock;
   using time_delta_t = std::chrono::milliseconds;
   using time_point_t = time_delta_t;
+
+  struct LevelSettings {
+    uint64_t resolution {0};
+    uint64_t slots {0};
+    LevelSettings(){}
+    LevelSettings(uint64_t res, uint64_t slot): resolution(res), slots(slot){}
+    LevelSettings(std::pair<uint64_t, uint64_t> numPair)
+      : resolution(numPair.first), slots(numPair.second) {}
+  };
+
+  struct WheelSettings {
+    using setting_vec_t = std::vector<LevelSettings>;
+    setting_vec_t levelSettings;
+    WheelSettings(setting_vec_t&& levels)
+      : levelSettings(std::forward<setting_vec_t>(levels)) {}
+
+
+    using setting_init_t = std::initializer_list<std::pair<uint64_t, uint64_t>>;
+    WheelSettings(setting_init_t&& initList) {
+      for (auto &elem: initList) {
+        levelSettings.push_back(LevelSettings(elem));
+      }
+    }
+    WheelSettings(){}
+  };
 
   class Entry {
    protected:
@@ -57,7 +67,6 @@ class HTimerWheel2 {
       : callback_(cb), interval_(interval), repeating_(repeating) {}
 
     void setAddedTime(time_point_t added) {
-      // LOG(INFO) << "setAddedTime: " << added.count();
       addedTime_ = added;
     }
 
@@ -88,24 +97,34 @@ class HTimerWheel2 {
     std::vector<Entry> entries;
   };
 
-  template<size_t ResolutionMS, size_t NSlots>
   class Bucket {
    protected:
-    WheelBuffer<Slot, NSlots> buffer_;
     bool isBottom_ {false};
+    size_t resolutionMsec_ {0};
+    size_t nSlots_ {0};
+    DynamicWheelBuffer<Slot> buffer_;
    public:
     Bucket(){}
-    Bucket(bool isBottom): isBottom_(isBottom){}
+    Bucket(bool isBottom, size_t resolution, size_t slots)
+      : isBottom_(isBottom), resolutionMsec_(resolution), nSlots_(slots) {
+      buffer_ = DynamicWheelBuffer<Slot>::create(nSlots_);
+    }
     time_delta_t timeCapacity() const {
-      return time_delta_t {ResolutionMS * NSlots};
+      return time_delta_t {getResolution() * getNumSlots()};
+    }
+    size_t getResolution() const {
+      return resolutionMsec_;
+    }
+    size_t getNumSlots() const {
+      return nSlots_;
     }
     template<typename ...Types>
     void say(const char *fmt, Types&&... args) {
       auto subMessage = folly::sformat(fmt, std::forward<Types>(args)...);
-      EVS_INFO("Bucket[{}/{}]: '{}'", ResolutionMS, NSlots, subMessage);
+      SCORE_INFO("Bucket[{}/{}]: '{}'", getResolution(), getNumSlots(), subMessage);
     }
     Slot& getSlotAt(size_t idx) {
-      CHECK(idx < NSlots);
+      CHECK(idx < getNumSlots());
       return buffer_.getAt(idx);
     }
     size_t getSlotIdx(time_delta_t msecDelay) {
@@ -113,19 +132,15 @@ class HTimerWheel2 {
         throw std::runtime_error("slot out of range.");
       }
       size_t totalMsec = msecDelay.count();
-      size_t overflow = totalMsec % ResolutionMS;
+      size_t overflow = totalMsec % getResolution();
       size_t toConsider = totalMsec - overflow;
-      if (totalMsec > 0) {
-        ;
-        // say("toConsider: {}/{}", toConsider, totalMsec);
-      }
       size_t idx = 0;
       size_t current = 0;
-      if (totalMsec < ResolutionMS) {
+      if (totalMsec < getResolution()) {
         idx = 0;
       } else {
         for (;;) {
-          current += ResolutionMS;
+          current += getResolution();
           if (overflow > 0) {
             if (current < toConsider) {
               idx++;
@@ -144,12 +159,12 @@ class HTimerWheel2 {
       if (isBottom_) {
         if (idx == 0) {
           size_t zeroDelta = overflow;
-          size_t tickDelta = ResolutionMS - overflow;
+          size_t tickDelta = getResolution() - overflow;
           if (tickDelta < zeroDelta) {
             idx++;
           }
         }
-      } else if (totalMsec < ResolutionMS) {
+      } else if (totalMsec < getResolution()) {
         idx = 0;
       }
 
@@ -173,16 +188,24 @@ class HTimerWheel2 {
     }
   };
 
+  struct WheelLevel {
+    Bucket bucket;
+    timer_ptr_t timer {nullptr};
+    size_t tickCounter {0};
+    size_t skipTick {0};
+
+    WheelLevel(){}
+    WheelLevel(Bucket&& bucket)
+      : bucket(std::move(bucket)) {}
+
+    WheelLevel(Bucket&& bucket, timer_ptr_t&& timer)
+      : bucket(std::move(bucket)), timer(std::move(timer)){}
+  };
+
  protected:
   base_t *base_ {nullptr};
-  Bucket<HH_BUCKET1_RES, HH_BUCKET1_SLOTS> bucket1_ {true};
-  timer_ptr_t timer1_ {nullptr};
-  Bucket<HH_BUCKET2_RES, HH_BUCKET2_SLOTS> bucket2_;
-  timer_ptr_t timer2_ {nullptr};
-  Bucket<HH_BUCKET3_RES, HH_BUCKET3_SLOTS> bucket3_;
-  timer_ptr_t timer3_ {nullptr};
-  Bucket<HH_BUCKET4_RES, HH_BUCKET4_SLOTS> bucket4_;
-  timer_ptr_t timer4_ {nullptr};
+  WheelSettings wheelSettings_;
+  std::vector<WheelLevel> levels_;
   time_point_t cachedNow_;
   bool nowInititialized_ {false};
 
@@ -199,26 +222,25 @@ class HTimerWheel2 {
     return cachedNow_;
   }
 
-  HTimerWheel2(base_t *base): base_(base){}
+  HTimerWheel(base_t *base, const WheelSettings& settings)
+    : base_(base), wheelSettings_(settings) {}
 
-  EVS_DISABLE_COPY_AND_ASSIGN(HTimerWheel2);
+  SCORE_DISABLE_COPY_AND_ASSIGN(HTimerWheel);
 
   void addEntry(Entry&& entry) {
     auto now = getNowOffset();
     auto offset = entry.getRemainingTime(now);
-    if (offset < bucket1_.timeCapacity()) {
-      EVS_INFO("entry has offset {}; adding to bucket1.", offset.count());
-      bucket1_.addEntry(now, std::move(entry));
-    } else if (offset < bucket2_.timeCapacity()) {
-      EVS_INFO("entry has offset {}; adding to bucket2.", offset.count());
-      bucket2_.addEntry(now, std::move(entry));
-    } else if (offset < bucket3_.timeCapacity()) {
-      EVS_INFO("entry has offset {}; adding to bucket3.", offset.count());
-      bucket3_.addEntry(now, std::move(entry));
-    } else if (offset < bucket4_.timeCapacity()) {
-      EVS_INFO("entry has offset {}; adding to bucket4.", offset.count());
-      bucket4_.addEntry(now, std::move(entry));
-    } else {
+    bool added = false;
+    for (size_t i = 0; i < levels_.size(); i++) {
+      auto& level = levels_[i];
+      if (offset < level.bucket.timeCapacity()) {
+        // SCORE_INFO("entry has offset {}; adding to bucket{}.", offset.count(), i+1);
+        level.bucket.addEntry(now, std::move(entry));
+        added = true;
+        break;
+      }
+    }
+    if (!added) {
       throw std::runtime_error(folly::sformat(
         "entry offset out of range: {}", offset.count()
       ));
@@ -267,7 +289,7 @@ class HTimerWheel2 {
     for (auto& entry: entries) {
       auto remaining = entry.getRemainingTime(getNowOffset());
       auto remainingCount = remaining.count();
-      size_t bucket1Res = HH_BUCKET1_RES;
+      size_t bucket1Res = wheelSettings_.levelSettings[0].resolution;
       if (remainingCount < bucket1Res) {
         size_t zeroDelta = remainingCount;
         size_t resDelta = bucket1Res - remainingCount;
@@ -283,7 +305,7 @@ class HTimerWheel2 {
 
 
   void processBucket1() {
-    auto& current = bucket1_.getSlot(time_delta_t {0});
+    auto& current = levels_[0].bucket.getSlot(time_delta_t {0});
     for (auto& entry: current.entries) {
       if (entry) {
         addPendingExecution(std::move(entry));
@@ -292,44 +314,23 @@ class HTimerWheel2 {
     current.entries.clear();
   }
 
-  void processBucket2() {
-    auto& current = bucket2_.getSlot(time_delta_t {0});
+  void processBucketN(size_t idx) {
+    CHECK(idx > 0);
+    auto& current = levels_[idx].bucket.getSlot(time_delta_t {0});
     processUpperBucketSlots(current.entries);
     current.entries.clear();
   }
 
-  void processBucket3() {
-    auto& current = bucket3_.getSlot(time_delta_t {0});
-    processUpperBucketSlots(current.entries);
-    current.entries.clear();
-  }
-
-  void processBucket4() {
-    auto& current = bucket4_.getSlot(time_delta_t {0});
-    processUpperBucketSlots(current.entries);
-    current.entries.clear();
-  }
-
-
-  void onTick1Impl() {
+  void onLevelTickImpl(size_t idx) {
     updateNowOffset();
-    processBucket1();
-    executePendingEntries();
-  }
-  void onTick2Impl() {
-    processBucket2();
-    executePendingEntries();
-    onTick1Impl();
-  }
-  void onTick3Impl() {
-    processBucket3();
-    executePendingEntries();
-    onTick2Impl();
-  }
-  void onTick4Impl() {
-    processBucket4();
-    executePendingEntries();
-    onTick3Impl();
+    if (idx == 0) {
+      processBucket1();
+      executePendingEntries();
+    } else {
+      processBucketN(idx);
+      executePendingEntries();
+      onLevelTickImpl(idx-1);
+    }
   }
   void onAfterTick() {
     executePendingEntries();
@@ -338,67 +339,63 @@ class HTimerWheel2 {
     reAddRepeatingEntries();
     executePendingEntries();
   }
-  size_t tick1Counter_ {0};
 
-  void onTick1() {
-    tick1Counter_++;
-    if (tick1Counter_ == HH_TICK1_COUNTER) {
-      tick1Counter_ = 0;
-      return;
+  void advanceBuckets(size_t levelIdx) {
+    for (size_t i = 0; i <= levelIdx; i++) {
+      levels_[i].bucket.advance();
     }
-    // LOG(INFO) << "onTick1";
-    onTick1Impl();
-    bucket1_.advance();
-    onAfterTick();
   }
 
-  size_t tick2Counter_ {0};
-  void onTick2() {
-    tick2Counter_++;
-    if (tick2Counter_ == HH_TICK2_COUNTER) {
-      tick2Counter_ = 0;
-      return;
+  void onLevelTick(size_t idx) {
+    if (idx == (levels_.size() - 1)) {
+      // this is the top level
+      onLevelTickImpl(idx);
+      advanceBuckets(idx);
+      onAfterTick();
+    } else {
+      levels_[idx].tickCounter++;
+      size_t counter = levels_[idx].tickCounter;
+      size_t nSkip = levels_[idx].skipTick;
+      if (counter == nSkip) {
+        levels_[idx].tickCounter = 0;
+        return;
+      } else {
+        onLevelTickImpl(idx);
+        advanceBuckets(idx);
+        onAfterTick();
+      }
     }
-    // LOG(INFO) << "onTick2";
-    onTick2Impl();
-    bucket1_.advance();
-    bucket2_.advance();
-    onAfterTick();
   }
 
-  size_t tick3Counter_ {0};
-  void onTick3() {
-    tick3Counter_++;
-    // LOG(INFO) << "onTick3";
-    if (tick3Counter_ == HH_TICK3_COUNTER) {
-      tick3Counter_ = 0;
-      return;
-    }
-    onTick3Impl();
-    bucket1_.advance();
-    bucket2_.advance();
-    bucket3_.advance();
-    onAfterTick();
-  }
-
-  void onTick4() {
-    // LOG(INFO) << "onTick3";
-    onTick4Impl();
-    bucket1_.advance();
-    bucket2_.advance();
-    bucket3_.advance();
-    bucket4_.advance();
-    onAfterTick();
-  }
 
   void addNewEntry(Entry&& entry) {
     entry.setAddedTime(getNowOffset());
     addEntry(std::move(entry));
   }
 
+  void initLevels() {
+    levels_.reserve(wheelSettings_.levelSettings.size());
+    size_t idx = 0;
+    for (auto &setting: wheelSettings_.levelSettings) {
+      bool isBottom = idx == 0;
+      levels_.push_back(WheelLevel(
+        Bucket(isBottom, setting.resolution, setting.slots)
+      ));
+    }
+    size_t lastIdx = levels_.size() - 1;
+    for (size_t i = 0; i < lastIdx; i++) {
+      size_t parentRes = wheelSettings_.levelSettings[i+1].resolution;
+      size_t selfRes = wheelSettings_.levelSettings[i].resolution;
+      size_t skipTick = parentRes / selfRes;
+      levels_[i].skipTick = skipTick;
+    }
+  }
+
  public:
-  static HTimerWheel2* createNew(base_t *base) {
-    return new HTimerWheel2(base);
+  static HTimerWheel* createNew(base_t *base, const WheelSettings& settings) {
+    auto wheel = new HTimerWheel(base, settings);
+    wheel->initLevels();
+    return wheel;
   }
 
   template<typename TCallable>
@@ -425,30 +422,23 @@ class HTimerWheel2 {
 
   void start() {
     updateNowOffset();
-    CHECK(!timer1_ && !timer2_ && !timer3_ && !timer4_);
-    timer_settings_t settings1 {std::chrono::milliseconds {HH_BUCKET1_RES}};
-    timer1_.reset(TimerEvent::createNewTimerEvent(base_, settings1));
-    timer1_->setHandler([this]() { onTick1(); });
-    timer_settings_t settings2 {std::chrono::milliseconds {HH_BUCKET2_RES}};
-    timer2_.reset(TimerEvent::createNewTimerEvent(base_, settings2));
-    timer2_->setHandler([this]() { onTick2(); });
-    timer_settings_t settings3 {std::chrono::milliseconds {HH_BUCKET3_RES}};
-    timer3_.reset(TimerEvent::createNewTimerEvent(base_, settings3));
-    timer3_->setHandler([this]() { onTick3(); });
-    timer_settings_t settings4 {std::chrono::milliseconds {HH_BUCKET4_RES}};
-    timer4_.reset(TimerEvent::createNewTimerEvent(base_, settings4));
-    timer4_->setHandler([this]() { onTick4(); });
+    using msec = std::chrono::milliseconds;
+    for (size_t i = 0; i < levels_.size(); i++) {
+      auto setting = wheelSettings_.levelSettings[i];
+      levels_[i].timer.reset(TimerEvent::createNewTimerEvent(
+        base_, timer_settings_t { msec { setting.resolution} }
+      ));
+      levels_[i].timer->setHandler([this, i]() {
+        onLevelTick(i);
+      });
+    }
   }
+
   void stop() {
-    CHECK(!!timer1_ && !!timer2_ && !!timer3_ && !!timer4_);
-    timer1_->del();
-    timer1_.reset();
-    timer2_->del();
-    timer2_.reset();
-    timer3_->del();
-    timer3_.reset();
-    timer4_->del();
-    timer4_.reset();
+    for (size_t i = 0; i < levels_.size(); i++) {
+      levels_[i].timer->del();
+      levels_[i].timer.reset();
+    }
   }
 
   auto getNow() -> decltype(getNowOffset()) {
@@ -456,4 +446,4 @@ class HTimerWheel2 {
   }
 };
 
-}}} // evs::events2::wheel
+}}} // score::async::wheel

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "evs/events2/VoidCallback.h"
+#include "score_async/VoidCallback.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class JustOnce {
  protected:
@@ -23,5 +23,5 @@ class JustOnce {
   }
 };
 
-}} // evs::events2
+}} // score::async
 

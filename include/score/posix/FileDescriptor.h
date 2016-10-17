@@ -1,13 +1,13 @@
 #pragma once
-#include "score/ScoreError.h"
+#include "score/exceptions/ScoreError.h"
 #include "score/macros.h"
-#include <folly/futures/Try.h>
+#include "score/Try.h"
 
-namespace evs { namespace posix {
+namespace score { namespace posix {
 
 class FileDescriptor {
  public:
-  SCORE_DECLARE_EXCEPTION(Invalid, ScoreError);
+  SCORE_DECLARE_EXCEPTION(Invalid, score::exceptions::ScoreError);
  protected:
   int fd_ {0};
   FileDescriptor(const FileDescriptor&) = delete;
@@ -18,12 +18,12 @@ class FileDescriptor {
   FileDescriptor(FileDescriptor&& other);
   bool good() const;
   operator bool() const;
-  folly::Try<int> get();
-  folly::Try<int> release();
+  Try<int> get();
+  Try<int> release();
   FileDescriptor& operator=(FileDescriptor&& other);
   void maybeClose();
   ~FileDescriptor();
   static FileDescriptor takeOwnership(int fd);
 };
 
-}} // evs::posix
+}} // score::posix

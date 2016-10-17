@@ -3,23 +3,23 @@
 #include <memory>
 #include <vector>
 #include <glog/logging.h>
-#include "evs/events2/EvBase.h"
-#include "evs/events2/TimerEvent.h"
-#include "evs/events2/VoidCallback.h"
-#include "evs/events/TimerSettings.h"
-#include "evs/events2/wheel/WheelBuffer.h"
-#include "evs/macros.h"
+#include "score_async/EvBase.h"
+#include "score_async/TimerEvent.h"
+#include "score_async/VoidCallback.h"
+#include "score/TimerSettings.h"
+#include "score_async/wheel/WheelBuffer.h"
+#include "score/macros.h"
 
-namespace evs { namespace events2 { namespace wheel {
+namespace score { namespace async { namespace wheel {
 
 template<uint64_t ResolutionMS, uint64_t NSlots>
 class SimpleTimerWheel {
  public:
-  using base_t = evs::events2::EvBase;
-  using timer_settings_t = evs::events::TimerSettings;
-  using timer_t = evs::events2::TimerEvent;
+  using base_t = score::async::EvBase;
+  using timer_settings_t = score::TimerSettings;
+  using timer_t = score::async::TimerEvent;
   using timer_ptr_t = std::unique_ptr<timer_t>;
-  using cb_t = evs::events2::VoidCallback;
+  using cb_t = score::async::VoidCallback;
   static const size_t kResolution = ResolutionMS;
   static const size_t kSlots = NSlots;
   static const size_t kTimeCapacity = ResolutionMS * NSlots;
@@ -63,7 +63,7 @@ class SimpleTimerWheel {
   timer_ptr_t timer_ {nullptr};
   WheelBuffer<Slot, NSlots> buffer_;
 
-  EVS_DISABLE_COPY_AND_ASSIGN(SimpleTimerWheel);
+  SCORE_DISABLE_COPY_AND_ASSIGN(SimpleTimerWheel);
   SimpleTimerWheel(base_t *base): base_(base){}
 
   Slot& getBucket(uint64_t msecDelay) {
@@ -137,4 +137,4 @@ class SimpleTimerWheel {
 };
 
 
-}}} // evs::events2::wheel
+}}} // score::async::wheel

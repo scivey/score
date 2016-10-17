@@ -4,12 +4,12 @@
 #include <glog/logging.h>
 
 #include "evs/events/EventFD.h"
-#include "evs/events2/EvBase.h"
-#include "evs/events2/SigEvent.h"
-#include "evs/events2/UnaryCallback.h"
-#include "evs/events2/EventFDEvent.h"
+#include "score_async/EvBase.h"
+#include "score_async/SigEvent.h"
+#include "score_async/UnaryCallback.h"
+#include "score_async/EventFDEvent.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class EventFDChannel {
  public:
@@ -83,4 +83,4 @@ class EventFDChannel {
   }
 };
 
-}} // evs::events2
+}} // score::async

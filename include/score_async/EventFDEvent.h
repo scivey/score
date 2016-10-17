@@ -1,12 +1,12 @@
 #pragma once
 
 #include <glog/logging.h>
-#include "evs/events2/BaseEvent.h"
-#include "evs/events2/BaseEvent.h"
+#include "score_async/BaseEvent.h"
+#include "score_async/BaseEvent.h"
 
-#include "evs/events2/VoidCallback.h"
+#include "score_async/VoidCallback.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 class EventFDEvent: public BaseEvent<EventFDEvent> {
@@ -29,4 +29,4 @@ class EventFDEvent: public BaseEvent<EventFDEvent> {
   void onSignal() {}
 };
 
-}} // evs::events2
+}} // score::async

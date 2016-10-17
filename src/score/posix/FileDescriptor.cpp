@@ -1,4 +1,5 @@
 #include "score/posix/FileDescriptor.h"
+#include "score/util/try_helpers.h"
 #include <folly/Format.h>
 #include <glog/logging.h>
 
@@ -24,11 +25,9 @@ Try<int> FileDescriptor::get() {
   if (good()) {
     return Try<int> { fd_ };
   }
-  return Try<int> {
-    folly::make_exception_wrapper<FileDescriptor::Invalid>(
-      folly::sformat("Invalid file descriptor: {}", fd_)
-    )
-  };
+  return util::makeTryFailure<int, FileDescriptor::Invalid>(
+    "Invalid file descriptor: {}", fd_
+  );
 }
 
 Try<int> FileDescriptor::release() {

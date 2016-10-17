@@ -1,9 +1,9 @@
 #pragma once
 
-#include "evs/events2/BaseEvent.h"
+#include "score_async/BaseEvent.h"
 #include <glog/logging.h>
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class DefaultEvent: public BaseEvent<DefaultEvent> {
  public:
@@ -21,4 +21,4 @@ class DefaultEvent: public BaseEvent<DefaultEvent> {
   }
 };
 
-}} // evs::events2
+}} // score::async

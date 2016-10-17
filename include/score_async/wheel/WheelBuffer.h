@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-namespace evs { namespace events2 { namespace wheel {
+namespace score { namespace async { namespace wheel {
 
 template<typename T, size_t NItems>
 class WheelBuffer {
@@ -27,4 +27,4 @@ class WheelBuffer {
   }
 };
 
-}}} // evs::events2::wheel
+}}} // score::async::wheel

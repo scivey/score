@@ -34,7 +34,17 @@ create-extract-tests: cm deps
 test-extract: create-extract-tests
 	./build/run_extract_tests
 
-test: test-nlp test-core test-extract
+create-curl-tests: cm deps
+	cd build && make run_curl_tests -j8
+
+test-curl: create-curl-tests
+	./build/run_curl_tests
+
+test-async: cm deps
+	cd build && make run_async_tests -j8
+	./build/run_async_tests
+
+test: test-nlp test-core test-extract test-curl test-async
 
 clean:
 	rm -rf build
@@ -42,6 +52,6 @@ clean:
 deps:
 	bash scripts/deps.sh
 
-.PHONY: clean run create-bencher create-runner deps create-core-tests test
+.PHONY: clean run create-bencher create-runner deps create-core-tests test test-async
 .PHONY: test-extract test-nlp test-core
 

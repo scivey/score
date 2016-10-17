@@ -13,11 +13,11 @@ class ScoreError: public std::runtime_error {
 
   template<typename TVal1>
   ScoreError(const char *fmt, const TVal1& val1)
-    : std::runtime_error(tryFormat(fmt, val1)) {}
+    : std::runtime_error(formatters::tryFormat(fmt, val1)) {}
 
   template<typename TVal1, typename...TVals>
   ScoreError(const char *fmt, const TVal1& val1, TVals&&... vals)
-    : std::runtime_error(tryFormat(fmt, val1, std::forward<TVals>(vals)...)) {}
+    : std::runtime_error(formatters::tryFormat(fmt, val1, std::forward<TVals>(vals)...)) {}
 
   ScoreError(const char*);
 };

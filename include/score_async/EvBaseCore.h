@@ -2,20 +2,20 @@
 
 #include <memory>
 #include <event2/event.h>
-#include "evs/util/util.h"
-#include "evs/events/TimerSettings.h"
+#include "score/util/misc.h"
+#include "score/TimerSettings.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class EvBaseCore {
  public:
   using base_t = event_base;
-  using base_ptr_t = typename evs::util::unique_destructor_ptr<base_t>::type;
+  using base_ptr_t = typename score::util::unique_destructor_ptr<base_t>::type;
 
  protected:
   base_ptr_t base_ {nullptr};
   void takeOwnershipOfBase(base_t *base) {
-    base_ = evs::util::asDestructorPtr<base_t>(base, event_base_free);
+    base_ = score::util::asDestructorPtr<base_t>(base, event_base_free);
   }
  public:
   static EvBaseCore createWithOwnership(base_t *base) {
@@ -54,10 +54,10 @@ class EvBaseCore {
     event_base_loopexit(base_.get(), tv);
     event_base_dispatch(base_.get());
   }
-  void runFor(const events::TimerSettings &settings) {
+  void runFor(const TimerSettings &settings) {
     timeval tv = settings.toTimeVal();
     runFor(&tv);
   }
 };
 
-}} // evs::events2
+}} // score::async

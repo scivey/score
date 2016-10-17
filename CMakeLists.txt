@@ -134,14 +134,6 @@ add_library(score_core ${SCORE_COMMON_SRC})
 set(ALL_LIBS score_core ${COMMON_LIBS})
 
 
-add_executable(runner
-    ${SCORE_ROOT_SRC}/main.cpp
-)
-add_dependencies(runner score_core)
-target_link_libraries(runner
-    ${ALL_LIBS}
-)
-
 
 set(CORE_TEST_DIR ${SCORE_CORE_SRC}/test)
 
@@ -243,3 +235,59 @@ target_link_libraries(run_extract_tests
 
 
 
+
+set(SCORE_ASYNC_SRC_DIR ${SCORE_ROOT_SRC}/score_async)
+
+FILE(GLOB SCORE_ASYNC_SRC
+    ${SCORE_EXTRACT_SRC_DIR}/EventFD.cpp
+)
+add_library(score_async ${SCORE_ASYNC_SRC})
+add_dependencies(score_async score)
+target_link_libraries(score_async ${COMMON_LIBS} score_core)
+
+FILE(GLOB SCORE_ASYNC_TEST_SRC
+    ${SCORE_ASYNC_SRC_DIR}/test/*.cpp
+)
+add_executable(run_async_tests
+    ${SCORE_ASYNC_TEST_SRC}
+    ${SCORE_ROOT_SRC}/run_tests.cpp
+)
+
+add_dependencies(run_async_tests score_async)
+target_link_libraries(run_async_tests
+    gmock
+    ${COMMON_LIBS}
+    score_async
+    score_core
+)
+
+
+
+set(SCORE_CURL_SRC_DIR ${SCORE_ROOT_SRC}/score_curl)
+FILE(GLOB SCORE_CURL_TEST_SRC
+    ${SCORE_CURL_SRC_DIR}/test/*.cpp
+)
+add_executable(run_curl_tests
+    ${SCORE_CURL_TEST_SRC}
+    ${SCORE_ROOT_SRC}/run_tests.cpp
+)
+
+add_dependencies(run_curl_tests score_async)
+target_link_libraries(run_curl_tests
+    gmock
+    ${COMMON_LIBS}
+    score_async
+    score_core
+)
+
+
+
+add_executable(runner
+    ${SCORE_ROOT_SRC}/main.cpp
+)
+add_dependencies(runner score_core score_async)
+target_link_libraries(runner
+    ${ALL_LIBS}
+    score_async
+    score_core
+)

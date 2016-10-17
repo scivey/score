@@ -3,7 +3,7 @@
 #include <functional>
 #include <glog/logging.h>
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class VoidCallback {
  public:
@@ -52,4 +52,4 @@ class VoidCallback {
 };
 
 
-}} // evs::events2
+}} // score::async

@@ -4,10 +4,10 @@
 #include <memory>
 #include <glog/logging.h>
 
-#include "evs/events2/EvBase.h"
-#include "evs/events2/SigEvent.h"
+#include "score_async/EvBase.h"
+#include "score_async/SigEvent.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 
 class SignalHandlerRegistry {
@@ -32,4 +32,4 @@ class SignalHandlerRegistry {
 };
 
 
-}} // evs::events2
+}} // score::async

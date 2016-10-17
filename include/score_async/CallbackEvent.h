@@ -4,10 +4,10 @@
 #include <cstdio>
 #include <folly/Format.h>
 #include <glog/logging.h>
-#include "evs/events2/BaseEvent.h"
-#include "evs/events2/VoidCallback.h"
+#include "score_async/BaseEvent.h"
+#include "score_async/VoidCallback.h"
 
-namespace evs { namespace events2 {
+namespace score { namespace async {
 
 class CallbackEvent: public events2::BaseEvent<CallbackEvent> {
  public:
@@ -70,4 +70,4 @@ class CallbackEvent: public events2::BaseEvent<CallbackEvent> {
 };
 
 
-}} // evs::ev2prog
+}} // score::async
