@@ -2,7 +2,6 @@
 #include <string>
 #include <sstream>
 #include "score/func/Function.h"
-#include "score/func/Callback.h"
 #include "score/func/callable_traits.h"
 #include "score/demangle.h"
 #include "score/Unit.h"
@@ -27,15 +26,15 @@ using ftraits = func::callable_traits<decltype(add2)>;
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  func::Function<void, int> cb([](int x) {
-    LOG(INFO) << "x! " << x;
+  func::Function<void> cb([]() {
+    LOG(INFO) << "!!";
   });
-  cb(17);
+  cb();
   using rt = typename ftraits::result_type;
   using fst = typename ftraits::nth_arg_type<0>;
   using snd = typename ftraits::nth_arg_type<1>;
   LOG(INFO) << score::demangle(typeid(rt));
   LOG(INFO) << score::demangle(typeid(fst));
   LOG(INFO) << score::demangle(typeid(snd));
-  LOG(INFO) << ftraits::arg_count;
+  LOG(INFO) << ftraits::arity;
 }

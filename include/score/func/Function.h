@@ -14,7 +14,11 @@ class Function {
   using func_type = std::function<TOut(TArgs...)>;
   using traits = callable_traits<func_type>;
   using argument_types = typename traits::argument_types;
-  using input_type = typename traits::template nth_arg_type<0>;
+
+  template<size_t Idx>
+  using nth_arg_type = typename traits::template nth_arg_type<Idx>;
+
+  static const size_t arity = traits::arity;
   using output_type = TOut;
   using func_option_t = score::Optional<func_type>;
  protected:

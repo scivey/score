@@ -60,7 +60,7 @@ struct callable_traits {
   template<size_t Idx>
   using nth_arg_type = typename std::tuple_element<Idx, argument_types>::type;
 
-  static const size_t arg_count = std::tuple_size<argument_types>::value;
+  static const size_t arity = std::tuple_size<argument_types>::value;
 };
 
 }} // score::func
