@@ -5,6 +5,7 @@
 #include "score/func/Callback.h"
 #include "score/func/callable_traits.h"
 #include "score/demangle.h"
+#include "score/Unit.h"
 
 using namespace std;
 
@@ -26,6 +27,10 @@ using ftraits = func::callable_traits<decltype(add2)>;
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
+  func::Function<void, int> cb([](int x) {
+    LOG(INFO) << "x! " << x;
+  });
+  cb(17);
   using rt = typename ftraits::result_type;
   using fst = typename ftraits::nth_arg_type<0>;
   using snd = typename ftraits::nth_arg_type<1>;
