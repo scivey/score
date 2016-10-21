@@ -1,38 +1,60 @@
 #include "score_async/EvBase.h"
+#include "score/util/misc.h"
+#include "score/TimerSettings.h"
+#include <memory>
+#include <event2/event.h>
 
 
 namespace score { namespace async {
 
-using base_t = typename EvBase::base_t;
-using base_core_t = typename EvBase::base_core_t;
+using base_t = EvBase::base_t;
 
-EvBase::EvBase(){}
+void EvBase::takeOwnershipOfBase(base_t *base) {
+  base_ = score::util::asDestructorPtr<base_t>(base, event_base_free);
+}
 
-EvBase::EvBase(base_core_t&& core): base_(std::move(core)) {}
+EvBase EvBase::createWithOwnership(base_t *base) {
+  EvBase baseCore;
+  baseCore.takeOwnershipOfBase(base);
+  return baseCore;
+}
 
 EvBase EvBase::create() {
-  return EvBase{EvBaseCore::create()};
+  return createWithOwnership(event_base_new());
+}
+
+EvBase* EvBase::newWithOwnership(base_t *base) {
+  return new EvBase {EvBase::createWithOwnership(base)};
 }
 
 EvBase* EvBase::createNew() {
-  return new EvBase(EvBase::create());
+  return newWithOwnership(event_base_new());
 }
 
 base_t* EvBase::getBase() {
-  return base_.getBase();
+  return base_.get();
 }
+
+void EvBase::runOnce() {
+  event_base_loop(base_.get(), EVLOOP_ONCE);
+}
+
+void EvBase::runNonBlocking() {
+  event_base_loop(base_.get(), EVLOOP_NONBLOCK);
+}
+
 void EvBase::runForever() {
-  base_.runForever();
+  event_base_dispatch(base_.get());
 }
+
 void EvBase::runFor(timeval *tv) {
-  base_.runFor(tv);
+  event_base_loopexit(base_.get(), tv);
+  event_base_dispatch(base_.get());
 }
+
 void EvBase::runFor(const TimerSettings &settings) {
   timeval tv = settings.toTimeVal();
   runFor(&tv);
-}
-void EvBase::runOnce() {
-  base_.runNonBlocking();
 }
 
 }} // score::async
