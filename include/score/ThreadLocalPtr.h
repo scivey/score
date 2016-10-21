@@ -2,7 +2,7 @@
 
 #include <pthread.h>
 #include <memory>
-#include "score/exceptions/macros.h"
+#include "score/macros/assertions.h"
 
 namespace score {
 

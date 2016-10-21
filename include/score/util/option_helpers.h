@@ -34,7 +34,7 @@ score::Optional<typename std::result_of<TCallable(TIn)>::type> doWithValue(
 
 template<typename TIn, typename TCallable,
   typename = typename std::enable_if<
-    is_score_option<typename std::result_of<TCallable(TIn)>::type>::value,
+    is_option<typename std::result_of<TCallable(TIn)>::type>::value,
     TIn
   >::type>
 auto doWithValue(score::Optional<TIn>&& prevOption, TCallable&& func)

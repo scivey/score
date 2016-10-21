@@ -1,8 +1,9 @@
 #pragma once
-#include "score/exceptions/macros.h"
-#include "score/vendored/folly/Likely.h"
 #include <errno.h>
 #include <folly/Format.h>
+
+#include "score/vendored/folly/Likely.h"
+#include "score/macros/assertions.h"
 
 #define SCORE_XSTR(x) #x
 #define SCORE_STR(x) SCORE_XSTR(x)

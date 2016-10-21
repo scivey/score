@@ -1,22 +1,24 @@
 #pragma once
 
-#include <folly/Optional.h>
-#include <folly/futures/Try.h>
-#include <folly/futures/Unit.h>
 #include <folly/Range.h>
+
+#include "score/Optional.h"
+#include "score/Try.h"
+#include "score/Unit.h"
+
 
 #include "score/exceptions/exceptions.h"
 #include "score/url/URLComponent.h"
 #include "score/url/detail/HTTPParserURL.h"
 
 #include "score/vendored/http-parser/http_parser.h"
-#include "score/folly_util/option_helpers.h"
+#include "score/util/option_helpers.h"
 
 namespace score { namespace url {
 
 class URLView {
  public:
-  using piece_t = folly::Optional<folly::StringPiece>;
+  using piece_t = score::Optional<folly::StringPiece>;
  protected:
   using HTTPParserURL = score::url::detail::HTTPParserURL;
   using StringPiece = folly::StringPiece;
@@ -29,7 +31,7 @@ class URLView {
  public:
   URLView();
 
-  static folly::Try<URLView> parse(const char *buff, size_t buffLen);
+  static score::Try<URLView> parse(const char *buff, size_t buffLen);
 
   piece_t getComponent(URLComponent component) const;
   piece_t host() const;
@@ -38,14 +40,14 @@ class URLView {
   piece_t query() const;
   piece_t userInfo() const;
   piece_t fragment() const;
-  folly::Optional<int16_t> port() const;
+  score::Optional<int16_t> port() const;
 
-  folly::Optional<size_t> fragmentOffset() const;
+  score::Optional<size_t> fragmentOffset() const;
 
   template<typename TString,
     typename = decltype(std::declval<TString>().c_str())
   >
-  static folly::Try<URLView> parse(const TString& anUrl) {
+  static score::Try<URLView> parse(const TString& anUrl) {
     return parse(anUrl.c_str(), anUrl.size());
   }
 

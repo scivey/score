@@ -5,27 +5,24 @@
 
 #include <gtest/gtest.h>
 #include <folly/Range.h>
-#include <folly/Optional.h>
-#include <folly/futures/Try.h>
-#include <folly/futures/Unit.h>
-#include <folly/ExceptionWrapper.h>
-
 #include "score/vendored/http-parser/http_parser.h"
 #include "score/exceptions/exceptions.h"
 #include "score/url/URLComponent.h"
 #include "score/url/detail/HTTPParserURL.h"
-
-#include "score/folly_util/option_helpers.h"
+#include "score/Optional.h"
+#include "score/Try.h"
+#include "score/Unit.h"
+#include "score/util/option_helpers.h"
 #include "score/url/URLView.h"
 
 using namespace std;
 using folly::StringPiece;
-using folly::Optional;
+using score::Optional;
 using score::url::URLComponent;
 using score::url::httpParserEnumOfURLComponent;
 using score::url::detail::HTTPParserURL;
 using score::url::URLView;
-using score::folly_util::doWithValue;
+using score::util::doWithValue;
 
 
 std::string makeString(const Optional<StringPiece>& strPiece) {

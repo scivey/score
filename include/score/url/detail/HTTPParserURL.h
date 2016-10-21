@@ -1,9 +1,10 @@
 #pragma once
 
-#include <folly/Optional.h>
-#include <folly/futures/Try.h>
-#include <folly/futures/Unit.h>
+#include "score/Optional.h"
+#include "score/Try.h"
+#include "score/Unit.h"
 #include "score/exceptions/exceptions.h"
+#include "score/ExceptionWrapper.h"
 #include "score/url/URLComponent.h"
 #include "score/vendored/http-parser/http_parser.h"
 
@@ -27,25 +28,25 @@ class HTTPParserURL {
   operator bool() const;
   void reset();
   bool hasComponent(URLComponent component) const;
-  folly::Optional<idx_pair_t> getComponent(URLComponent component) const;
+  score::Optional<idx_pair_t> getComponent(URLComponent component) const;
   int16_t getPort() const;
-  folly::Try<folly::Unit> setTarget(const char *buff, size_t buffLen);
+  score::Try<score::Unit> setTarget(const char *buff, size_t buffLen);
 
 
   template<typename TString,
     typename = decltype(std::declval<TString>().c_str())
   >
-  folly::Try<folly::Unit> setTarget(const TString& aString) {
+  score::Try<score::Unit> setTarget(const TString& aString) {
     return setTarget(aString.c_str(), aString.size());
   }
 
-  static folly::Try<HTTPParserURL> parse(const char *buff, size_t buffLen);
+  static score::Try<HTTPParserURL> parse(const char *buff, size_t buffLen);
 
 
   template<typename TString,
     typename = decltype(std::declval<TString>().c_str())
   >
-  static folly::Try<HTTPParserURL> parse(const TString& aString) {
+  static score::Try<HTTPParserURL> parse(const TString& aString) {
     return parse(aString.c_str(), aString.size());
   }
 };

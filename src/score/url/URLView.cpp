@@ -1,10 +1,7 @@
 #include "score/url/URLView.h"
-#include "score/folly_util/option_helpers.h"
+#include "score/util/option_helpers.h"
 
 using score::url::detail::HTTPParserURL;
-using folly::Optional;
-using folly::StringPiece;
-using folly::Try;
 
 namespace score { namespace url {
 
@@ -15,20 +12,20 @@ URLView::URLView(HTTPParserURL&& httpParser, const char *buff, size_t buffLen)
 
 URLView::URLView(){}
 
-folly::Try<URLView> URLView::parse(const char *buff, size_t buffLen) {
+score::Try<URLView> URLView::parse(const char *buff, size_t buffLen) {
   auto parsed = HTTPParserURL::parse(buff, buffLen);
   if (parsed.hasException()) {
-    return folly::Try<URLView>{
+    return score::Try<URLView>{
       std::move(parsed.exception())
     };
   }
-  return folly::Try<URLView> {
+  return score::Try<URLView> {
     URLView(std::move(parsed.value()), buff, buffLen)
   };
 }
 
 piece_t URLView::getComponent(URLComponent component) const {
-  return folly_util::doWithValue(parsed_.getComponent(component),
+  return util::doWithValue(parsed_.getComponent(component),
     [this](HTTPParserURL::idx_pair_t idxPair) {
       return StringPiece(
         buff_ + idxPair.first,
@@ -62,8 +59,8 @@ piece_t URLView::fragment() const {
   return getComponent(URLComponent::FRAGMENT);
 }
 
-folly::Optional<size_t> URLView::fragmentOffset() const {
-  folly::Optional<size_t> result;
+score::Optional<size_t> URLView::fragmentOffset() const {
+  score::Optional<size_t> result;
   auto frag = fragment();
   if (!frag.hasValue()) {
     return result;
@@ -74,8 +71,8 @@ folly::Optional<size_t> URLView::fragmentOffset() const {
   return result;
 }
 
-folly::Optional<int16_t> URLView::port() const {
-  folly::Optional<int16_t> result;
+score::Optional<int16_t> URLView::port() const {
+  score::Optional<int16_t> result;
   if (parsed_.valid()) {
     result.assign(parsed_.getPort());
   }
