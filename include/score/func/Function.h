@@ -4,16 +4,18 @@
 #include <glog/logging.h>
 #include <type_traits>
 #include "score/Optional.h"
+#include "score/func/callable_traits.h"
 
 namespace score { namespace func {
 
-template<typename TIn, typename TOut>
+template<typename TOut, typename...TArgs>
 class Function {
  public:
-  using arg_type = TIn;
-  using input_type = TIn;
+  using func_type = std::function<TOut(TArgs...)>;
+  using traits = callable_traits<func_type>;
+  using argument_types = typename traits::argument_types;
+  using input_type = typename traits::template nth_arg_type<0>;
   using output_type = TOut;
-  using func_type = std::function<output_type(input_type)>;
   using func_option_t = score::Optional<func_type>;
  protected:
   func_option_t func_;
@@ -109,14 +111,17 @@ class Function {
     return *this;
   }
 
-  TOut call(TIn arg) {
+  template<typename ...U>
+  output_type call(U&&... args) {
     DCHECK(good());
-    return func_.value()(arg);
+    return func_.value()(std::forward<U>(args)...);
   }
 
-  TOut operator()(TIn arg) {
-    return call(arg);
+  template<typename ...U>
+  output_type operator()(U&&... args) {
+    return call(std::forward<U>(args)...);
   }
 };
+
 
 }} // score::func

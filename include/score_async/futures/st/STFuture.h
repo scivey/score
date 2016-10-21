@@ -38,7 +38,7 @@ class STFuture {
   template<typename TOut>
   struct then_helper {
     using result_t = TOut;
-    using cb_t = func::Function<T, result_t>;
+    using cb_t = func::Function<result_t, T>;
     using cb_wrap_t = type_wrapper<cb_t>;
     using out_future = STFuture<TOut>;
     using promise_t = STPromise<TOut>;

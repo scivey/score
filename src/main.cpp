@@ -19,8 +19,9 @@ std::string joinStr(string str1, string str2) {
   oss << str1 << " || " << str2;
   return oss.str();
 }
+namespace func = score::func;
+using ftraits = func::callable_traits<decltype(add2)>;
 
-using ftraits = score::func::callable_traits<decltype(add2)>;
 
 int main() {
   google::InstallFailureSignalHandler();

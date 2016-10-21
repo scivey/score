@@ -13,7 +13,7 @@ std::string stringOfInt(int x) {
   return oss.str();
 }
 
-using ITSFunc = func::Function<int, string>;
+using ITSFunc = func::Function<string, int>;
 
 TEST(TestFunction, TestGoodness1) {
   ITSFunc fn;
