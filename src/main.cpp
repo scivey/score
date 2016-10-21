@@ -26,10 +26,10 @@ int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
   using rt = typename ftraits::result_type;
-  using fst = typename score::func::nth_arg_type<decltype(add2), 0>;
-  using snd = typename score::func::nth_arg_type<decltype(add2), 1>;
+  using fst = typename ftraits::nth_arg_type<0>;
+  using snd = typename ftraits::nth_arg_type<1>;
   LOG(INFO) << score::demangle(typeid(rt));
   LOG(INFO) << score::demangle(typeid(fst));
   LOG(INFO) << score::demangle(typeid(snd));
-
+  LOG(INFO) << ftraits::arg_count;
 }
