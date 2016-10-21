@@ -16,6 +16,7 @@ class SignalHandlerRegistry {
   std::vector<std::shared_ptr<SigEvent>> handlers_;
  public:
   SignalHandlerRegistry(EvBase *base): base_(base) {}
+
   template<typename TCallable>
   void addHandler(int signo, TCallable&& callable) {
     DCHECK(!!base_);

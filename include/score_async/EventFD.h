@@ -16,7 +16,7 @@ class EventFD {
   posix::FileDescriptor fd_;
   EventFD(posix::FileDescriptor&&);
  public:
-  SCORE_DECLARE_EXCEPTION(EventFDError, ScoreError);
+  SCORE_DECLARE_EXCEPTION(EventFDError, score::exceptions::ScoreError);
   SCORE_DECLARE_EXCEPTION(Invalid, EventFDError);
   SCORE_DECLARE_EXCEPTION(NotReady, EventFDError);
   SCORE_DECLARE_EXCEPTION(IOError, EventFDError);

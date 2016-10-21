@@ -8,7 +8,7 @@ using score::util::makeTryFailure;
 using score::util::makeTrySuccess;
 using score::util::doWithValue;
 
-namespace evs { namespace events {
+namespace score { namespace async {
 
 using fd_try_t = typename EventFD::fd_try_t;
 
@@ -75,5 +75,5 @@ EventFD::operator bool() const {
   return good();
 }
 
-}} // evs::events
+}} // score::async
 
