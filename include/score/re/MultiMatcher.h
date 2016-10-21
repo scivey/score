@@ -11,7 +11,7 @@ class MultiMatcher {
   using string_t = std::string;
   using string_set_t = std::set<string_t>;
  protected:
-  RE2 re_;
+  re2::RE2 re_;
   MultiMatcher(const MultiMatcher&) = delete;
   MultiMatcher& operator=(const MultiMatcher&) = delete;
  public:
