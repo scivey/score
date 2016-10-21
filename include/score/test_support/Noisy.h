@@ -161,6 +161,12 @@ class Noisy {
   ~Noisy() {
     maybeMarkDestroyed();
   }
+  bool operator==(const Noisy& other) const {
+    return id_ == other.id_;
+  }
+  bool operator!=(const Noisy& other) const {
+    return !operator==(other);
+  }
 };
 
 
