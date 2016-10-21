@@ -239,8 +239,7 @@ target_link_libraries(run_extract_tests
 set(SCORE_ASYNC_SRC_DIR ${SCORE_ROOT_SRC}/score_async)
 
 FILE(GLOB SCORE_ASYNC_SRC
-    ${SCORE_ASYNC_SRC_DIR}/EventFD.cpp
-    ${SCORE_ASYNC_SRC_DIR}/EvBaseCore.cpp
+    ${SCORE_ASYNC_SRC_DIR}/*.cpp
 
 )
 add_library(score_async ${SCORE_ASYNC_SRC})

@@ -9,10 +9,10 @@
 
 namespace score { namespace async {
 
-class CallbackEvent: public events2::BaseEvent<CallbackEvent> {
+class CallbackEvent: public BaseEvent<CallbackEvent> {
  public:
   using string_t = std::string;
-  using event_cb_t = events2::VoidCallback;
+  using event_cb_t = VoidCallback;
 
  protected:
   event_cb_t readCallback_;
@@ -20,27 +20,10 @@ class CallbackEvent: public events2::BaseEvent<CallbackEvent> {
   event_cb_t timeoutCallback_;
 
  public:
-  void onReadable() {
-    if (readCallback_) {
-      readCallback_();
-    } else {
-      LOG(INFO) << "onReadable: no readCallback registered.";
-    }
-  }
-  void onWritable() {
-    if (writeCallback_) {
-      writeCallback_();
-    } else {
-      LOG(INFO) << "onWritable: no writeCallback registered.";
-    }
-  }
-  void onTimeout() {
-    if (timeoutCallback_) {
-      timeoutCallback_();
-    } else {
-      LOG(INFO) << "onTimeout: no timeoutCallback registered.";
-    }
-  }
+  void onReadable();
+  void onWritable();
+  void onTimeout();
+  void onSignal();
 
   template<typename TCallable>
   void setReadHandler(TCallable&& callable) {
@@ -66,7 +49,6 @@ class CallbackEvent: public events2::BaseEvent<CallbackEvent> {
   void setTimeoutHandler(const TCallable& callable) {
     timeoutCallback_ = callable;
   }
-  void onSignal() {}
 };
 
 

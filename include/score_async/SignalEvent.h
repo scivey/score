@@ -6,9 +6,11 @@
 
 namespace score { namespace async {
 
-class SigEvent: public BaseEvent<SigEvent> {
+class SignalEvent: public BaseEvent<SignalEvent> {
+ public:
+  using cb_t = VoidCallback;
  protected:
-  VoidCallback callback_;
+  cb_t callback_;
  public:
   void onSignal() {
     CHECK(!!callback_);

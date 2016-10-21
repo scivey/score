@@ -5,7 +5,7 @@
 
 #include "evs/events/EventFD.h"
 #include "score_async/EvBase.h"
-#include "score_async/SigEvent.h"
+#include "score_async/SignalEvent.h"
 #include "score_async/UnaryCallback.h"
 #include "score_async/EventFDEvent.h"
 
