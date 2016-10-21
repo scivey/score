@@ -1,5 +1,5 @@
 #pragma once
-#include "score/html/Node.h"
+#include "score_html/Node.h"
 #include "score_extract/goose/util.h"
 #include <vector>
 #include <set>

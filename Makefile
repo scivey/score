@@ -15,36 +15,36 @@ run: create-runner
 bench: create-bencher
 	./build/bencher
 
-create-core-tests: cm deps
-	cd build && make run_core_tests -j8
 
-test-core: create-core-tests
+TEST_RUNNERS=run_core_tests \
+	  run_async_tests \
+	  run_curl_tests \
+	  run_extract_tests \
+	  run_html_tests \
+	  run_nlp_tests
+
+build-tests: cm deps
+	cd build && make $(TEST_RUNNERS) -j8
+
+test-core: build-tests
 	./build/run_core_tests
 
-create-nlp-tests: cm deps
-	cd build && make run_nlp_tests -j8
-
-test-nlp: create-nlp-tests
+test-nlp: build-tests
 	./build/run_nlp_tests
 
-
-create-extract-tests: cm deps
-	cd build && make run_extract_tests -j8
-
-test-extract: create-extract-tests
+test-extract: build-tests
 	./build/run_extract_tests
 
-create-curl-tests: cm deps
-	cd build && make run_curl_tests -j8
-
-test-curl: create-curl-tests
+test-curl: build-tests
 	./build/run_curl_tests
 
-test-async: cm deps
-	cd build && make run_async_tests -j8
+test-async: build-tests
 	./build/run_async_tests
 
-test: test-nlp test-core test-extract test-curl test-async
+test-html: build-tests
+	./build/run_html_tests
+
+test: test-nlp test-core test-extract test-curl test-async test-html
 
 clean:
 	rm -rf build
@@ -52,6 +52,5 @@ clean:
 deps:
 	bash scripts/deps.sh
 
-.PHONY: clean run create-bencher create-runner deps create-core-tests test test-async
-.PHONY: test-extract test-nlp test-core
+.PHONY: clean run create-bencher create-runner deps test
 

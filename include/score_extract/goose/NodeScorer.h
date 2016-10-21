@@ -4,7 +4,7 @@
 #include <memory>
 #include <set>
 #include <vector>
-#include "score/html/Node.h"
+#include "score_html/Node.h"
 
 namespace score { namespace extract { namespace goose {
 

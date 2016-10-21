@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "score/html/HtmlDom.h"
+#include "score_html/HtmlDom.h"
 #include "score_nlp/Language.h"
 #include "score_nlp/stemming/StemmerManager.h"
 #include "score_extract/goose/GooseOptions.h"

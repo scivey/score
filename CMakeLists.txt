@@ -51,83 +51,68 @@ set(COMMON_LIBS
     atomic
 )
 
-set(SCORE_ROOT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(SCORE_CORE_SRC ${SCORE_ROOT_SRC}/score)
-
-set(GUMBO_PARSER_SOURCES
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/attribute.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/char_ref.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/error.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/parser.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/string_buffer.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/string_piece.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/tag.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/tokenizer.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/utf8.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/util.c
-    ${SCORE_CORE_SRC}/vendored/gumbo-parser/vector.c
-)
+set(SCORE_ROOT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SCORE_CORE_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score)
 
 set(SMHASHER_SOURCES
-    ${SCORE_CORE_SRC}/vendored/smhasher/Platform.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/sha1.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/md5.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/Types.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/Bitvec.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/Bitslice.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/Random.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/City.cpp
-    ${SCORE_CORE_SRC}/vendored/smhasher/MurmurHash3.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/Platform.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/sha1.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/md5.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/Types.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/Bitvec.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/Bitslice.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/Random.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/City.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/smhasher/MurmurHash3.cpp
 )
 
 
-set(VENDORED_CHARSET_ROOT ${SCORE_CORE_SRC}/vendored/lgpl/charsetdetect)
+set(VENDORED_CHARSET_ROOT ${SCORE_CORE_SRC_DIR}/vendored/lgpl/charsetdetect)
 FILE(GLOB CHARSETDETECT_SOURCES ${VENDORED_CHARSET_ROOT}/base/*.cpp)
 set(CHARSETDETECT_SOURCES
     ${CHARSETDETECT_SOURCES} ${VENDORED_CHARSET_ROOT}/charsetdetect.cpp
 )
 
 FILE(GLOB VENDORED_FOLLY_SOURCES
-    ${SCORE_CORE_SRC}/vendored/folly/*.cpp
-    ${SCORE_CORE_SRC}/vendored/folly/**/*.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/folly/*.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/folly/**/*.cpp
 )
 
 
-set(SCORE_VENDORED_SRC
+set(SCORE_CORE_VENDORED_SRC
     ${SMHASHER_SOURCES}
-    ${GUMBO_PARSER_SOURCES}
     ${CHARSETDETECT_SOURCES}
     ${VENDORED_FOLLY_SOURCES}
-    ${SCORE_CORE_SRC}/vendored/http-parser/http_parser.c
-    ${SCORE_CORE_SRC}/vendored/pugixml/pugixml.cpp
-    ${SCORE_CORE_SRC}/vendored/modp_b64/modp_b64.cc
+    ${SCORE_CORE_SRC_DIR}/vendored/http-parser/http_parser.c
+    ${SCORE_CORE_SRC_DIR}/vendored/pugixml/pugixml.cpp
+    ${SCORE_CORE_SRC_DIR}/vendored/modp_b64/modp_b64.cc
 )
 
 FILE(GLOB SCORE_COMMON_SRC
-    ${SCORE_CORE_SRC}/*.cpp
-    ${SCORE_CORE_SRC}/curl/**/*.cpp
-    ${SCORE_CORE_SRC}/curl/*.cpp
-    ${SCORE_CORE_SRC}/url/*.cpp
-    ${SCORE_CORE_SRC}/url/**/*.cpp
-    ${SCORE_CORE_SRC}/encodings/*.cpp
-    ${SCORE_CORE_SRC}/html/*.cpp
-    ${SCORE_CORE_SRC}/fs/*.cpp
-    ${SCORE_CORE_SRC}/io/*.cpp
-    ${SCORE_CORE_SRC}/locks/*.cpp
-    ${SCORE_CORE_SRC}/mem/*.cpp
-    ${SCORE_CORE_SRC}/posix/*.cpp
-    ${SCORE_CORE_SRC}/re/*.cpp
-    ${SCORE_CORE_SRC}/reactor/*.cpp
-    ${SCORE_CORE_SRC}/unicode/*.cpp
-    ${SCORE_CORE_SRC}/net/*.cpp
-    ${SCORE_CORE_SRC}/hashing/*.cpp
-    ${SCORE_CORE_SRC}/exceptions/*.cpp
+    ${SCORE_CORE_SRC_DIR}/*.cpp
+    ${SCORE_CORE_SRC_DIR}/curl/**/*.cpp
+    ${SCORE_CORE_SRC_DIR}/curl/*.cpp
+    ${SCORE_CORE_SRC_DIR}/url/*.cpp
+    ${SCORE_CORE_SRC_DIR}/url/**/*.cpp
+    ${SCORE_CORE_SRC_DIR}/encodings/*.cpp
+    ${SCORE_CORE_SRC_DIR}/html/*.cpp
+    ${SCORE_CORE_SRC_DIR}/fs/*.cpp
+    ${SCORE_CORE_SRC_DIR}/io/*.cpp
+    ${SCORE_CORE_SRC_DIR}/locks/*.cpp
+    ${SCORE_CORE_SRC_DIR}/mem/*.cpp
+    ${SCORE_CORE_SRC_DIR}/posix/*.cpp
+    ${SCORE_CORE_SRC_DIR}/re/*.cpp
+    ${SCORE_CORE_SRC_DIR}/reactor/*.cpp
+    ${SCORE_CORE_SRC_DIR}/unicode/*.cpp
+    ${SCORE_CORE_SRC_DIR}/net/*.cpp
+    ${SCORE_CORE_SRC_DIR}/hashing/*.cpp
+    ${SCORE_CORE_SRC_DIR}/exceptions/*.cpp
 )
 
 
 set(SCORE_COMMON_SRC
     ${SCORE_COMMON_SRC}
-    ${SCORE_VENDORED_SRC}
+    ${SCORE_CORE_VENDORED_SRC}
 )
 
 add_library(score_core ${SCORE_COMMON_SRC})
@@ -135,7 +120,7 @@ set(ALL_LIBS score_core ${COMMON_LIBS})
 
 
 
-set(CORE_TEST_DIR ${SCORE_CORE_SRC}/test)
+set(CORE_TEST_DIR ${SCORE_CORE_SRC_DIR}/test)
 
 FILE(GLOB CORE_TEST_SRC
     ${CORE_TEST_DIR}/*.cpp
@@ -146,7 +131,7 @@ FILE(GLOB CORE_TEST_SRC
 
 add_executable(run_core_tests
     ${CORE_TEST_SRC}
-    ${SCORE_ROOT_SRC}/run_tests.cpp
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
 add_dependencies(run_core_tests score_core)
@@ -158,7 +143,54 @@ target_link_libraries(run_core_tests
 
 
 
-set(SCORE_NLP_SRC_DIR ${SCORE_ROOT_SRC}/score_nlp)
+
+
+
+
+set(SCORE_HTML_VENDORED_SRC ${GUMBO_PARSER_SOURCES})
+set(SCORE_HTML_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_html)
+set(SCORE_HTML_VENDORED_DIR ${SCORE_HTML_SRC_DIR}/vendored)
+
+set(SCORE_HTML_GUMBO_PARSER_SRC
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/attribute.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/char_ref.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/error.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/parser.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/string_buffer.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/string_piece.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/tag.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/tokenizer.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/utf8.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/util.c
+    ${SCORE_HTML_VENDORED_DIR}/gumbo-parser/vector.c
+)
+FILE(GLOB SCORE_HTML_SRC
+    ${SCORE_HTML_SRC_DIR}/*.cpp
+)
+set(SCORE_HTML_SRC
+    ${SCORE_HTML_SRC}
+    ${SCORE_HTML_GUMBO_PARSER_SRC}
+)
+add_library(score_html ${SCORE_HTML_SRC})
+add_dependencies(score_html score)
+
+FILE(GLOB SCORE_HTML_TEST_SRC
+    ${SCORE_HTML_SRC_DIR}/test/*.cpp
+)
+add_executable(run_html_tests
+    ${SCORE_HTML_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+target_link_libraries(run_html_tests gmock score_html score_core ${COMMON_LIBS})
+
+
+
+
+
+
+
+
+set(SCORE_NLP_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_nlp)
 
 set(VENDORED_LIBSTEMMER_ROOT ${SCORE_NLP_SRC_DIR}/vendored/libstemmer)
 FILE(GLOB LIBSTEMMER_SOURCES ${VENDORED_LIBSTEMMER_ROOT}/**/*.c)
@@ -193,7 +225,7 @@ FILE(GLOB SCORE_NLP_TEST_SRC
 
 add_executable(run_nlp_tests
     ${SCORE_NLP_TEST_SRC}
-    ${SCORE_ROOT_SRC}/run_tests.cpp
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_nlp_tests score_nlp)
 target_link_libraries(run_nlp_tests gmock ${COMMON_LIBS} score_core score_nlp)
@@ -204,15 +236,14 @@ target_link_libraries(run_nlp_tests gmock ${COMMON_LIBS} score_core score_nlp)
 
 
 
-set(SCORE_EXTRACT_SRC_DIR ${SCORE_ROOT_SRC}/score_extract)
+set(SCORE_EXTRACT_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_extract)
 
 FILE(GLOB SCORE_EXTRACT_SRC
     ${SCORE_EXTRACT_SRC_DIR}/goose/*.cpp
 )
 add_library(score_extract ${SCORE_EXTRACT_SRC})
-add_dependencies(score_extract score)
-add_dependencies(score_extract score_nlp)
-target_link_libraries(score_extract ${COMMON_LIBS} score_core score_nlp)
+add_dependencies(score_extract score score_nlp score_html)
+target_link_libraries(score_extract ${COMMON_LIBS} score_nlp score_html score_core)
 
 FILE(GLOB SCORE_EXTRACT_TEST_SRC
     ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
@@ -221,7 +252,7 @@ FILE(GLOB SCORE_EXTRACT_TEST_SRC
 
 add_executable(run_extract_tests
     ${SCORE_EXTRACT_TEST_SRC}
-    ${SCORE_ROOT_SRC}/run_tests.cpp
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
 add_dependencies(run_extract_tests score_extract)
@@ -236,7 +267,7 @@ target_link_libraries(run_extract_tests
 
 
 
-set(SCORE_ASYNC_SRC_DIR ${SCORE_ROOT_SRC}/score_async)
+set(SCORE_ASYNC_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_async)
 
 FILE(GLOB SCORE_ASYNC_SRC
     ${SCORE_ASYNC_SRC_DIR}/*.cpp
@@ -251,7 +282,7 @@ FILE(GLOB SCORE_ASYNC_TEST_SRC
 )
 add_executable(run_async_tests
     ${SCORE_ASYNC_TEST_SRC}
-    ${SCORE_ROOT_SRC}/run_tests.cpp
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
 add_dependencies(run_async_tests score_async)
@@ -264,7 +295,7 @@ target_link_libraries(run_async_tests
 
 
 
-set(SCORE_CURL_SRC_DIR ${SCORE_ROOT_SRC}/score_curl)
+set(SCORE_CURL_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_curl)
 
 FILE(GLOB SCORE_CURL_SRC
     ${SCORE_CURL_SRC_DIR}/*.cpp
@@ -279,7 +310,7 @@ FILE(GLOB SCORE_CURL_TEST_SRC
 )
 add_executable(run_curl_tests
     ${SCORE_CURL_TEST_SRC}
-    ${SCORE_ROOT_SRC}/run_tests.cpp
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
 add_dependencies(run_curl_tests score_curl)
@@ -294,7 +325,7 @@ target_link_libraries(run_curl_tests
 
 
 add_executable(runner
-    ${SCORE_ROOT_SRC}/main.cpp
+    ${SCORE_ROOT_SRC_DIR}/main.cpp
 )
 add_dependencies(runner score_core score_async)
 target_link_libraries(runner

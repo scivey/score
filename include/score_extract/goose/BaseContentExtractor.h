@@ -1,5 +1,5 @@
 #pragma once
-#include "score/html/Node.h"
+#include "score_html/Node.h"
 #include "score_extract/goose/BoostChecker.h"
 #include "score_extract/goose/TextCleaner.h"
 #include "score_extract/goose/TextNodeCollector.h"
