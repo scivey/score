@@ -81,7 +81,8 @@ std::string demangle(const char* name) {
   }
   // len is the length of the buffer (including NUL terminator and maybe
   // other junk)
-  return std::string(demangled, strlen(demangled), len, AcquireMallocatedString());
+  // return std::string(demangled, strlen(demangled), len, AcquireMallocatedString());
+  return std::string(demangled, strlen(demangled));
 }
 
 namespace {
