@@ -6,7 +6,6 @@
 #include <glog/logging.h>
 #include <folly/Range.h>
 #include "score/util/try_helpers.h"
-#include "score_async/UnaryCallback.h"
 #include "score/Try.h"
 #include "score/Unit.h"
 #include "score_curl/EasyHandle.h"

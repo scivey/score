@@ -6,7 +6,6 @@
 #include <chrono>
 #include "score/TimerSettings.h"
 #include "score_async/TimerEvent.h"
-#include "score_async/VoidCallback.h"
 #include "score_async/EvBase.h"
 #include "score_async/wheel/SimpleTimerWheel.h"
 #include "score_async/wheel/HTimerWheel.h"
@@ -17,7 +16,6 @@ using namespace std;
 using score::async::EvBase;
 using score::async::wheel::SimpleTimerWheel;
 using score::async::wheel::HTimerWheel;
-using score::async::VoidCallback;
 using score::async::TimerEvent;
 using score::TimerSettings;
 

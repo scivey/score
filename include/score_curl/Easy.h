@@ -7,7 +7,7 @@
 #include <glog/logging.h>
 #include <folly/Range.h>
 #include "score/util/try_helpers.h"
-#include "score_async/UnaryCallback.h"
+#include "score/func/Function.h"
 #include "score/Try.h"
 #include "score/Unit.h"
 #include "score_curl/EasyHandle.h"
@@ -17,7 +17,7 @@ namespace score { namespace curl {
 
 class Easy {
  public:
-  using done_cb_t = async::UnaryCallback<std::string>;
+  using done_cb_t = func::Function<void, std::string>;
  protected:
   done_cb_t doneCallback_;
   std::unique_ptr<EasyHandle> handle_ {nullptr};
