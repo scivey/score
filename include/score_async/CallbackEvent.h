@@ -5,14 +5,14 @@
 #include <folly/Format.h>
 #include <glog/logging.h>
 #include "score_async/BaseEvent.h"
-#include "score_async/VoidCallback.h"
+#include "score/func/Function.h"
 
 namespace score { namespace async {
 
 class CallbackEvent: public BaseEvent<CallbackEvent> {
  public:
   using string_t = std::string;
-  using event_cb_t = VoidCallback;
+  using event_cb_t = score::func::Function<void>;
 
  protected:
   event_cb_t readCallback_;

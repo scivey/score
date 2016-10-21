@@ -1,15 +1,18 @@
 #pragma once
 
-#include "score_async/VoidCallback.h"
+#include "score/func/Function.h"
 
 namespace score { namespace async {
 
 class JustOnce {
+ public:
+  using cb_t = func::Function<void>;
  protected:
   bool ran_ {false};
-  VoidCallback func_;
+
+  cb_t func_;
  public:
-  JustOnce(VoidCallback&& func): func_(func){}
+  JustOnce(cb_t&& func): func_(std::forward<cb_t>(func)) {}
   bool run() {
     if (!ran_) {
       ran_ = true;

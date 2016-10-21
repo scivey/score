@@ -2,14 +2,14 @@
 
 #include <glog/logging.h>
 #include "score_async/BaseEvent.h"
-#include "score_async/VoidCallback.h"
+#include "score/func/Function.h"
 
 namespace score { namespace async {
 
 
 class TimerEvent: public BaseEvent<TimerEvent> {
  protected:
-  VoidCallback callback_;
+  func::Function<void> callback_;
  public:
   template<typename TCallable>
   void setHandler(TCallable&& callable) {

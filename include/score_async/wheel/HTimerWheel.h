@@ -3,14 +3,14 @@
 #include <memory>
 #include <vector>
 #include <glog/logging.h>
-#include "score_async/EvBase.h"
-#include "score_async/TimerEvent.h"
-#include "score_async/VoidCallback.h"
 #include "score/TimerSettings.h"
-#include "score_async/wheel/WheelBuffer.h"
-#include "score_async/wheel/DynamicWheelBuffer.h"
 #include "score/macros.h"
 #include "score/logging.h"
+#include "score/func/Function.h"
+#include "score_async/EvBase.h"
+#include "score_async/TimerEvent.h"
+#include "score_async/wheel/WheelBuffer.h"
+#include "score_async/wheel/DynamicWheelBuffer.h"
 
 namespace score { namespace async { namespace wheel {
 
@@ -20,7 +20,7 @@ class HTimerWheel {
   using timer_settings_t = score::TimerSettings;
   using timer_t = score::async::TimerEvent;
   using timer_ptr_t = std::unique_ptr<timer_t>;
-  using cb_t = score::async::VoidCallback;
+  using cb_t = score::func::Function<void>;
   using clock_t = std::chrono::steady_clock;
   using time_delta_t = std::chrono::milliseconds;
   using time_point_t = time_delta_t;

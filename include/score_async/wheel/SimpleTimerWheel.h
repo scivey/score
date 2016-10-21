@@ -3,12 +3,12 @@
 #include <memory>
 #include <vector>
 #include <glog/logging.h>
+#include "score/TimerSettings.h"
+#include "score/func/Function.h"
+#include "score/macros.h"
 #include "score_async/EvBase.h"
 #include "score_async/TimerEvent.h"
-#include "score_async/VoidCallback.h"
-#include "score/TimerSettings.h"
 #include "score_async/wheel/WheelBuffer.h"
-#include "score/macros.h"
 
 namespace score { namespace async { namespace wheel {
 
@@ -19,7 +19,7 @@ class SimpleTimerWheel {
   using timer_settings_t = score::TimerSettings;
   using timer_t = score::async::TimerEvent;
   using timer_ptr_t = std::unique_ptr<timer_t>;
-  using cb_t = score::async::VoidCallback;
+  using cb_t = score::func::Function<void>;
   static const size_t kResolution = ResolutionMS;
   static const size_t kSlots = NSlots;
   static const size_t kTimeCapacity = ResolutionMS * NSlots;

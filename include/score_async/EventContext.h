@@ -3,7 +3,7 @@
 #include "score_async/EvBase.h"
 #include "score_async/wheel/HTimerWheel.h"
 #include "score_async/SignalHandlerRegistry.h"
-#include "score_async/VoidCallback.h"
+#include "score/func/Function.h"
 #include "score/util/misc.h"
 #include <folly/ScopeGuard.h>
 
@@ -17,7 +17,7 @@ class EventContext {
   using wheel_ptr_t = std::unique_ptr<wheel_t>;
   using sig_registry_t = SignalHandlerRegistry;
   using sig_registry_ptr_t = std::unique_ptr<SignalHandlerRegistry>;
-  using work_cb_t = VoidCallback;
+  using work_cb_t = func::Function<void>;
  protected:
   base_ptr_t base_ {nullptr};
   wheel_ptr_t wheel_ {nullptr};

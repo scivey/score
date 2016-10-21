@@ -2,13 +2,13 @@
 
 #include <glog/logging.h>
 #include "score_async/BaseEvent.h"
-#include "score_async/VoidCallback.h"
+#include "score/func/Function.h"
 
 namespace score { namespace async {
 
 class SignalEvent: public BaseEvent<SignalEvent> {
  public:
-  using cb_t = VoidCallback;
+  using cb_t = func::Function<void>;
  protected:
   cb_t callback_;
  public:
