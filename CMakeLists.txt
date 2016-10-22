@@ -326,12 +326,38 @@ target_link_libraries(run_curl_tests
 
 
 
+
+
+
+
+
+
+
+
+
+
+set(SCORE_REDIS_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_redis)
+
+FILE(GLOB SCORE_REDIS_SRC
+    ${SCORE_REDIS_SRC_DIR}/*.cpp
+    ${SCORE_REDIS_SRC_DIR}/hiredis_adapter/*.cpp
+)
+
+add_library(score_redis ${SCORE_REDIS_SRC})
+add_dependencies(score_redis score_async score_core)
+target_link_libraries(score_redis score_async score_core)
+
+
+
+
 add_executable(runner
     ${SCORE_ROOT_SRC_DIR}/main.cpp
 )
-add_dependencies(runner score_core score_async)
+add_dependencies(runner score_core score_async score_redis)
 target_link_libraries(runner
     ${ALL_LIBS}
     score_async
     score_core
+    score_redis
+    hiredis
 )

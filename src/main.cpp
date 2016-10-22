@@ -1,40 +1,41 @@
 #include <glog/logging.h>
 #include <string>
 #include <sstream>
+#include <memory>
 #include "score/func/Function.h"
 #include "score/func/callable_traits.h"
+#include "score_async/EventContext.h"
+#include "score/util/misc.h"
 #include "score/demangle.h"
 #include "score/Unit.h"
+#include "score_redis/LLRedisClient.h"
 
+using namespace score;
+using namespace score::redis;
+using namespace score::async;
 using namespace std;
 
-uint64_t add2(uint32_t x, uint16_t y) {
-  uint64_t result = x;
-  result += y;
-  return result;
-}
 
-std::string joinStr(string str1, string str2) {
-  std::ostringstream oss;
-  oss << str1 << " || " << str2;
-  return oss.str();
+void runRedis() {
+  auto ctx = score::util::createShared<EventContext>();
+  auto client = LLRedisClient::createShared(ctx.get(), "127.0.0.1", 6379);
+  client->connect([client](typename LLRedisClient::connect_result_t result) {
+    LOG(INFO) << "here.";
+    client->set("foo", "bazz", [client](typename LLRedisClient::response_t res) {
+      LOG(INFO) << "set result type: " << res.pprint();
+      client->get("foo", [](typename LLRedisClient::response_t res2) {
+        LOG(INFO) << "get result type: " << res2.pprint();
+      });
+    });
+  });
+  for (;;) {
+    ctx->getBase()->runForever();
+  }
 }
-namespace func = score::func;
-using ftraits = func::callable_traits<decltype(add2)>;
-
 
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  func::Function<void> cb([]() {
-    LOG(INFO) << "!!";
-  });
-  cb();
-  using rt = typename ftraits::result_type;
-  using fst = typename ftraits::nth_arg_type<0>;
-  using snd = typename ftraits::nth_arg_type<1>;
-  LOG(INFO) << score::demangle(typeid(rt));
-  LOG(INFO) << score::demangle(typeid(fst));
-  LOG(INFO) << score::demangle(typeid(snd));
-  LOG(INFO) << ftraits::arity;
+  runRedis();
+  LOG(INFO) << "end";
 }
