@@ -257,11 +257,11 @@ void LLRedisClient::hiredisCommandCallback(redisAsyncContext *ac, void *reply, v
   clientPtr->handleCommandResponse(reqCtx, RedisDynamicResponse {bareReply});
 }
 
-// void LLRedisClient::hiredisSubscriptionCallback(redisAsyncContext *ac, void *reply, void*) {
-//   auto clientPtr = detail::getClientFromContext(ac);
-//   auto bareReply = (redisReply*) reply;
-//   clientPtr->handleSubscriptionEvent(RedisDynamicResponse {bareReply});
-// }
+void LLRedisClient::hiredisSubscriptionCallback(redisAsyncContext *ac, void *reply, void*) {
+  auto clientPtr = detail::getClientFromContext(ac);
+  auto bareReply = (redisReply*) reply;
+  clientPtr->handleSubscriptionEvent(RedisDynamicResponse {bareReply});
+}
 
 void LLRedisClient::handleConnected(int status) {
   CHECK(status == REDIS_OK);
@@ -278,12 +278,13 @@ void LLRedisClient::handleDisconnected(int status) {
   disconnectPromise_.setValue(util::makeTrySuccess<Unit>());
 }
 
-// void LLRedisClient::handleSubscriptionEvent(RedisDynamicResponse&& response) {
-//   auto subscriptionPtr = currentSubscription_.lock();
-//   if (subscriptionPtr) {
-//     subscriptionPtr->dispatchMessage(std::move(response));
-//   }
-// }
+void LLRedisClient::handleSubscriptionEvent(RedisDynamicResponse&& response) {
+  CHECK(false) << "not implemented";
+  // auto subscriptionPtr = currentSubscription_.lock();
+  // if (subscriptionPtr) {
+  //   subscriptionPtr->dispatchMessage(std::move(response));
+  // }
+}
 
 void LLRedisClient::maybeCleanupContext() {
   if (redisContext_) {

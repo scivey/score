@@ -13,9 +13,7 @@
 #include "score_async/futures/st/STPromise.h"
 #include "score_async/futures/st/STFuture.h"
 #include "score_redis/RedisDynamicResponse.h"
-
-// #include "score/redis/LLRedisRequestContext.h"
-// #include "score/redis/RedisSubscription.h"
+#include "score_redis/LLRedisSubscription.h"
 
 struct redisAsyncContext;
 
