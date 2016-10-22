@@ -7,6 +7,7 @@
 #include "score/Try.h"
 #include "score/Unit.h"
 #include "score/Optional.h"
+#include "score/io/SocketAddr.h"
 #include "score/func/Function.h"
 #include "score_async/EventContext.h"
 #include "score_async/futures/st/STPromise.h"
@@ -25,20 +26,12 @@ namespace hiredis_adapter {
 class LibeventRedisContext;
 } // hiredis_adapter
 
-struct LLRequestContext {
-  using response_t = RedisDynamicResponse;
-  using cb_t = func::Function<void, response_t>;
-  cb_t callback;
-  LLRequestContext(){}
-  LLRequestContext(cb_t&& cb): callback(std::forward<cb_t>(cb)){}
-  LLRequestContext(const cb_t& cb): callback(cb){}
-};
-
 class LLRedisClient  {
  public:
 
   // using response_t = typename LLRedisRequestContext::response_t;
-  using response_t = RedisDynamicResponse;
+  using inner_response_t = RedisDynamicResponse;
+  using response_t = score::Try<inner_response_t>;
   using cb_t = func::Function<void, response_t>;
   using connect_result_t = score::Try<score::Unit>;
   using disconnect_result_t = score::Try<score::Unit>;
@@ -59,10 +52,15 @@ class LLRedisClient  {
   // using subscription_try_t = score::Try<std::shared_ptr<subscription_t>>;
   // using subscription_handler_ptr_t = subscription_t::handler_ptr_t;
   using event_ctx_t = score::async::EventContext;
+
+  struct RequestContext {
+    cb_t callback;
+    RequestContext(cb_t&& cb);
+  };
+
  protected:
   event_ctx_t *eventContext_ {nullptr};
-  string_t host_;
-  int port_ {0};
+  io::SocketAddr serverAddr_;
   struct redisAsyncContext *redisContext_ {nullptr};
   std::shared_ptr<hiredis_adapter::LibeventRedisContext> adapter_ {nullptr};
   connect_promise_t connectPromise_;
@@ -71,8 +69,7 @@ class LLRedisClient  {
   // std::weak_ptr<subscription_t> currentSubscription_;
 
   // not really for public use.
-  LLRedisClient(event_ctx_t *ctx,
-    const string_t& host, int port);
+  LLRedisClient(event_ctx_t *ctx, io::SocketAddr&& serverAddr);
 
   LLRedisClient(const LLRedisClient &other) = delete;
   LLRedisClient& operator=(const LLRedisClient &other) = delete;
@@ -89,8 +86,7 @@ class LLRedisClient  {
   LLRedisClient(LLRedisClient &&other);
   LLRedisClient& operator=(LLRedisClient &&other);
 
-  static LLRedisClient* createNew(event_ctx_t *ctx,
-    const string_t &host, int port);
+  static LLRedisClient* createNew(event_ctx_t *, io::SocketAddr&&);
 
   connect_future_t connect();
   disconnect_future_t disconnect();
@@ -146,10 +142,10 @@ class LLRedisClient  {
  protected:
   // event handler methods called from the static handlers (because C)
   void handleConnected(int status);
-  void handleCommandResponse(LLRequestContext *ctx, response_t&& data);
+  void handleCommandResponse(RequestContext *ctx, inner_response_t&& data);
   void handleDisconnected(int status);
-  void handleSubscriptionEvent(response_t&& data);
-
+  void handleSubscriptionEvent(inner_response_t&& data);
+  void maybeCleanupContext();
  public:
   // these are public because hiredis needs access to them,
   // but they aren't really "public" public.

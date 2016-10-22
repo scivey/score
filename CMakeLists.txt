@@ -386,7 +386,9 @@ set(ALL_SCORE_LIBS
 
 FILE(GLOB SCORE_CLIENT_INTEGRATION_TEST_SRC
     ${SCORE_MEMCACHED_SRC_DIR}/test_integration/*.cpp
+    ${SCORE_REDIS_SRC_DIR}/test_integration/*.cpp
 )
+
 add_executable(run_client_integration_tests
     ${SCORE_CLIENT_INTEGRATION_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp

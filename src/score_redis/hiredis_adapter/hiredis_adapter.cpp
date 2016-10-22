@@ -41,7 +41,6 @@ void scoreLibeventDelWrite(void *privdata) {
 }
 
 void scoreLibeventCleanup(void *privdata) {
-  LOG(INFO) << "cleanup";
   auto ctx = getCtx(privdata);
   event_del(&ctx->readEvent);
   event_del(&ctx->writeEvent);
@@ -53,7 +52,7 @@ std::shared_ptr<LibeventRedisContext> scoreLibeventAttach(
   redisContext *c = &(ac->c);
 
   /* Nothing should be attached when something is already attached */
-  CHECK(ac->ev.data == nullptr);
+  DCHECK(ac->ev.data == nullptr);
 
   auto scoreEventParent = std::make_shared<LibeventRedisContext>();
   auto scoreCtx = scoreEventParent->getInnerContext();

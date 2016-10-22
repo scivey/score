@@ -22,35 +22,45 @@ using cb_t = typename LLRedisClient::cb_t;
 using event_ctx_t = typename LLRedisClient::event_ctx_t;
 using connect_future_t = typename LLRedisClient::connect_future_t;
 using disconnect_future_t = typename LLRedisClient::disconnect_future_t;
+using score::io::SocketAddr;
 
-LLRedisClient::LLRedisClient(event_ctx_t *ctx, const string_t &host, int port)
-  : eventContext_(ctx), host_(host), port_(port) {}
+
+LLRedisClient::LLRedisClient(event_ctx_t *ctx, SocketAddr&& addr)
+  : eventContext_(ctx), serverAddr_(std::forward<SocketAddr>(addr)) {}
 
 
 LLRedisClient::LLRedisClient(LLRedisClient &&other)
   : eventContext_(other.eventContext_),
-    host_(other.host_),
-    port_(other.port_),
-    redisContext_(other.redisContext_) {
+    serverAddr_(other.serverAddr_),
+    redisContext_(other.redisContext_),
+    adapter_(other.adapter_) {
   other.redisContext_ = nullptr;
 }
 
 LLRedisClient& LLRedisClient::operator=(LLRedisClient &&other) {
   std::swap(eventContext_, other.eventContext_);
-  std::swap(host_, other.host_);
-  std::swap(port_, other.port_);
+  std::swap(serverAddr_, other.serverAddr_);
+  std::swap(adapter_, other.adapter_);
   std::swap(redisContext_, other.redisContext_);
   return *this;
 }
 
+LLRedisClient::RequestContext::RequestContext(cb_t&& cb)
+  : callback(std::forward<cb_t>(cb)) {}
+
+
 LLRedisClient* LLRedisClient::createNew(event_ctx_t *ctx,
-      const string_t& host, int port) {
-  return new LLRedisClient{ctx, host, port};
+    SocketAddr&& addr) {
+  return new LLRedisClient{ctx, std::forward<SocketAddr>(addr)};
 }
 
 connect_future_t LLRedisClient::connect() {
   CHECK(!redisContext_);
-  redisContext_ = redisAsyncConnect(host_.c_str(), port_);
+  redisContext_ = redisAsyncConnect(
+    serverAddr_.getHost().c_str(),
+    serverAddr_.getPort()
+  );
+  DCHECK(!!redisContext_); // hiredis claims to never return null here, but still
   if (redisContext_->err) {
     connectPromise_.setException<RedisIOError>(redisContext_->errstr);
   } else {
@@ -67,14 +77,12 @@ connect_future_t LLRedisClient::connect() {
 
 disconnect_future_t LLRedisClient::disconnect() {
   CHECK(!!redisContext_);
-  SCORE_LOG_ADDR0();
-  LOG(INFO) << "address of disconnectPromise: " << ((uintptr_t) &disconnectPromise_);
   redisAsyncDisconnect(redisContext_);
   return disconnectPromise_.getFuture();
 }
 
 void LLRedisClient::command0(cmd_str_ref cmd, cb_t&& cb) {
-  auto reqCtx = new LLRequestContext {
+  auto reqCtx = new RequestContext {
     std::forward<cb_t>(cb)
   };
   redisAsyncCommand(redisContext_,
@@ -86,7 +94,7 @@ void LLRedisClient::command0(cmd_str_ref cmd, cb_t&& cb) {
 
 void LLRedisClient::command1(cmd_str_ref cmd,
     arg_str_ref arg, cb_t&& cb) {
-  auto reqCtx = new LLRequestContext {std::forward<cb_t>(cb)};
+  auto reqCtx = new RequestContext {std::forward<cb_t>(cb)};
   redisAsyncCommand(redisContext_,
     &LLRedisClient::hiredisCommandCallback,
     (void*) reqCtx,
@@ -96,7 +104,7 @@ void LLRedisClient::command1(cmd_str_ref cmd,
 
 void LLRedisClient::command2(cmd_str_ref cmd,
     arg_str_ref arg1, arg_str_ref arg2, cb_t&& cb) {
-  auto reqCtx = new LLRequestContext {std::forward<cb_t>(cb)};
+  auto reqCtx = new RequestContext {std::forward<cb_t>(cb)};
   redisAsyncCommand(redisContext_,
     &LLRedisClient::hiredisCommandCallback,
     (void*) reqCtx,
@@ -107,7 +115,7 @@ void LLRedisClient::command2(cmd_str_ref cmd,
 void LLRedisClient::command2(cmd_str_ref cmd,
     arg_str_ref arg1, redis_signed_t arg2, cb_t&& cb) {
   // auto reqCtx = new LLRequestContext {shared_from_this()};
-  auto reqCtx = new LLRequestContext {std::forward<cb_t>(cb)};
+  auto reqCtx = new RequestContext {std::forward<cb_t>(cb)};
   redisAsyncCommand(redisContext_,
     &LLRedisClient::hiredisCommandCallback,
     (void*) reqCtx,
@@ -228,7 +236,7 @@ void LLRedisClient::hiredisDisconnectCallback(const redisAsyncContext *ac, int s
 
 void LLRedisClient::hiredisCommandCallback(redisAsyncContext *ac, void *reply, void *pdata) {
   auto clientPtr = detail::getClientFromContext(ac);
-  auto reqCtx = (LLRequestContext*) pdata;
+  auto reqCtx = (RequestContext*) pdata;
   auto bareReply = (redisReply*) reply;
   CHECK(!!bareReply);
   clientPtr->handleCommandResponse(reqCtx, RedisDynamicResponse {bareReply});
@@ -245,14 +253,12 @@ void LLRedisClient::handleConnected(int status) {
   connectPromise_.setValue(util::makeTrySuccess<Unit>());
 }
 
-void LLRedisClient::handleCommandResponse(LLRequestContext *ctx, RedisDynamicResponse &&response) {
-  ctx->callback(std::forward<RedisDynamicResponse>(response));
+void LLRedisClient::handleCommandResponse(RequestContext *ctx, RedisDynamicResponse &&response) {
+  ctx->callback(util::makeTrySuccess<RedisDynamicResponse>(std::forward<RedisDynamicResponse>(response)));
 }
 
 void LLRedisClient::handleDisconnected(int status) {
   CHECK(status == REDIS_OK);
-  SCORE_LOG_ADDR0();
-  LOG(INFO) << "handleDisconnected : addr of promise: " << ((uintptr_t) &disconnectPromise_);
   disconnectPromise_.setValue(util::makeTrySuccess<Unit>());
 }
 
@@ -263,12 +269,15 @@ void LLRedisClient::handleDisconnected(int status) {
 //   }
 // }
 
-LLRedisClient::~LLRedisClient() {
-  LOG(INFO) << "destroying";
+void LLRedisClient::maybeCleanupContext() {
   if (redisContext_) {
     delete redisContext_;
     redisContext_ = nullptr;
   }
+}
+
+LLRedisClient::~LLRedisClient() {
+  maybeCleanupContext();
 }
 
 namespace detail {

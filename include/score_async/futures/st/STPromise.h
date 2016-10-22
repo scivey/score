@@ -3,7 +3,6 @@
 #include <string>
 #include <glog/logging.h>
 #include <folly/Format.h>
-#include "score/macros/debug.h"
 #include "score/mem/st_shared_ptr.h"
 #include "score_async/futures/st/traits.h"
 #include "score_async/futures/st/STSharedState.h"
@@ -44,11 +43,9 @@ class STPromise {
   future_t getFuture();
 
   void setValue(value_type&& value) {
-    SCORE_LOG_ADDR0();
     getSharedState()->triggerValue(std::forward<value_type>(value));
   }
   void setValue(const value_type& value) {
-    SCORE_LOG_ADDR0();
     getSharedState()->triggerValue(value);
   }
   void setException(error_t&& err) {
