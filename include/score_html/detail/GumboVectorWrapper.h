@@ -2,7 +2,7 @@
 
 #include "score_html/vendored/gumbo-parser/gumbo.h"
 
-namespace score { namespace html {
+namespace score { namespace html { namespace detail {
 
 class GumboVectorWrapper {
  protected:
@@ -34,5 +34,5 @@ class GumboVectorWrapper {
 };
 
 
-}} // score::html
+}}} // score::html::detail
 

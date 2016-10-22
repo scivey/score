@@ -18,7 +18,7 @@ GooseContentExtractor::GooseContentExtractor(){}
 GooseContentExtractor::GooseContentExtractor(GooseOptions options)
   : options_(options) {}
 
-string GooseContentExtractor::extract(const HtmlDom &dom, Language lang) {
+string GooseContentExtractor::extract(const HTMLDoc &dom, Language lang) {
 
   using collector_type = TextNodeCollector<
     TextCleaner, StupidStopwordCounter
@@ -40,7 +40,7 @@ string GooseContentExtractor::extract(const HtmlDom &dom, Language lang) {
 }
 
 string GooseContentExtractor::extract(const string &htmlStr, Language lang) {
-  auto dom = HtmlDom::create(htmlStr);
+  auto dom = HTMLDoc::create(htmlStr);
   return extract(dom, lang);
 }
 

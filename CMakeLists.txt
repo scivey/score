@@ -166,14 +166,15 @@ set(SCORE_HTML_GUMBO_PARSER_SRC
 )
 FILE(GLOB SCORE_HTML_SRC
     ${SCORE_HTML_SRC_DIR}/*.cpp
+    ${SCORE_HTML_SRC_DIR}/detail/*.cpp
 )
 set(SCORE_HTML_SRC
     ${SCORE_HTML_SRC}
     ${SCORE_HTML_GUMBO_PARSER_SRC}
 )
 add_library(score_html ${SCORE_HTML_SRC})
-add_dependencies(score_html score)
-
+add_dependencies(score_html score_core)
+target_link_libraries(score_html ${COMMON_LIBS} score_core)
 FILE(GLOB SCORE_HTML_TEST_SRC
     ${SCORE_HTML_SRC_DIR}/test/*.cpp
 )
@@ -181,7 +182,8 @@ add_executable(run_html_tests
     ${SCORE_HTML_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
-target_link_libraries(run_html_tests gmock score_html score_core ${COMMON_LIBS})
+add_dependencies(run_html_tests score_html)
+target_link_libraries(run_html_tests gmock score_html ${ALL_LIBS})
 
 
 
@@ -242,8 +244,8 @@ FILE(GLOB SCORE_EXTRACT_SRC
     ${SCORE_EXTRACT_SRC_DIR}/goose/*.cpp
 )
 add_library(score_extract ${SCORE_EXTRACT_SRC})
-add_dependencies(score_extract score score_nlp score_html)
-target_link_libraries(score_extract ${COMMON_LIBS} score_nlp score_html score_core)
+add_dependencies(score_extract score_core score_nlp score_html)
+target_link_libraries(score_extract score_nlp score_html score_core ${COMMON_LIBS})
 
 FILE(GLOB SCORE_EXTRACT_TEST_SRC
     ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
@@ -258,10 +260,10 @@ add_executable(run_extract_tests
 add_dependencies(run_extract_tests score_extract)
 target_link_libraries(run_extract_tests
     gmock
-    ${COMMON_LIBS}
     score_extract
     score_core
     score_nlp
+    ${COMMON_LIBS}
 )
 
 

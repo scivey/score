@@ -6,20 +6,9 @@
 
 namespace score { namespace io {
 
-template<typename TString = std::string>
-TString trimAsciiWhitespace(const TString &aStr) {
-  TString result;
-  for (auto c: aStr) {
-    if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
-      continue;
-    }
-    if (c == '\0') {
-      continue;
-    }
-    result.push_back(c);
-  }
-  return result;
-}
+
+std::string trimWhitespace(const std::string& text);
+
 
 template<typename TCollection>
 std::string joinWith(const std::string& separator,

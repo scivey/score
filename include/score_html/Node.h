@@ -3,8 +3,10 @@
 #include <functional>
 #include <string>
 #include <sstream>
-#include "score_html/GumboVectorWrapper.h"
+#include "score_html/detail/GumboVectorWrapper.h"
 #include "score_html/Tag.h"
+#include "score/io/string_utils.h"
+
 
 namespace score { namespace html {
 
@@ -12,6 +14,7 @@ class Node {
  protected:
   const GumboNode *node_ {nullptr};
  public:
+  using GumboVectorWrapper = detail::GumboVectorWrapper;
   Node(const GumboNode*);
   Node(const Node &other);
   Node();
@@ -19,6 +22,7 @@ class Node {
   bool good() const;
   operator bool() const;
   size_t childCount() const;
+  size_t childElementCount() const;
   bool hasChildren() const;
   bool isElement() const;
   bool isText() const;
@@ -40,6 +44,7 @@ class Node {
 
   size_t getText(std::ostringstream &oss) const;
   std::string getText() const;
+  std::string getTrimmedText() const;
 
   class NodeVector {
    protected:

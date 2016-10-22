@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-namespace score { namespace html {
+namespace score { namespace html { namespace detail {
 
 class GumboOutputWrapper {
  protected:
@@ -23,4 +23,4 @@ class GumboOutputWrapper {
   ~GumboOutputWrapper();
 };
 
-}} // score::html
+}}} // score::html::detail

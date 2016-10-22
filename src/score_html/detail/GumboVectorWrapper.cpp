@@ -1,7 +1,7 @@
-#include "score_html/GumboVectorWrapper.h"
+#include "score_html/detail/GumboVectorWrapper.h"
 #include <gumbo.h>
 
-namespace score { namespace html {
+namespace score { namespace html { namespace detail {
 
 using VecIter = typename GumboVectorWrapper::Iterator;
 
@@ -64,4 +64,4 @@ bool VecIter::operator!=(const VecIter &other) const {
 }
 
 
-}} // score::html
+}}} // score::html::detail

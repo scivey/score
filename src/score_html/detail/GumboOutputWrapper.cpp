@@ -1,9 +1,9 @@
-#include "score_html/GumboOutputWrapper.h"
+#include "score_html/detail/GumboOutputWrapper.h"
 #include <string>
 
 using namespace std;
 
-namespace score { namespace html {
+namespace score { namespace html { namespace detail {
 
 GumboOutputWrapper::GumboOutputWrapper(GumboOutput *output)
   : output_(output){}
@@ -41,4 +41,4 @@ std::shared_ptr<GumboOutputWrapper> GumboOutputWrapper::createShared(
 }
 
 
-}} // score::html
+}}} // score::html::detail

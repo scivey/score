@@ -5,7 +5,7 @@
 #include <map>
 #include <iostream>
 #include <vector>
-#include "score_html/HtmlDom.h"
+#include "score_html/HTMLDoc.h"
 #include "score_html/MetaTags.h"
 #include "score/io/string_utils.h"
 #include "score_html/vendored/gumbo-parser/gumbo.h"
@@ -39,7 +39,7 @@ static const map<string, string> doc1Expectations {
 
 TEST(TestMetaTags, BasicTest1) {
   auto fulldoc = joinWith("\n", doc1);
-  auto dom = HtmlDom::create(fulldoc);
+  auto dom = HTMLDoc::create(fulldoc);
   auto metas = MetaTags::extract(dom.root());
   EXPECT_EQ(doc1Expectations.size(), metas.size());
   for (auto &item: doc1Expectations) {
@@ -51,7 +51,7 @@ TEST(TestMetaTags, BasicTest1) {
 
 TEST(TestMetaTags, BasicTest2) {
   auto fulldoc = joinWith("\n", doc1);
-  auto dom = HtmlDom::create(fulldoc);
+  auto dom = HTMLDoc::create(fulldoc);
   auto head = dom.root().dfFindFirst(Node::nodeHasTag(Tag::HEAD));
   auto metas = MetaTags::extract(head);
   EXPECT_EQ(doc1Expectations.size(), metas.size());
@@ -64,7 +64,7 @@ TEST(TestMetaTags, BasicTest2) {
 
 TEST(TestMetaTags, TestNoMetas) {
   auto fulldoc = joinWith("\n", doc1);
-  auto dom = HtmlDom::create(fulldoc);
+  auto dom = HTMLDoc::create(fulldoc);
   auto body = dom.root().dfFindFirst(Node::nodeHasTag(Tag::BODY));
   auto metas = MetaTags::extract(body);
   EXPECT_EQ(0, metas.size());

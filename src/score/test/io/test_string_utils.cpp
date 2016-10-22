@@ -14,3 +14,16 @@ TEST(TestStringUtils, TestJoinWith) {
   EXPECT_EQ(expected, result);
 }
 
+TEST(TestStringUtils, TestTrimWhitespace1) {
+  string text {"  fish  bandit\t"};
+  EXPECT_EQ("fish  bandit", trimWhitespace(text));
+}
+TEST(TestStringUtils, TestTrimWhitespace2) {
+  string text {"fish  bandit"};
+  EXPECT_EQ("fish  bandit", trimWhitespace(text));
+}
+TEST(TestStringUtils, TestTrimWhitespace3) {
+  string text {"fish  bandit    "};
+  EXPECT_EQ("fish  bandit", trimWhitespace(text));
+}
+

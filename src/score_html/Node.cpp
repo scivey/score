@@ -1,12 +1,14 @@
-#include <gumbo.h>
-#include "score_html/GumboVectorWrapper.h"
+#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score_html/detail/GumboVectorWrapper.h"
 #include "score_html/Node.h"
 #include "score/util/misc.h"
+
 
 using namespace std;
 
 namespace score { namespace html {
 
+using detail::GumboVectorWrapper;
 using NodeVec = Node::NodeVector;
 using NodeIter = Node::NodeVector::Iterator;
 
@@ -70,6 +72,19 @@ size_t Node::childCount() const {
   }
   auto offspring = children();
   return offspring.size();
+}
+
+size_t Node::childElementCount() const {
+  if (!isElement()) {
+    return 0;
+  }
+  size_t acc {0};
+  for (auto child: children()) {
+    if (child.isElement()) {
+      acc++;
+    }
+  }
+  return acc;
 }
 
 bool Node::hasChildren() const {
@@ -285,6 +300,10 @@ string Node::getText() const {
   ostringstream oss;
   getText(oss);
   return oss.str();
+}
+
+string Node::getTrimmedText() const {
+  return io::trimWhitespace(getText());
 }
 
 Node Node::dfFindFirst(Node::filter_visitor choosePred,

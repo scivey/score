@@ -1,4 +1,4 @@
-#include "score_html/HtmlDom.h"
+#include "score_html/HTMLDoc.h"
 #include "score_html/Node.h"
 #include "score_html/Tag.h"
 #include "score_html/MetaTags.h"
