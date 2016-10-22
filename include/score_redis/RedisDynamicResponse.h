@@ -25,6 +25,9 @@ class RedisDynamicResponse {
   RedisDynamicResponse(redisReply *redisRep);
   RedisDynamicResponse(const RedisDynamicResponse &other);
   RedisDynamicResponse& operator=(const RedisDynamicResponse &other);
+  RedisDynamicResponse(RedisDynamicResponse&&);
+  RedisDynamicResponse& operator=(RedisDynamicResponse&&);
+
   bool isType(ResponseType resType) const;
   score::Try<const char*> getTypeString() const;
   score::Try<ResponseType> getType() const;

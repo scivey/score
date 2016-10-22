@@ -19,8 +19,17 @@ RedisDynamicResponse::RedisDynamicResponse(redisReply *hiredisRep)
 RedisDynamicResponse::RedisDynamicResponse(const RedisDynamicResponse& other)
   : hiredisReply_(other.hiredisReply_) {}
 
+RedisDynamicResponse::RedisDynamicResponse(RedisDynamicResponse&& other)
+  : hiredisReply_(other.hiredisReply_) {}
+
 RedisDynamicResponse& RedisDynamicResponse::operator=(
     const RedisDynamicResponse& other) {
+  hiredisReply_ = other.hiredisReply_;
+  return *this;
+}
+
+RedisDynamicResponse& RedisDynamicResponse::operator=(
+    RedisDynamicResponse&& other) {
   hiredisReply_ = other.hiredisReply_;
   return *this;
 }

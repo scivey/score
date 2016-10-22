@@ -126,7 +126,7 @@ void LLRedisClient::get(arg_str_ref key, cb_t&& cb) {
 //   return command1("EXISTS %s", key, std::forward<cb_t>(cb));
 // }
 
-// LLRedisClient::response_future_t LLRedisClient::expire(arg_str_ref key,
+// void LLRedisClient::expire(arg_str_ref key,
 //     redis_signed_t ttlSecs) {
 //   return command2("EXPIRE %s %i", key, ttlSecs);
 // }
@@ -139,60 +139,60 @@ void LLRedisClient::set(arg_str_ref key, redis_signed_t val, cb_t&& cb) {
   command2("SET %s %i", key, val, std::forward<cb_t>(cb));
 }
 
-// LLRedisClient::response_future_t LLRedisClient::mset(mset_init_list&& msetList) {
-//   folly::fbvector<std::pair<arg_str_t, arg_str_t>> toMset{
-//     std::forward<mset_init_list>(msetList)
-//   };
-//   return mset(toMset);
-// }
+void LLRedisClient::mset(mset_init_list&& msetList, cb_t&& cb) {
+  std::vector<std::pair<arg_str_t, arg_str_t>> toMset{
+    std::forward<mset_init_list>(msetList)
+  };
+  mset(std::move(toMset), std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::mget(mget_init_list&& mgetList) {
-//   folly::fbvector<arg_str_t> toMget{
-//     std::forward<mget_init_list>(mgetList)
-//   };
-//   return mget(toMget);
-// }
+void LLRedisClient::mget(mget_init_list&& mgetList, cb_t&& cb) {
+  std::vector<arg_str_t> toMget{
+    std::forward<mget_init_list>(mgetList)
+  };
+  mget(std::move(toMget), std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::setnx(arg_str_ref key,
-//     arg_str_ref val) {
-//   return command2("SETNX %s %s", key, val);
-// }
+void LLRedisClient::setnx(arg_str_ref key,
+    arg_str_ref val, cb_t&& cb) {
+  command2("SETNX %s %s", key, val, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::setnx(arg_str_ref key,
-//     redis_signed_t val) {
-//   return command2("SETNX %s %i", key, val);
-// }
+void LLRedisClient::setnx(arg_str_ref key,
+    redis_signed_t val, cb_t&& cb) {
+  command2("SETNX %s %i", key, val, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::getset(arg_str_ref key,
-//     arg_str_ref val) {
-//   return command2("GETSET %s %s", key, val);
-// }
+void LLRedisClient::getset(arg_str_ref key,
+    arg_str_ref val, cb_t&& cb) {
+  command2("GETSET %s %s", key, val, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::incr(arg_str_ref key) {
-//   return command1("INCR %s", key);
-// }
+void LLRedisClient::incr(arg_str_ref key, cb_t&& cb) {
+  command1("INCR %s", key, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::incrby(arg_str_ref key,
-//     redis_signed_t amount) {
-//   return command2("INCRBY %s %i", key, amount);
-// }
+void LLRedisClient::incrby(arg_str_ref key,
+    redis_signed_t amount, cb_t&& cb) {
+  command2("INCRBY %s %i", key, amount, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::decr(arg_str_ref key) {
-//   return command1("DECR %s", key);
-// }
+void LLRedisClient::decr(arg_str_ref key, cb_t&& cb) {
+  command1("DECR %s", key, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::decrby(arg_str_ref key,
-//     redis_signed_t amount) {
-//   return command2("DECRBY %s %i", key, amount);
-// }
+void LLRedisClient::decrby(arg_str_ref key,
+    redis_signed_t amount, cb_t&& cb) {
+  command2("DECRBY %s %i", key, amount, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::llen(arg_str_ref key) {
-//   return command1("LLEN %s", key);
-// }
+void LLRedisClient::llen(arg_str_ref key, cb_t&& cb) {
+  command1("LLEN %s", key, std::forward<cb_t>(cb));
+}
 
-// LLRedisClient::response_future_t LLRedisClient::strlen(arg_str_ref key) {
-//   return command1("STRLEN %s", key);
-// }
+void LLRedisClient::strlen(arg_str_ref key, cb_t&& cb) {
+  command1("STRLEN %s", key, std::forward<cb_t>(cb));
+}
 
 // using subscription_try_t = LLRedisClient::subscription_try_t;
 // using subscription_handler_ptr_t = LLRedisClient::subscription_handler_ptr_t;

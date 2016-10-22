@@ -9,6 +9,8 @@
 #include "score/demangle.h"
 #include "score/Unit.h"
 #include "score_redis/LLRedisClient.h"
+#include "score_redis/FutureLLRedisClient.h"
+
 #include "score_memcached/SyncMCClient.h"
 #include "score_memcached/MemcachedConfig.h"
 
@@ -37,6 +39,28 @@ void runRedis() {
   }
 }
 
+void runRedis2() {
+  auto ctx = score::util::createShared<EventContext>();
+  FutureLLRedisClient futureClient {
+    LLRedisClient::createShared(ctx.get(), "127.0.0.1", 6379)
+  };
+  futureClient.connect().then([&futureClient](Try<Unit> result) {
+    result.throwIfFailed();
+    futureClient
+      .mset({{"x", "x-val"}, {"y", "y-val"}})
+      .then([&futureClient](RedisDynamicResponse response) {
+        LOG(INFO) << response.pprint();
+        futureClient.mget({"x", "y"}).then([&futureClient](RedisDynamicResponse res2) {
+          LOG(INFO) << "here.";
+          LOG(INFO) << res2.pprint();
+        });
+      });
+  });
+  for (;;) {
+    ctx->getBase()->runForever();
+  }
+}
+
 void runMemcached() {
   MemcachedConfig config {{"127.0.0.1", 11211}};
   {
@@ -56,7 +80,7 @@ void runMemcached() {
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  // runRedis();
+  runRedis2();
   runMemcached();
   LOG(INFO) << "end";
 }

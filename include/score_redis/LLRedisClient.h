@@ -88,51 +88,48 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void set(arg_str_ref, arg_str_ref, cb_t&&);
   void set(arg_str_ref, redis_signed_t, cb_t&&);
 
-  // template<typename TCollection>
-  // void mset(const TCollection &args, cb_t&& cb) {
-  //   std::ostringstream oss;
-  //   oss << "MSET";
-  //   for (const auto &keyVal: args) {
-  //     oss << " " << keyVal.first << " " << keyVal.second;
-  //   }
-  //   return command0(oss.str(), std::forward<cb_t>(cb));
-  // }
+  template<typename TCollection>
+  void mset(const TCollection &args, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << "MSET";
+    for (const auto &keyVal: args) {
+      oss << " " << keyVal.first << " " << keyVal.second;
+    }
+    auto cmd = oss.str();
+    return command0(oss.str(), std::forward<cb_t>(cb));
+  }
 
   using mset_init_list = std::initializer_list<std::pair<arg_str_t, arg_str_t>>;
-  // void mset(mset_init_list&& msetList, cb_t);
+  void mset(mset_init_list&& msetList, cb_t&&);
 
 
-  // template<typename TCollection>
-  // void mget(const TCollection &args, cb_t&& cb) {
-  //   std::ostringstream oss;
-  //   oss << "MGET";
-  //   for (const auto &key: args) {
-  //     oss << " " << key;
-  //   }
-  //   return command0(oss.str(), std::forward<cb_t>(cb));
-  // }
+  template<typename TCollection>
+  void mget(const TCollection &args, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << "MGET";
+    for (const auto &key: args) {
+      oss << " " << key;
+    }
+    return command0(oss.str(), std::forward<cb_t>(cb));
+  }
 
-  // using mget_init_list = std::initializer_list<arg_str_t>;
+  using mget_init_list = std::initializer_list<arg_str_t>;
 
-  // response_future_t mget(mget_init_list&& mgetList);
-  // response_future_t exists(arg_str_ref);
-  // response_future_t del(arg_str_ref);
-  // response_future_t expire(arg_str_ref, redis_signed_t);
-  // response_future_t setnx(arg_str_ref, arg_str_ref);
-  // response_future_t setnx(arg_str_ref, redis_signed_t);
-  // response_future_t getset(arg_str_ref, arg_str_ref);
+  void mget(mget_init_list&& mgetList, cb_t&&);
+  void exists(arg_str_ref);
+  void del(arg_str_ref, cb_t&&);
+  void expire(arg_str_ref, redis_signed_t, cb_t&&);
+  void setnx(arg_str_ref, arg_str_ref, cb_t&&);
+  void setnx(arg_str_ref, redis_signed_t, cb_t&&);
+  void getset(arg_str_ref, arg_str_ref, cb_t&&);
 
-  // response_future_t keys(arg_str_ref pattern);
-
-  // response_future_t strlen(arg_str_ref);
-
-  // response_future_t decr(arg_str_ref);
-  // response_future_t decrby(arg_str_ref, redis_signed_t);
-  // response_future_t incr(arg_str_ref key);
-  // response_future_t incrby(arg_str_ref key, redis_signed_t);
-
-  // response_future_t llen(arg_str_ref key);
-
+  void keys(arg_str_ref pattern, cb_t&&);
+  void strlen(arg_str_ref, cb_t&&);
+  void decr(arg_str_ref, cb_t&&);
+  void decrby(arg_str_ref, redis_signed_t, cb_t&&);
+  void incr(arg_str_ref key, cb_t&&);
+  void incrby(arg_str_ref key, redis_signed_t, cb_t&&);
+  void llen(arg_str_ref key, cb_t&&);
   // subscription_try_t subscribe(subscription_handler_ptr_t, arg_str_ref);
 
  protected:
