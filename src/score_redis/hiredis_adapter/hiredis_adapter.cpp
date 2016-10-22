@@ -1,4 +1,6 @@
 #include "score_redis/hiredis_adapter/hiredis_adapter.h"
+#include "score_redis/hiredis_adapter/LibeventRedisContext.h"
+
 #include "score_redis/LLRedisClient.h"
 #include <event2/event.h>
 #include <hiredis/hiredis.h>
@@ -6,73 +8,82 @@
 
 namespace score { namespace redis { namespace hiredis_adapter {
 
+using context_t = LibeventRedisContext::InnerContext;
+
+context_t* getCtx(void *arg) {
+  return (context_t*) arg;
+}
+
 void scoreLibeventReadEvent(int fd, short event, void *arg) {
-    ((void)fd); ((void)event);
-    scoreLibeventEvents *e = (scoreLibeventEvents*)arg;
-    redisAsyncHandleRead(e->context);
+  ((void)fd); ((void)event);
+  redisAsyncHandleRead(getCtx(arg)->redisContext);
 }
 
 void scoreLibeventWriteEvent(int fd, short event, void *arg) {
-    ((void)fd); ((void)event);
-    scoreLibeventEvents *e = (scoreLibeventEvents*)arg;
-    redisAsyncHandleWrite(e->context);
+  ((void)fd); ((void)event);
+  redisAsyncHandleWrite(getCtx(arg)->redisContext);
 }
 
 void scoreLibeventAddRead(void *privdata) {
-    scoreLibeventEvents *e = (scoreLibeventEvents*)privdata;
-    event_add(&e->rev,NULL);
+  event_add(&getCtx(privdata)->readEvent, nullptr);
 }
 
 void scoreLibeventDelRead(void *privdata) {
-    scoreLibeventEvents *e = (scoreLibeventEvents*)privdata;
-    event_del(&e->rev);
+  event_del(&getCtx(privdata)->readEvent);
 }
 
 void scoreLibeventAddWrite(void *privdata) {
-    scoreLibeventEvents *e = (scoreLibeventEvents*)privdata;
-    event_add(&e->wev,NULL);
+  event_add(&getCtx(privdata)->writeEvent, nullptr);
 }
 
 void scoreLibeventDelWrite(void *privdata) {
-    scoreLibeventEvents *e = (scoreLibeventEvents*)privdata;
-    event_del(&e->wev);
+  event_del(&getCtx(privdata)->writeEvent);
 }
 
 void scoreLibeventCleanup(void *privdata) {
-    scoreLibeventEvents *e = (scoreLibeventEvents*)privdata;
-    event_del(&e->rev);
-    event_del(&e->wev);
-    free(e);
+  LOG(INFO) << "cleanup";
+  auto ctx = getCtx(privdata);
+  event_del(&ctx->readEvent);
+  event_del(&ctx->writeEvent);
 }
 
-int scoreLibeventAttach(LLRedisClient *client, redisAsyncContext *ac,
-      struct event_base *base) {
-    redisContext *c = &(ac->c);
-    scoreLibeventEvents *e;
+std::shared_ptr<LibeventRedisContext> scoreLibeventAttach(
+    LLRedisClient *client, redisAsyncContext *ac, struct event_base *base) {
 
-    /* Nothing should be attached when something is already attached */
-    if (ac->ev.data != NULL) {
-        return REDIS_ERR;
-    }
-    /* Create container for context and r/w events */
-    e = (scoreLibeventEvents*)malloc(sizeof(*e));
-    e->context = ac;
-    e->client = client;
+  redisContext *c = &(ac->c);
 
-    /* Register functions to start/stop listening for events */
-    ac->ev.addRead = scoreLibeventAddRead;
-    ac->ev.delRead = scoreLibeventDelRead;
-    ac->ev.addWrite = scoreLibeventAddWrite;
-    ac->ev.delWrite = scoreLibeventDelWrite;
-    ac->ev.cleanup = scoreLibeventCleanup;
-    ac->ev.data = e;
+  /* Nothing should be attached when something is already attached */
+  CHECK(ac->ev.data == nullptr);
 
-    /* Initialize and install read/write events */
-    event_set(&e->rev,c->fd,EV_READ, scoreLibeventReadEvent,e);
-    event_set(&e->wev,c->fd,EV_WRITE, scoreLibeventWriteEvent,e);
-    event_base_set(base,&e->rev);
-    event_base_set(base,&e->wev);
-    return REDIS_OK;
+  auto scoreEventParent = std::make_shared<LibeventRedisContext>();
+  auto scoreCtx = scoreEventParent->getInnerContext();
+  scoreCtx->redisContext = ac;
+  scoreCtx->clientPtr = client;
+
+  /* Register functions to start/stop listening for events */
+  ac->ev.addRead = scoreLibeventAddRead;
+  ac->ev.delRead = scoreLibeventDelRead;
+  ac->ev.addWrite = scoreLibeventAddWrite;
+  ac->ev.delWrite = scoreLibeventDelWrite;
+  ac->ev.cleanup = scoreLibeventCleanup;
+  ac->ev.data = scoreCtx;
+
+  /* Initialize and install read/write events */
+  event_set(&scoreCtx->readEvent,
+    c->fd,
+    EV_READ,
+    scoreLibeventReadEvent,
+    scoreCtx
+  );
+  event_set(&scoreCtx->writeEvent,
+    c->fd,
+    EV_WRITE,
+    scoreLibeventWriteEvent,
+    scoreCtx
+  );
+  event_base_set(base, &scoreCtx->readEvent);
+  event_base_set(base, &scoreCtx->writeEvent);
+  return scoreEventParent;
 }
 
 }}} // score::redis::hiredis_adapter

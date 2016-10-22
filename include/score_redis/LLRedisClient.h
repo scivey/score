@@ -9,6 +9,8 @@
 #include "score/Optional.h"
 #include "score/func/Function.h"
 #include "score_async/EventContext.h"
+#include "score_async/futures/st/STPromise.h"
+#include "score_async/futures/st/STFuture.h"
 #include "score_redis/RedisDynamicResponse.h"
 
 // #include "score/redis/LLRedisRequestContext.h"
@@ -17,6 +19,11 @@
 struct redisAsyncContext;
 
 namespace score { namespace redis {
+
+
+namespace hiredis_adapter {
+class LibeventRedisContext;
+} // hiredis_adapter
 
 struct LLRequestContext {
   using response_t = RedisDynamicResponse;
@@ -27,15 +34,19 @@ struct LLRequestContext {
   LLRequestContext(const cb_t& cb): callback(cb){}
 };
 
-class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
+class LLRedisClient  {
  public:
 
   // using response_t = typename LLRedisRequestContext::response_t;
   using response_t = RedisDynamicResponse;
   using cb_t = func::Function<void, response_t>;
-  using connect_result_t = score::Try<std::shared_ptr<LLRedisClient>>;
-  using connect_cb_t = func::Function<void, connect_result_t>;
-  using disconnect_cb_t = func::Function<void, score::Try<score::Unit>>;
+  using connect_result_t = score::Try<score::Unit>;
+  using disconnect_result_t = score::Try<score::Unit>;
+  using connect_promise_t = async::futures::st::STPromise<connect_result_t>;
+  using connect_future_t = typename connect_promise_t::future_t;
+  using disconnect_promise_t = async::futures::st::STPromise<disconnect_result_t>;
+  using disconnect_future_t = typename disconnect_promise_t::future_t;
+
   using string_t = std::string;
   using cmd_str_t = string_t;
   using arg_str_t = cmd_str_t;
@@ -53,11 +64,11 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   string_t host_;
   int port_ {0};
   struct redisAsyncContext *redisContext_ {nullptr};
-  score::Optional<connect_cb_t> connectCallback_;
-  score::Optional<disconnect_cb_t> disconnectCallback_;
+  std::shared_ptr<hiredis_adapter::LibeventRedisContext> adapter_ {nullptr};
+  connect_promise_t connectPromise_;
+  disconnect_promise_t disconnectPromise_;
+
   // std::weak_ptr<subscription_t> currentSubscription_;
-  // connect_promise_t connectPromise_;
-  // disconnect_promise_t disconnectPromise_;
 
   // not really for public use.
   LLRedisClient(event_ctx_t *ctx,
@@ -78,11 +89,11 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   LLRedisClient(LLRedisClient &&other);
   LLRedisClient& operator=(LLRedisClient &&other);
 
-  static std::shared_ptr<LLRedisClient> createShared(event_ctx_t *ctx,
+  static LLRedisClient* createNew(event_ctx_t *ctx,
     const string_t &host, int port);
 
-  void connect(connect_cb_t&&);
-  void disconnect(disconnect_cb_t&&);
+  connect_future_t connect();
+  disconnect_future_t disconnect();
 
   void get(arg_str_ref, cb_t&&);
   void set(arg_str_ref, arg_str_ref, cb_t&&);
@@ -140,8 +151,10 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void handleSubscriptionEvent(response_t&& data);
 
  public:
-  // these are public because hiredis needs access to them.
-  // they aren't really "public" public
+  // these are public because hiredis needs access to them,
+  // but they aren't really "public" public.
+  // if you're wondering whether you count as "public",
+  // you probably do.  unless you're me, in which case hi.
   static void hiredisConnectCallback(const redisAsyncContext*, int status);
   static void hiredisCommandCallback(redisAsyncContext*, void *reply, void *pdata);
   static void hiredisDisconnectCallback(const redisAsyncContext*, int status);

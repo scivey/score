@@ -45,7 +45,7 @@ class STSharedState: public score::mem::enable_st_shared_from_this<STSharedState
 
   void transitionToValue() {
     CHECK(valueOption_.hasValue());
-    CHECK(state_ == State::PENDING);
+    CHECK(state_ == State::PENDING) << "actual state: " << stringOfState(state_);
     state_ = State::VALUE;
     maybeInvokeValue();
   }

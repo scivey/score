@@ -9,7 +9,6 @@
 #include "score/demangle.h"
 #include "score/Unit.h"
 #include "score_redis/LLRedisClient.h"
-#include "score_redis/FutureLLRedisClient.h"
 
 #include "score_memcached/SyncMCClient.h"
 #include "score_memcached/MemcachedConfig.h"
@@ -24,37 +23,27 @@ using namespace std;
 
 void runRedis() {
   auto ctx = score::util::createShared<EventContext>();
-  auto client = LLRedisClient::createShared(ctx.get(), "127.0.0.1", 6379);
-  client->connect([client](typename LLRedisClient::connect_result_t result) {
-    LOG(INFO) << "here.";
-    client->set("foo", "bazz", [client](typename LLRedisClient::response_t res) {
-      LOG(INFO) << "set result type: " << res.pprint();
-      client->get("foo", [](typename LLRedisClient::response_t res2) {
-        LOG(INFO) << "get result type: " << res2.pprint();
-      });
-    });
-  });
-  for (;;) {
-    ctx->getBase()->runForever();
-  }
-}
+  LOG(INFO) << "made ctx";
+  auto client = score::util::createShared<LLRedisClient>(ctx.get(), "127.0.0.1", 6379);
+  LOG(INFO) << "made client";
 
-void runRedis2() {
-  auto ctx = score::util::createShared<EventContext>();
-  FutureLLRedisClient futureClient {
-    LLRedisClient::createShared(ctx.get(), "127.0.0.1", 6379)
-  };
-  futureClient.connect().then([&futureClient](Try<Unit> result) {
+  using conn_result = typename LLRedisClient::connect_result_t;
+  using res_t = typename LLRedisClient::response_t;
+  client->connect().then([client](conn_result result) {
+    LOG(INFO) << "connected.";
     result.throwIfFailed();
-    futureClient
-      .mset({{"x", "x-val"}, {"y", "y-val"}})
-      .then([&futureClient](RedisDynamicResponse response) {
-        LOG(INFO) << response.pprint();
-        futureClient.mget({"x", "y"}).then([&futureClient](RedisDynamicResponse res2) {
-          LOG(INFO) << "here.";
-          LOG(INFO) << res2.pprint();
+    client->set("foo", "bazz", [client](res_t res) {
+      LOG(INFO) << "ran set.";
+      LOG(INFO) << "set result type: " << res.pprint();
+      client->get("foo", [client](res_t res2) {
+        LOG(INFO) << "get result type: " << res2.pprint();
+        client->disconnect().then([client](conn_result result) {
+          LOG(INFO) << "disconnected! 1";
+          result.throwIfFailed();
+          LOG(INFO) << "disconnected! 2";
         });
       });
+    });
   });
   for (;;) {
     ctx->getBase()->runForever();
@@ -80,7 +69,7 @@ void runMemcached() {
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  runRedis2();
-  runMemcached();
+  runRedis();
+  // runMemcached();
   LOG(INFO) << "end";
 }

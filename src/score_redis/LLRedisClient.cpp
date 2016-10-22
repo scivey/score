@@ -5,6 +5,8 @@
 #include <folly/ExceptionWrapper.h>
 #include "score_redis/RedisError.h"
 #include "score_redis/hiredis_adapter/hiredis_adapter.h"
+#include "score_redis/hiredis_adapter/LibeventRedisContext.h"
+#include "score/macros/debug.h"
 
 using namespace std;
 
@@ -17,9 +19,9 @@ using arg_str_list = typename LLRedisClient::arg_str_list;
 using mset_init_list = typename LLRedisClient::mset_init_list;
 using string_t = typename LLRedisClient::string_t;
 using cb_t = typename LLRedisClient::cb_t;
-using connect_cb_t = typename LLRedisClient::connect_cb_t;
-using disconnect_cb_t = typename LLRedisClient::disconnect_cb_t;
 using event_ctx_t = typename LLRedisClient::event_ctx_t;
+using connect_future_t = typename LLRedisClient::connect_future_t;
+using disconnect_future_t = typename LLRedisClient::disconnect_future_t;
 
 LLRedisClient::LLRedisClient(event_ctx_t *ctx, const string_t &host, int port)
   : eventContext_(ctx), host_(host), port_(port) {}
@@ -41,34 +43,34 @@ LLRedisClient& LLRedisClient::operator=(LLRedisClient &&other) {
   return *this;
 }
 
-std::shared_ptr<LLRedisClient> LLRedisClient::createShared(event_ctx_t *ctx,
+LLRedisClient* LLRedisClient::createNew(event_ctx_t *ctx,
       const string_t& host, int port) {
-  return std::make_shared<LLRedisClient>(LLRedisClient(ctx, host, port));
+  return new LLRedisClient{ctx, host, port};
 }
 
-void LLRedisClient::connect(connect_cb_t&& cb) {
+connect_future_t LLRedisClient::connect() {
   CHECK(!redisContext_);
   redisContext_ = redisAsyncConnect(host_.c_str(), port_);
   if (redisContext_->err) {
-    cb(util::makeTryFailure<shared_ptr<LLRedisClient>, RedisIOError>(
-      redisContext_->errstr
-    ));
-    return;
+    connectPromise_.setException<RedisIOError>(redisContext_->errstr);
+  } else {
+    adapter_ = hiredis_adapter::scoreLibeventAttach(
+      this, redisContext_, eventContext_->getBase()->getBase()
+    );
+    redisAsyncSetConnectCallback(redisContext_,
+      &LLRedisClient::hiredisConnectCallback);
+    redisAsyncSetDisconnectCallback(redisContext_,
+      &LLRedisClient::hiredisDisconnectCallback);
   }
-  connectCallback_.assign(std::forward<connect_cb_t>(cb));
-  hiredis_adapter::scoreLibeventAttach(
-    this, redisContext_, eventContext_->getBase()->getBase()
-  );
-  redisAsyncSetConnectCallback(redisContext_,
-    &LLRedisClient::hiredisConnectCallback);
-  redisAsyncSetDisconnectCallback(redisContext_,
-    &LLRedisClient::hiredisDisconnectCallback);
+  return connectPromise_.getFuture();
 }
 
-void LLRedisClient::disconnect(disconnect_cb_t&& cb) {
+disconnect_future_t LLRedisClient::disconnect() {
   CHECK(!!redisContext_);
-  disconnectCallback_.assign(std::forward<disconnect_cb_t>(cb));
+  SCORE_LOG_ADDR0();
+  LOG(INFO) << "address of disconnectPromise: " << ((uintptr_t) &disconnectPromise_);
   redisAsyncDisconnect(redisContext_);
+  return disconnectPromise_.getFuture();
 }
 
 void LLRedisClient::command0(cmd_str_ref cmd, cb_t&& cb) {
@@ -228,6 +230,7 @@ void LLRedisClient::hiredisCommandCallback(redisAsyncContext *ac, void *reply, v
   auto clientPtr = detail::getClientFromContext(ac);
   auto reqCtx = (LLRequestContext*) pdata;
   auto bareReply = (redisReply*) reply;
+  CHECK(!!bareReply);
   clientPtr->handleCommandResponse(reqCtx, RedisDynamicResponse {bareReply});
 }
 
@@ -239,8 +242,7 @@ void LLRedisClient::hiredisCommandCallback(redisAsyncContext *ac, void *reply, v
 
 void LLRedisClient::handleConnected(int status) {
   CHECK(status == REDIS_OK);
-  auto selfPtr = this->shared_from_this();
-  connectCallback_.value()(score::Try<decltype(selfPtr)> {selfPtr});
+  connectPromise_.setValue(util::makeTrySuccess<Unit>());
 }
 
 void LLRedisClient::handleCommandResponse(LLRequestContext *ctx, RedisDynamicResponse &&response) {
@@ -249,10 +251,9 @@ void LLRedisClient::handleCommandResponse(LLRequestContext *ctx, RedisDynamicRes
 
 void LLRedisClient::handleDisconnected(int status) {
   CHECK(status == REDIS_OK);
-  if (disconnectCallback_) {
-    disconnectCallback_.value()(score::Try<score::Unit> {score::Unit{}});
-  }
-  // disconnectPromise_.setValue(folly::Try<folly::Unit> {folly::Unit {}});
+  SCORE_LOG_ADDR0();
+  LOG(INFO) << "handleDisconnected : addr of promise: " << ((uintptr_t) &disconnectPromise_);
+  disconnectPromise_.setValue(util::makeTrySuccess<Unit>());
 }
 
 // void LLRedisClient::handleSubscriptionEvent(RedisDynamicResponse&& response) {
@@ -263,6 +264,7 @@ void LLRedisClient::handleDisconnected(int status) {
 // }
 
 LLRedisClient::~LLRedisClient() {
+  LOG(INFO) << "destroying";
   if (redisContext_) {
     delete redisContext_;
     redisContext_ = nullptr;
@@ -271,8 +273,8 @@ LLRedisClient::~LLRedisClient() {
 
 namespace detail {
 LLRedisClient* getClientFromContext(const redisAsyncContext *ctx) {
-  auto evData = (hiredis_adapter::scoreLibeventEvents*) ctx->ev.data;
-  return evData->client;
+  auto evData = (hiredis_adapter::LibeventRedisContext::InnerContext*) ctx->ev.data;
+  return evData->clientPtr;
 }
 }
 

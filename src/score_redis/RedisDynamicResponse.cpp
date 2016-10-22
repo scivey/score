@@ -19,17 +19,8 @@ RedisDynamicResponse::RedisDynamicResponse(redisReply *hiredisRep)
 RedisDynamicResponse::RedisDynamicResponse(const RedisDynamicResponse& other)
   : hiredisReply_(other.hiredisReply_) {}
 
-RedisDynamicResponse::RedisDynamicResponse(RedisDynamicResponse&& other)
-  : hiredisReply_(other.hiredisReply_) {}
-
 RedisDynamicResponse& RedisDynamicResponse::operator=(
     const RedisDynamicResponse& other) {
-  hiredisReply_ = other.hiredisReply_;
-  return *this;
-}
-
-RedisDynamicResponse& RedisDynamicResponse::operator=(
-    RedisDynamicResponse&& other) {
   hiredisReply_ = other.hiredisReply_;
   return *this;
 }
@@ -109,12 +100,19 @@ RedisDynamicResponse::try_array_t RedisDynamicResponse::getArray() {
   }
   response_vector_t responses;
   responses.reserve(hiredisReply_->elements);
+  LOG(INFO) << "num elements: " << hiredisReply_->elements;
   auto currentElem = (redisReply**) hiredisReply_->element;
   for (size_t i = 0; i < hiredisReply_->elements; i++) {
-    responses.push_back(RedisDynamicResponse(*currentElem));
+    redisReply* current = *currentElem;
+    if (!current) {
+      break;
+    }
+    LOG(INFO) << "current type: " << current->type;
+    responses.push_back(RedisDynamicResponse(current));
     currentElem++;
   }
-  return try_array_t {std::move(responses)};
+  LOG(INFO) << "response vector size: " << responses.size();
+  return try_array_t {responses};
 }
 
 void RedisDynamicResponse::pprintTo(std::ostream &oss) {
@@ -130,7 +128,8 @@ void RedisDynamicResponse::pprintTo(std::ostream &oss) {
     oss << "{ NIL }";
   } else if (isType(ResponseType::ARRAY)) {
     oss << "{ ARRAY: [";
-    for (auto child: getArray().value()) {
+    auto children = getArray().value();
+    for (auto& child: children) {
       oss << "\n\t";
       child.pprintTo(oss);
       oss << ",";

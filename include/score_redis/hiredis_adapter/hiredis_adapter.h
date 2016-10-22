@@ -36,6 +36,7 @@
    */
 
 #include <event.h>
+#include <memory>
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>
 
@@ -45,11 +46,7 @@ class LLRedisClient;
 
 namespace score { namespace redis { namespace hiredis_adapter {
 
-typedef struct scoreLibeventEvents {
-    redisAsyncContext *context {nullptr};
-    LLRedisClient *client {nullptr};
-    struct event rev, wev;
-} scoreLibeventEvents;
+class LibeventRedisContext;
 
 void scoreLibeventReadEvent(int fd, short event, void *arg);
 
@@ -65,9 +62,11 @@ void scoreLibeventDelWrite(void *privdata);
 
 void scoreLibeventCleanup(void *privdata);
 
-int scoreLibeventAttach(LLRedisClient *client,
-    redisAsyncContext *ac,
-    struct event_base *base);
+std::shared_ptr<LibeventRedisContext> scoreLibeventAttach(
+  LLRedisClient *client,
+  redisAsyncContext *ac,
+  struct event_base *base
+);
 
 }}} // score::redis::hiredis_adapter
 
