@@ -6,9 +6,11 @@
 #include "score_redis/RedisError.h"
 #include "score_redis/hiredis_adapter/hiredis_adapter.h"
 #include "score_redis/hiredis_adapter/LibeventRedisContext.h"
-#include "score/macros/debug.h"
+#include "score_async/futures/st/helpers.h"
 
 using namespace std;
+namespace futures = score::async::futures;
+
 
 namespace score { namespace redis {
 
@@ -55,28 +57,41 @@ LLRedisClient* LLRedisClient::createNew(event_ctx_t *ctx,
 }
 
 connect_future_t LLRedisClient::connect() {
-  CHECK(!redisContext_);
+  if (redisContext_) {
+    return futures::st::makeReadySTFuture(
+      util::makeTryFailure<Unit, AlreadyConnected>("Client is already connected.")
+    );
+  }
+  DCHECK(!redisContext_);
   redisContext_ = redisAsyncConnect(
     serverAddr_.getHost().c_str(),
     serverAddr_.getPort()
   );
-  DCHECK(!!redisContext_); // hiredis claims to never return null here, but still
+
+  // hiredis claims to never return null here, but still
+  DCHECK(!!redisContext_);
+
   if (redisContext_->err) {
-    connectPromise_.setException<RedisIOError>(redisContext_->errstr);
-  } else {
-    adapter_ = hiredis_adapter::scoreLibeventAttach(
-      this, redisContext_, eventContext_->getBase()->getBase()
+    return futures::st::makeReadySTFuture(
+      util::makeTryFailure<Unit, RedisIOError>(redisContext_->errstr)
     );
-    redisAsyncSetConnectCallback(redisContext_,
-      &LLRedisClient::hiredisConnectCallback);
-    redisAsyncSetDisconnectCallback(redisContext_,
-      &LLRedisClient::hiredisDisconnectCallback);
   }
+  adapter_ = hiredis_adapter::scoreLibeventAttach(
+    this, redisContext_, eventContext_->getBase()->getBase()
+  );
+  redisAsyncSetConnectCallback(redisContext_,
+    &LLRedisClient::hiredisConnectCallback);
+  redisAsyncSetDisconnectCallback(redisContext_,
+    &LLRedisClient::hiredisDisconnectCallback);
   return connectPromise_.getFuture();
 }
 
 disconnect_future_t LLRedisClient::disconnect() {
-  CHECK(!!redisContext_);
+  if (!redisContext_) {
+    return futures::st::makeReadySTFuture(util::makeTryFailure<Unit, NotConnected>(
+      "Client is not connected."
+    ));
+  }
   redisAsyncDisconnect(redisContext_);
   return disconnectPromise_.getFuture();
 }
@@ -255,6 +270,7 @@ void LLRedisClient::handleConnected(int status) {
 
 void LLRedisClient::handleCommandResponse(RequestContext *ctx, RedisDynamicResponse &&response) {
   ctx->callback(util::makeTrySuccess<RedisDynamicResponse>(std::forward<RedisDynamicResponse>(response)));
+  delete ctx;
 }
 
 void LLRedisClient::handleDisconnected(int status) {

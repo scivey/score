@@ -100,18 +100,15 @@ RedisDynamicResponse::try_array_t RedisDynamicResponse::getArray() {
   }
   response_vector_t responses;
   responses.reserve(hiredisReply_->elements);
-  LOG(INFO) << "num elements: " << hiredisReply_->elements;
   auto currentElem = (redisReply**) hiredisReply_->element;
   for (size_t i = 0; i < hiredisReply_->elements; i++) {
     redisReply* current = *currentElem;
     if (!current) {
       break;
     }
-    LOG(INFO) << "current type: " << current->type;
     responses.push_back(RedisDynamicResponse(current));
     currentElem++;
   }
-  LOG(INFO) << "response vector size: " << responses.size();
   return try_array_t {responses};
 }
 
