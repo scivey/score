@@ -349,15 +349,68 @@ target_link_libraries(score_redis score_async score_core)
 
 
 
+set(SCORE_MEMCACHED_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_memcached)
+
+FILE(GLOB SCORE_MEMCACHED_SRC
+    ${SCORE_MEMCACHED_SRC_DIR}/*.cpp
+)
+
+add_library(score_memcached ${SCORE_MEMCACHED_SRC})
+add_dependencies(score_memcached score_async score_core)
+
+set(SCORE_MEMCACHED_LIBS score_async score_core ${COMMON_LIBS} memcached)
+target_link_libraries(score_memcached ${SCORE_MEMCACHED_LIBS})
+
+
+file(GLOB SCORE_MEMCACHED_TEST_SRC
+    ${SCORE_MEMCACHED_SRC_DIR}/test/*.cpp
+)
+add_executable(run_memcached_tests
+    ${SCORE_MEMCACHED_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+add_dependencies(run_memcached_tests score_memcached)
+target_link_libraries(run_memcached_tests gmock score_memcached ${SCORE_MEMCACHED_LIBS})
+
+
+set(ALL_SCORE_LIBS
+    score_core
+    score_memcached
+    score_async
+    score_redis
+    score_extract
+    score_html
+    score_nlp
+    score_curl
+)
+
+FILE(GLOB SCORE_CLIENT_INTEGRATION_TEST_SRC
+    ${SCORE_MEMCACHED_SRC_DIR}/test_integration/*.cpp
+)
+add_executable(run_client_integration_tests
+    ${SCORE_CLIENT_INTEGRATION_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+
+add_dependencies(run_client_integration_tests ${ALL_SCORE_LIBS})
+target_link_libraries(run_client_integration_tests
+    ${ALL_SCORE_LIBS}
+    gmock
+    hiredis
+    memcached
+    ${COMMON_LIBS}
+)
 
 add_executable(runner
     ${SCORE_ROOT_SRC_DIR}/main.cpp
 )
-add_dependencies(runner score_core score_async score_redis)
+add_dependencies(runner score_core score_async score_redis score_memcached)
 target_link_libraries(runner
     ${ALL_LIBS}
     score_async
     score_core
     score_redis
+    score_memcached
     hiredis
+    memcached
 )

@@ -21,7 +21,8 @@ TEST_RUNNERS=run_core_tests \
 	  run_curl_tests \
 	  run_extract_tests \
 	  run_html_tests \
-	  run_nlp_tests
+	  run_nlp_tests \
+	  run_memcached_tests
 
 build-tests: cm deps
 	cd build && make $(TEST_RUNNERS) -j8
@@ -46,11 +47,14 @@ test-html: build-tests
 
 test: test-nlp test-core test-extract test-curl test-async test-html
 
+client-integration: cm deps
+	cd build && make run_client_integration_tests -j8
+	./build/run_client_integration_tests
+
 clean:
 	rm -rf build
 
 deps:
 	bash scripts/deps.sh
 
-.PHONY: clean run create-bencher create-runner deps test
-
+.PHONY: clean run create-bencher create-runner deps test client-integration

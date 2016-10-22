@@ -9,9 +9,13 @@
 #include "score/demangle.h"
 #include "score/Unit.h"
 #include "score_redis/LLRedisClient.h"
+#include "score_memcached/SyncMCClient.h"
+#include "score_memcached/MemcachedConfig.h"
 
 using namespace score;
 using namespace score::redis;
+using namespace score::memcached;
+
 using namespace score::async;
 using namespace std;
 
@@ -33,9 +37,26 @@ void runRedis() {
   }
 }
 
+void runMemcached() {
+  MemcachedConfig config {{"127.0.0.1", 11211}};
+  {
+    SyncMCClient client {config};
+    client.connect().throwIfFailed();
+    client.set("foo", "bar").throwIfFailed();
+  }
+  {
+    SyncMCClient client {config};
+    client.connect().throwIfFailed();
+    auto result = client.get("foo");
+    result.throwIfFailed();
+    LOG(INFO) << result.value().value();
+  }
+}
+
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  runRedis();
+  // runRedis();
+  runMemcached();
   LOG(INFO) << "end";
 }
