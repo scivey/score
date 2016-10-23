@@ -6,14 +6,8 @@ cm:
 create-runner: cm
 	cd build && make runner -j8
 
-create-bencher: cm
-	cd build && make bencher -j8
-
 run: create-runner
 	./build/runner
-
-bench: create-bencher
-	./build/bencher
 
 build-tests: cm deps
 	cd build && make unit_test_dummy -j8
@@ -41,3 +35,7 @@ deps:
 	bash scripts/deps.sh
 
 .PHONY: clean run create-bencher create-runner deps test client-integration
+
+bench: cm deps
+	cd build && make bench_async -j8
+	./build/bench_async

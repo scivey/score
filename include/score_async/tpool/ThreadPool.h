@@ -113,7 +113,7 @@ class ThreadPool {
   static ThreadPool* createNew(size_t nThreads) {
     return new ThreadPool{
       nThreads,
-      util::makeUnique<queue_t>(size_t{20000})
+      util::makeUnique<queue_t>(size_t{50000})
     };
   }
   bool isRunning() const {

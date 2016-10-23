@@ -33,7 +33,7 @@ class MPSCEventChannel {
   static MPSCEventChannel create() {
     return MPSCEventChannel(
       EventFD::create().value(),
-      util::makeUnique<queue_t>(size_t {10000}),
+      util::makeUnique<queue_t>(size_t {20000}),
       lock_t::create().value()
     );
   }

@@ -506,3 +506,17 @@ add_dependencies(integration_test_dummy
     run_misc_integration_tests
 )
 target_link_libraries(integration_test_dummy glog)
+
+
+
+add_executable(bench_async
+    ${SCORE_ASYNC_SRC_DIR}/bench/bench_ThreadPool.cpp
+)
+add_dependencies(bench_async ${ALL_SCORE_LIBS})
+target_link_libraries(bench_async
+    ${ALL_SCORE_LIBS}
+    wangle
+    folly
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)

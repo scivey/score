@@ -40,7 +40,7 @@ void EvBase::runOnce() {
 }
 
 void EvBase::runNonBlocking() {
-  event_base_loop(base_.get(), EVLOOP_NONBLOCK);
+  event_base_loop(base_.get(), EVLOOP_ONCE | EVLOOP_NONBLOCK);
 }
 
 void EvBase::runForever() {

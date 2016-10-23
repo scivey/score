@@ -3,11 +3,15 @@
 #include <array>
 #include <memory>
 #include <random>
+#include <thread>
+#include <chrono>
 #include <benchmark/benchmark.h>
+
+using namespace std;
 
 static void BM_nothing(benchmark::State& state) {
   while (state.KeepRunning()) {
-    this_thread::sleep_for(chrono::milliseconds(10));
+    ;
   }
 }
 BENCHMARK(BM_nothing);
