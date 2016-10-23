@@ -20,7 +20,7 @@ using cmd_str_ref = typename LLRedisClient::cmd_str_ref;
 using redis_signed_t = typename LLRedisClient::redis_signed_t;
 using redis_float_t = typename LLRedisClient::redis_float_t;
 using arg_str_list = typename LLRedisClient::arg_str_list;
-using mset_init_list = typename LLRedisClient::mset_init_list;
+using string_pair_init_list = typename LLRedisClient::string_pair_init_list;
 using string_t = typename LLRedisClient::string_t;
 using cb_t = typename LLRedisClient::cb_t;
 using event_ctx_t = typename LLRedisClient::event_ctx_t;
@@ -303,7 +303,19 @@ void LLRedisClient::hKeys(arg_str_ref key, cb_t&& cb) {
   command1("HKEYS %s", key, std::forward<cb_t>(cb));
 }
 
-// HMGET, HMSET
+void LLRedisClient::hMGet(arg_str_ref key, string_init_list&& fields, cb_t&& cb) {
+  std::vector<arg_str_t> toGet{
+    std::forward<string_init_list>(fields)
+  };
+  hMGet(key, std::move(toGet), std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::hMSet(arg_str_ref key, string_pair_init_list&& fieldVals, cb_t&& cb) {
+  std::vector<std::pair<arg_str_t, arg_str_t>> toMset{
+    std::forward<string_pair_init_list>(fieldVals)
+  };
+  hMSet(key, std::move(toMset), std::forward<cb_t>(cb));
+}
 
 void LLRedisClient::hSet(arg_str_ref key, arg_str_ref field,
     arg_str_ref val, cb_t&& cb) {
@@ -338,10 +350,21 @@ void LLRedisClient::incrByFloat(arg_str_ref key,
 }
 
 
-void LLRedisClient::lIndex (arg_str_ref key,
+void LLRedisClient::lIndex(arg_str_ref key,
     redis_signed_t idx, cb_t&& cb) {
   command2("LINDEX %s %i", key, idx, std::forward<cb_t>(cb));
 }
+
+void LLRedisClient::lInsertBefore(arg_str_ref key,
+    arg_str_ref pivot, arg_str_ref value, cb_t&& cb) {
+  command3("LINSERT %s BEFORE %s %s", key, pivot, value, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::lInsertAfter(arg_str_ref key,
+    arg_str_ref pivot, arg_str_ref value, cb_t&& cb) {
+  command3("LINSERT %s AFTER %s %s", key, pivot, value, std::forward<cb_t>(cb));
+}
+
 
 void LLRedisClient::lLen(arg_str_ref key, cb_t&& cb) {
   command1("LLEN %s", key, std::forward<cb_t>(cb));
@@ -349,6 +372,17 @@ void LLRedisClient::lLen(arg_str_ref key, cb_t&& cb) {
 
 void LLRedisClient::lPop(arg_str_ref key, cb_t&& cb) {
   command1("LPOP %s", key, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::lPush(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
+  command2("LPUSH %s %s", key, val, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::lPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb) {
+  std::vector<arg_str_t> toPush{
+    std::forward<string_init_list>(vals)
+  };
+  lPush(key, std::move(toPush), std::forward<cb_t>(cb));
 }
 
 void LLRedisClient::lPushX(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
@@ -375,16 +409,16 @@ void LLRedisClient::lTrim(arg_str_ref key, redis_signed_t start,
   command3("LTRIM %s %i %i", key, start, stop, std::forward<cb_t>(cb));
 }
 
-void LLRedisClient::mGet(mget_init_list&& mgetList, cb_t&& cb) {
+void LLRedisClient::mGet(string_init_list&& mgetList, cb_t&& cb) {
   std::vector<arg_str_t> toMget{
-    std::forward<mget_init_list>(mgetList)
+    std::forward<string_init_list>(mgetList)
   };
   mGet(std::move(toMget), std::forward<cb_t>(cb));
 }
 
-void LLRedisClient::mSet(mset_init_list&& msetList, cb_t&& cb) {
+void LLRedisClient::mSet(string_pair_init_list&& msetList, cb_t&& cb) {
   std::vector<std::pair<arg_str_t, arg_str_t>> toMset{
-    std::forward<mset_init_list>(msetList)
+    std::forward<string_pair_init_list>(msetList)
   };
   mSet(std::move(toMset), std::forward<cb_t>(cb));
 }

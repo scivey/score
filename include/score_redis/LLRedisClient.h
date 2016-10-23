@@ -51,6 +51,9 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   using subscription_try_t = score::Try<std::shared_ptr<subscription_t>>;
   using subscription_handler_ptr_t = subscription_t::handler_ptr_t;
   using event_ctx_t = score::async::EventContext;
+  using string_init_list = std::initializer_list<arg_str_t>;
+  using string_pair_init_list = std::initializer_list<std::pair<arg_str_t, arg_str_t>>;
+
 
   struct RequestContext {
     cb_t callback;
@@ -124,9 +127,32 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void hIncrBy(arg_str_ref, arg_str_ref, redis_signed_t, cb_t&&);
   void hIncrByFloat(arg_str_ref, arg_str_ref, redis_float_t, cb_t&&);
   void hKeys(arg_str_ref, cb_t&&);
-  // missing:
-  //  HMGET
-  //  HMSET
+
+
+  void hMGet(arg_str_ref key, string_init_list&& fields, cb_t&&);
+
+  template<typename TCollection>
+  void hMGet(arg_str_ref key, const TCollection& fields, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << "HMGET " << key;
+    for (const auto &field: fields) {
+      oss << " " << field;
+    }
+    command0(oss.str(), std::forward<cb_t>(cb));
+  }
+
+  void hMSet(arg_str_ref key, string_pair_init_list&& fieldVals, cb_t&&);
+
+  template<typename TCollection>
+  void hMSet(arg_str_ref key, const TCollection& fieldVals, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << "HMSET " << key;
+    for (const auto &fieldVal: fieldVals) {
+      oss << " " << fieldVal.first << " " << fieldVal.second;
+    }
+    command0(oss.str(), std::forward<cb_t>(cb));
+  }
+
   void hSet(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
   void hSetNX(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
   void hStrLen(arg_str_ref, arg_str_ref, cb_t&&);
@@ -141,12 +167,28 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   // void lastSave(cb_t&&);
   void lIndex(arg_str_ref, redis_signed_t, cb_t&&);
 
-  // missing: LINSERT
+  void lInsertBefore(arg_str_ref key, arg_str_ref pivot, arg_str_ref val, cb_t&&);
+  void lInsertAfter(arg_str_ref key, arg_str_ref pivot, arg_str_ref val, cb_t&&);
 
   void lLen(arg_str_ref ref, cb_t&&);
   void lPop(arg_str_ref ref, cb_t&&);
 
-  // missing: LPUSH
+  void lPush(arg_str_ref key, arg_str_ref val, cb_t&& cb);
+
+  // sfinae here is to only match containers of strings
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void lPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << "LPUSH " << key;
+    for (const auto& item: collection) {
+      oss << " " << item;
+    }
+    return command0(oss.str(), std::forward<cb_t>(cb));
+  }
+
+  void lPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb);
+
 
   void lPushX(arg_str_ref, arg_str_ref, cb_t&&);
   void lRange(arg_str_ref, redis_signed_t, redis_signed_t, cb_t&&);
@@ -164,9 +206,7 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
     return command0(oss.str(), std::forward<cb_t>(cb));
   }
 
-  using mget_init_list = std::initializer_list<arg_str_t>;
-  void mGet(mget_init_list&& mgetList, cb_t&&);
-
+  void mGet(string_init_list&& mgetList, cb_t&&);
 
   // missing: MIGRATE, MONITOR, MOVE
 
@@ -181,8 +221,7 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
     return command0(oss.str(), std::forward<cb_t>(cb));
   }
 
-  using mset_init_list = std::initializer_list<std::pair<arg_str_t, arg_str_t>>;
-  void mSet(mset_init_list&& msetList, cb_t&&);
+  void mSet(string_pair_init_list&& msetList, cb_t&&);
 
   // missing: MSETNX
   void multi(cb_t&&);
