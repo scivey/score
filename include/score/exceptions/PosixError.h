@@ -1,11 +1,25 @@
 #pragma once
 #include "score/exceptions/ScoreError.h"
+#include <string>
 #include <folly/Format.h>
+#include <score/ExceptionWrapper.h>
 #include <errno.h>
 
 namespace score { namespace exceptions {
 
 SCORE_DECLARE_EXCEPTION(PosixError, ScoreError);
+
+std::string formatErrno(int err, const std::string& msg);
+
+template<typename TError>
+TError fromErrno(int err, const std::string& msg = "") {
+  return TError(formatErrno(err, msg));
+}
+
+template<typename TError>
+TError wrapperFromErrno(int err, const std::string& msg = "") {
+  return score::makeExceptionWrapper<TError>(formatErrno(err, msg));
+}
 
 }}
 

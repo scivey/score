@@ -3,12 +3,20 @@
 #include <functional>
 #include "score/Try.h"
 #include "score/ExceptionWrapper.h"
+#include "score/exceptions/PosixError.h"
 #include <folly/Demangle.h>
 #include <folly/Format.h>
 #include <type_traits>
 
 
 namespace score { namespace util {
+
+template<typename TValue, typename TErr>
+score::Try<TValue> makeTryFailureFromErrno(int err, const std::string& msg) {
+  return score::Try<TValue> {
+    score::make_exception_wrapper<TErr>(exceptions::formatErrno(err, msg))
+  };
+}
 
 template<typename TValue, typename TErr, typename ... TErrorArgs>
 score::Try<TValue> makeTryFailure(TErrorArgs&&... errArgs) {
