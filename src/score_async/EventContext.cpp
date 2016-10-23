@@ -8,9 +8,14 @@
 
 namespace score { namespace async {
 
+using control_channel_t = typename EventContext::control_channel_t;
 using base_t = typename EventContext::base_t;
 using wheel_t = typename EventContext::wheel_t;
 using sig_registry_t = typename EventContext::sig_registry_t;
+
+EventContext::ControlMessage::ControlMessage(){}
+EventContext::ControlMessage::ControlMessage(work_cb_t&& workFunc)
+  : work(std::forward<work_cb_t>(workFunc)){}
 
 EventContext::EventContext(){}
 
@@ -24,6 +29,27 @@ wheel_t* EventContext::getWheel() {
 
 sig_registry_t* EventContext::getSignalRegistry() {
   return sigRegistry_.get();
+}
+
+void EventContext::bindControlChannel() {
+  CHECK(!controlEvent_);
+  CHECK(!!controlChannel_ && !!base_);
+  controlEvent_.reset(CallbackEvent::createNewEvent(
+    base_.get(), controlChannel_->getFDNum().value(), EV_READ
+  ));
+  controlEvent_->setReadHandler([this]() {
+    ControlMessage message;
+    for (;;) {
+      auto readResult = controlChannel_->unlockedRead(message);
+      readResult.throwIfFailed();
+      if (!readResult.value()) {
+        break;
+      }
+      DCHECK(!!message.work);
+      message.work();
+    }
+  });
+  controlEvent_->add();
 }
 
 EventContext* EventContext::createNew() {
@@ -41,6 +67,8 @@ EventContext* EventContext::createNew() {
   ctx->wheel_ = util::createUnique<wheel_t>(ctx->base_.get(), wheelSettings);
   ctx->wheel_->start();
   ctx->sigRegistry_ = util::createUnique<sig_registry_t>(ctx->base_.get());
+  ctx->controlChannel_ = util::createUnique<control_channel_t>();
+  ctx->bindControlChannel();
   guard.dismiss();
   return ctx;
 }
@@ -49,5 +77,11 @@ void EventContext::runSoon(work_cb_t&& work) {
   work_cb_t toRun { std::forward<work_cb_t>(work)};
   wheel_->addOneShot(std::move(toRun), std::chrono::milliseconds{5});
 }
+
+Try<Unit> EventContext::threadsafeTrySendControlMessage(ControlMessage&& message) {
+  return controlChannel_->tryLockAndSend(std::forward<ControlMessage>(message));
+}
+
+
 
 }} // score::async
