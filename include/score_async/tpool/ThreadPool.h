@@ -13,7 +13,7 @@
 #include "score_async/queues/MPMCQueue.h"
 #include "score_async/queues/EventDataChannel.h"
 
-namespace score { namespace async {
+namespace score { namespace async { namespace tpool {
 
 SCORE_DECLARE_EXCEPTION(ThreadPoolError, EventError);
 
@@ -193,4 +193,4 @@ class ThreadPool {
   }
 };
 
-}}
+}}} // score::async::tpool

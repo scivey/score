@@ -3,10 +3,11 @@
 #include <atomic>
 #include <chrono>
 #include "score_async/EventContext.h"
-#include "score_async/ThreadPool.h"
+#include "score_async/tpool/ThreadPool.h"
 
 using namespace score;
 using namespace score::async;
+using namespace score::async::tpool;
 using score::func::Function;
 using namespace std;
 
@@ -26,19 +27,15 @@ TEST(TestThreadPool, TestSanity1) {
   );
   pool->start().throwIfFailed();
   pool->trySubmit(std::move(task)).throwIfFailed();
-
-  LOG(INFO) << "here.";
   bool didWorkRun {false};
   bool didCallbackRun {false};
   for (;;) {
     auto workResult = workRan.load();
     if (workResult != didWorkRun) {
-      LOG(INFO) << "workRan";
       didWorkRun = workResult;
     }
     auto doneResult = doneCallbackRan.load();
     if (doneResult != didCallbackRun) {
-      LOG(INFO) << "done cb ran";
       didCallbackRun = doneResult;
     }
     if (didWorkRun && didCallbackRun) {
@@ -46,7 +43,6 @@ TEST(TestThreadPool, TestSanity1) {
     }
     evCtx->getBase()->runOnce();
   }
-  LOG(INFO) << "here.";
   EXPECT_TRUE(workRan.load());
   EXPECT_TRUE(doneCallbackRan.load());
 }
