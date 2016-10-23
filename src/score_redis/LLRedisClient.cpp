@@ -120,7 +120,6 @@ void command1Impl(redisAsyncContext *redisCtx, cmd_str_ref cmd,
   );
 }
 
-
 void LLRedisClient::command1(cmd_str_ref cmd,
     arg_str_ref arg, cb_t&& cb) {
   command1Impl(redisContext_, cmd, arg.c_str(), std::forward<cb_t>(cb));
@@ -130,6 +129,7 @@ void LLRedisClient::command1(cmd_str_ref cmd,
     redis_signed_t arg, cb_t&& cb) {
   command1Impl(redisContext_, cmd, arg, std::forward<cb_t>(cb));
 }
+
 
 template<typename T1, typename T2>
 void command2Impl(redisAsyncContext *redisCtx, cmd_str_ref cmd,
@@ -165,7 +165,6 @@ void LLRedisClient::command2(cmd_str_ref cmd,
     std::forward<cb_t>(cb)
   );
 }
-
 
 
 template<typename T1, typename T2, typename T3>
@@ -213,6 +212,9 @@ void LLRedisClient::command3(cmd_str_ref cmd, arg_str_ref arg1,
 
 
 
+// ==========================
+// MAIN REDIS COMMANDS BELOW
+// ==========================
 
 
 void LLRedisClient::decr(arg_str_ref key, cb_t&& cb) {
@@ -231,7 +233,6 @@ void LLRedisClient::del(arg_str_ref key, cb_t&& cb) {
 void LLRedisClient::exec(cb_t&& cb) {
   command0("EXEC", std::forward<cb_t>(cb));
 }
-
 
 void LLRedisClient::echo(arg_str_ref key, cb_t&& cb) {
   return command1("ECHO %s", key, std::forward<cb_t>(cb));
@@ -349,7 +350,6 @@ void LLRedisClient::incrByFloat(arg_str_ref key,
   command2("INCRBYFLOAT %s %f", key, amount, std::forward<cb_t>(cb));
 }
 
-
 void LLRedisClient::lIndex(arg_str_ref key,
     redis_signed_t idx, cb_t&& cb) {
   command2("LINDEX %s %i", key, idx, std::forward<cb_t>(cb));
@@ -364,7 +364,6 @@ void LLRedisClient::lInsertAfter(arg_str_ref key,
     arg_str_ref pivot, arg_str_ref value, cb_t&& cb) {
   command3("LINSERT %s AFTER %s %s", key, pivot, value, std::forward<cb_t>(cb));
 }
-
 
 void LLRedisClient::lLen(arg_str_ref key, cb_t&& cb) {
   command1("LLEN %s", key, std::forward<cb_t>(cb));
@@ -499,12 +498,20 @@ void LLRedisClient::rPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb) {
   rPush(key, std::move(toPush), std::forward<cb_t>(cb));
 }
 
-
 void LLRedisClient::rPushX(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
   command2("RPUSHX %s %s", key, val, std::forward<cb_t>(cb));
 }
 
-// SADD
+void LLRedisClient::sAdd(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
+  command2("SADD %s %s", key, val, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::sAdd(arg_str_ref key, string_init_list&& vals, cb_t&& cb) {
+  std::vector<arg_str_t> toAdd{
+    std::forward<string_init_list>(vals)
+  };
+  sAdd(key, toAdd, std::forward<cb_t>(cb));
+}
 
 void LLRedisClient::save(cb_t&& cb) {
   command0("SAVE", std::forward<cb_t>(cb));
@@ -514,9 +521,32 @@ void LLRedisClient::sCard(arg_str_ref key, cb_t&& cb) {
   command1("SCARD %s", key, std::forward<cb_t>(cb));
 }
 
+
 // SCRIPT_*
-// SDIFF
-// SDIFFSTORE
+
+
+void LLRedisClient::sDiff(arg_str_ref key1, arg_str_ref key2, cb_t&& cb) {
+  command2("SDIFF %s %s", key1, key2, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::sDiff(string_init_list&& keys, cb_t&& cb) {
+  std::vector<arg_str_t> toDiff {
+    std::forward<string_init_list>(keys)
+  };
+  sDiff(std::move(toDiff), std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::sDiffStore(arg_str_ref dest, arg_str_ref key1,
+    arg_str_ref key2, cb_t&& cb) {
+  command3("SDIFFSTORE %s %s %s", dest, key1, key2, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::sDiffStore(arg_str_ref dest, string_init_list&& keys, cb_t&& cb) {
+  std::vector<arg_str_t> toDiff {
+    std::forward<string_init_list>(keys)
+  };
+  sDiffStore(dest, std::move(toDiff), std::forward<cb_t>(cb));
+}
 
 void LLRedisClient::select(redis_signed_t dbNum, cb_t&& cb) {
   command1("SELECT %i", dbNum, std::forward<cb_t>(cb));

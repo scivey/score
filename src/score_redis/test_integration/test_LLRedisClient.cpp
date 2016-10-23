@@ -111,9 +111,9 @@ TEST(IntegrationTestLLRedisClient, TestMgetMset) {
   auto ctx = LLRTestContext::createShared();
   ctx->connect([ctx]() {
     auto client = ctx->client;
-    client->mset({{"a", "a-val"}, {"b", "b-val"}}, [client, ctx](res_t response) {
+    client->mSet({{"a", "a-val"}, {"b", "b-val"}}, [client, ctx](res_t response) {
       EXPECT_STATUS(response);
-      client->mget({"a", "b"}, [client, ctx](res_t response) {
+      client->mGet({"a", "b"}, [client, ctx](res_t response) {
         EXPECT_STRING_ARRAY(response, "a-val", "b-val");
         ctx->finished();
       });

@@ -181,7 +181,8 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   // sfinae here is to only match containers of strings
   template<typename TCollection,
     typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
-  void listPushImpl(arg_str_ref cmd, arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+  void multiSubkeyCommandImpl(arg_str_ref cmd, arg_str_ref key,
+        const TCollection& collection, cb_t&& cb) {
     std::ostringstream oss;
     oss << cmd << " " << key;
     for (const auto& item: collection) {
@@ -194,7 +195,7 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   template<typename TCollection,
     typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
   void lPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
-    listPushImpl("LPUSH", key, collection, std::forward<cb_t>(cb));
+    multiSubkeyCommandImpl("LPUSH", key, collection, std::forward<cb_t>(cb));
   }
 
   void lPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb);
@@ -206,14 +207,32 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void lSet(arg_str_ref key, redis_signed_t idx, arg_str_ref value, cb_t&&);
   void lTrim(arg_str_ref key, redis_signed_t start, redis_signed_t stop, cb_t&&);
 
+
+ protected:
   template<typename TCollection>
-  void mGet(const TCollection &args, cb_t&& cb) {
+  void multiKeyCommandImpl(arg_str_ref cmd, const TCollection &args, cb_t&& cb) {
     std::ostringstream oss;
-    oss << "MGET";
+    oss << cmd;
     for (const auto &key: args) {
       oss << " " << key;
     }
     return command0(oss.str(), std::forward<cb_t>(cb));
+  }
+
+  template<typename TCollection>
+  void multiKeyCommandImpl(arg_str_ref cmd, arg_str_ref key1, const TCollection &args, cb_t&& cb) {
+    std::ostringstream oss;
+    oss << cmd << " " << key1;
+    for (const auto &key: args) {
+      oss << " " << key;
+    }
+    return command0(oss.str(), std::forward<cb_t>(cb));
+  }
+ public:
+
+  template<typename TCollection>
+  void mGet(const TCollection &args, cb_t&& cb) {
+    multiKeyCommandImpl("MGET", args, std::forward<cb_t>(cb));
   }
 
   void mGet(string_init_list&& mgetList, cb_t&&);
@@ -276,20 +295,45 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   template<typename TCollection,
     typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
   void rPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
-    listPushImpl("RPUSH", key, collection, std::forward<cb_t>(cb));
+    multiSubkeyCommandImpl("RPUSH", key, collection, std::forward<cb_t>(cb));
   }
 
   void rPush(arg_str_ref key, string_init_list&& vals, cb_t&&);
   void rPush(arg_str_ref key, arg_str_ref val, cb_t&&);
 
   void rPushX(arg_str_ref key, arg_str_ref value, cb_t&&);
-  // missing: SADD
+
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void sAdd(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+    multiSubkeyCommandImpl("SADD", key, collection, std::forward<cb_t>(cb));
+  }
+  void sAdd(arg_str_ref key, arg_str_ref val, cb_t&&);
+  void sAdd(arg_str_ref key, string_init_list&& vals, cb_t&&);
+
   void save(cb_t&&);
   void sCard(arg_str_ref, cb_t&&);
 
   // missing: SCRIPT_* commands
 
-  // missing: SDIFF, SDIFFSTORE
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void sDiff(const TCollection& collection, cb_t&& cb) {
+    multiKeyCommandImpl("SDIFF", collection, std::forward<cb_t>(cb));
+  }
+
+  void sDiff(arg_str_ref key1, arg_str_ref key2, cb_t&& cb);
+  void sDiff(string_init_list&& keys, cb_t&& cb);
+
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void sDiffStore(arg_str_ref dest, const TCollection& collection, cb_t&& cb) {
+    multiKeyCommandImpl("SDIFFSTORE", dest, collection, std::forward<cb_t>(cb));
+  }
+
+  void sDiffStore(arg_str_ref dest, arg_str_ref key1, arg_str_ref key2, cb_t&&);
+  void sDiffStore(arg_str_ref dest, string_init_list&& keys, cb_t&&);
+
   void select(redis_signed_t dbNum, cb_t&&);
 
 
