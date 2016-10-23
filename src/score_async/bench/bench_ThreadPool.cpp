@@ -11,6 +11,8 @@
 #include <glog/logging.h>
 #include <wangle/concurrent/CPUThreadPoolExecutor.h>
 #include <folly/io/async/EventBase.h>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
 #include "score/Try.h"
 #include "score/Unit.h"
 #include "score/util/misc.h"
@@ -28,9 +30,75 @@ using namespace score::async;
 
 using bench_func_t = score::func::Function<void>;
 
-double runBenched(bench_func_t&& benchFunc, size_t nIter) {
-  std::vector<double> durations;
-  durations.reserve(nIter * 2);
+
+class BenchResult {
+ protected:
+  std::string name_ {"Default"};
+  double mean_ {0.0};
+  double stdev_ {0.0};
+  double min_ {0.0};
+  double max_ {0.0};
+ public:
+  BenchResult(){}
+  BenchResult(const std::string& name)
+    : name_(name) {}
+  BenchResult& setMean(double mean) {
+    mean_ = mean;
+    return *this;
+  }
+  BenchResult& setStdev(double stdev) {
+    stdev_ = stdev;
+    return *this;
+  }
+  BenchResult& setMin(double minVal) {
+    min_ = minVal;
+    return *this;
+  }
+  BenchResult& setMax(double maxVal) {
+    max_ = maxVal;
+    return *this;
+  }
+  BenchResult& setName(const std::string& name) {
+    name_ = name;
+    return *this;
+  }
+  double getMin() const {
+    return min_;
+  }
+  double getMax() const {
+    return max_;
+  }
+  double getMean() const {
+    return mean_;
+  }
+  double getStdev() const {
+    return stdev_;
+  }
+  const std::string& getName() const {
+    return name_;
+  }
+};
+
+std::ostream& operator<<(std::ostream& oss, const BenchResult& benched) {
+  oss << "\n\t[" << benched.getName() << "]" << endl;
+  oss << "\t\tmean:  " << benched.getMean() << endl
+      << "\t\tstdev: " << benched.getStdev() << endl
+      << "\t\tmin:   " << benched.getMin() << endl
+      << "\t\tmax:   " << benched.getMax() << endl
+      << endl;
+  return oss;
+}
+
+BenchResult runBenched(const string& name, bench_func_t&& benchFunc, size_t nIter) {
+  boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::features<
+      boost::accumulators::tag::mean,
+      boost::accumulators::tag::variance,
+      boost::accumulators::tag::max,
+      boost::accumulators::tag::min
+    >
+  > accum;
   for (size_t i = 0; i < nIter; i++) {
     auto start = chrono::high_resolution_clock::now();
     benchFunc();
@@ -38,14 +106,18 @@ double runBenched(bench_func_t&& benchFunc, size_t nIter) {
     auto elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(
       end - start
     );
-    durations.push_back(elapsed.count());
+    accum(elapsed.count());
   }
-  return std::accumulate(durations.begin(), durations.end(), 0.0) / ((double) nIter);
+  return BenchResult(name)
+    .setMean(boost::accumulators::mean(accum))
+    .setStdev(sqrt(boost::accumulators::variance(accum)))
+    .setMin(boost::accumulators::min(accum))
+    .setMax(boost::accumulators::max(accum));
 }
 
-static const size_t kNumTasks = 100;
-static const size_t kNumThreads = 4;
-static const size_t kIterations = 10;
+static const size_t kNumTasks = 1000;
+static const size_t kNumThreads = 8;
+static const size_t kIterations = 100;
 
 
 template<typename T>
@@ -91,16 +163,6 @@ void benchScoreThreadpool() {
     std::atomic<size_t> workCounter {0};
     size_t doneCounter {0};
     bool finishedCycle {false};
-    // auto incrWork = [&workCounter]() {
-    //   workCounter++;
-    // };
-    // auto incrDone = [&doneCounter, &finishedCycle](Try<Unit> result) {
-    //   CHECK(!result.hasException()) << "exception: " << result.exception().what();
-    //   doneCounter++;
-    //   if (doneCounter == kNumTasks) {
-    //     finishedCycle = true;
-    //   }
-    // };
     for (size_t i = 0; i < kNumTasks; i++) {
       ScoreTask scoreTask {&workCounter, &doneCounter, &finishedCycle};
       auto submitResult = pool->trySubmit(Task::createFromEventThread(
@@ -119,8 +181,8 @@ void benchScoreThreadpool() {
       ctx->getBase()->runNonBlocking();
     }
   };
-  auto duration = runBenched(benchFunc, kIterations);
-  LOG(INFO) << "score duration: " << duration;
+  auto result = runBenched("score", benchFunc, kIterations);
+  LOG(INFO) << result;
 }
 
 
@@ -157,8 +219,8 @@ void benchWangleThreadpool() {
       evBase.loopOnce(EVLOOP_NONBLOCK);
     }
   };
-  auto duration = runBenched(benchFunc, kIterations);
-  LOG(INFO) << "wangle duration: " << duration;
+  auto result = runBenched("wangle", benchFunc, kIterations);
+  LOG(INFO) << result;
 }
 
 
