@@ -33,50 +33,72 @@ sig_registry_t* EventContext::getSignalRegistry() {
   return sigRegistry_.get();
 }
 
+void EventContext::drainDataChannel(const std::shared_ptr<EventDataChannel>& channel) {
+  EventDataChannel::Message message;
+  for (;;) {
+    auto readResult = channel->getQueue()->tryRead(message);
+    readResult.throwIfFailed();
+    if (!readResult.value()) {
+      break;
+    }
+    DCHECK(!!message.work);
+    message.work();
+  }
+}
+
+void EventContext::drainControlChannel() {
+  ControlMessage message;
+  for (;;) {
+    auto readResult = controlChannel_->tryRead(message);
+    readResult.throwIfFailed();
+    if (!readResult.value()) {
+      break;
+    }
+    DCHECK(!!message.work);
+    message.work();
+  }
+}
+
 void EventContext::bindDataChannel(std::shared_ptr<EventDataChannel> channel) {
   EventDataChannelHandle chanHandle;
   chanHandle.channel = channel;
   chanHandle.readEvent.reset(CallbackEvent::createNewEvent(
-    base_.get(), channel->getQueue()->getFDNum().value(), EV_READ
+    base_.get(), channel->getQueue()->getFDNum().value(), EV_READ | EV_PERSIST
   ));
   chanHandle.readEvent->setReadHandler([this, channel]() {
-    EventDataChannel::Message message;
-    for (;;) {
-      auto readResult = channel->getQueue()->tryRead(message);
-      readResult.throwIfFailed();
-      if (!readResult.value()) {
-        break;
-      }
-      DCHECK(!!message.work);
-      message.work();
-    }
+    this->drainDataChannel(channel);
   });
   chanHandle.readEvent->add();
   channel->markReceiverAcked(true);
   dataChannels_.insert(std::make_pair(
     channel->getSenderID(), std::move(chanHandle)
   ));
+
+  // the producer may have sent messages before
+  // we registered the read event
+  this->drainDataChannel(channel);
 }
 
 void EventContext::bindControlChannel() {
   CHECK(!controlEvent_);
   CHECK(!!controlChannel_ && !!base_);
   controlEvent_.reset(CallbackEvent::createNewEvent(
-    base_.get(), controlChannel_->getFDNum().value(), EV_READ
+    base_.get(), controlChannel_->getFDNum().value(), EV_READ | EV_PERSIST
   ));
   controlEvent_->setReadHandler([this]() {
-    ControlMessage message;
-    for (;;) {
-      auto readResult = controlChannel_->tryRead(message);
-      readResult.throwIfFailed();
-      if (!readResult.value()) {
-        break;
-      }
-      DCHECK(!!message.work);
-      message.work();
-    }
+    this->drainControlChannel();
   });
   controlEvent_->add();
+
+  // if the EventContext was properly initialized prior to
+  // being made visible to other threads, we shouldn't have any
+  // existing control messages that were enqueued before we
+  // registered the read event handler.
+  //
+  // nonetheless, draining any existing messages here seems
+  // like a reasonable safeguard given that we only pay the
+  // cost once (at initialization).
+  this->drainControlChannel();
 }
 
 EventContext* EventContext::createNew() {

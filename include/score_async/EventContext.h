@@ -35,9 +35,12 @@ class EventContext {
   using control_channel_t = queues::MPSCEventChannel<ControlMessage>;
   using control_channel_ptr_t = std::unique_ptr<control_channel_t>;
 
+  using data_channel_t = EventDataChannel;
+  using data_channel_ptr_t = std::shared_ptr<data_channel_t>;
+
   struct EventDataChannelHandle {
     std::unique_ptr<CallbackEvent> readEvent {nullptr};
-    std::shared_ptr<EventDataChannel> channel {nullptr};
+    data_channel_ptr_t channel {nullptr};
   };
 
  protected:
@@ -48,9 +51,12 @@ class EventContext {
   std::unique_ptr<CallbackEvent> controlEvent_ {nullptr};
   using data_channel_map_t = std::unordered_map<std::thread::id, EventDataChannelHandle>;
   data_channel_map_t dataChannels_;
+
   EventContext();
+  void drainControlChannel();
   void bindControlChannel();
-  void bindDataChannel(std::shared_ptr<EventDataChannel>);
+  void drainDataChannel(const data_channel_ptr_t&);
+  void bindDataChannel(data_channel_ptr_t);
  public:
   base_t* getBase();
   wheel_t* getWheel();
