@@ -9,4 +9,9 @@ SCORE_DECLARE_EXCEPTION(NotRunning, ThreadPoolError);
 SCORE_DECLARE_EXCEPTION(InvalidSettings, ThreadPoolError);
 SCORE_DECLARE_EXCEPTION(AlreadyRunning, ThreadPoolError);
 
+SCORE_DECLARE_EXCEPTION(TaskError, ThreadPoolError);
+SCORE_DECLARE_EXCEPTION(InvalidTask, TaskError);
+SCORE_DECLARE_EXCEPTION(TaskThrewException, TaskError);
+SCORE_DECLARE_EXCEPTION(CouldntSendResult, TaskError);
+
 }}} // score::async::tpool

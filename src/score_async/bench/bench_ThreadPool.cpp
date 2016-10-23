@@ -121,7 +121,7 @@ static const size_t kIterations = 100;
 
 
 template<typename T>
-class BaseTask {
+class BasePoolBenchTask {
  protected:
   mutable std::atomic<size_t> *taskCounter_ {nullptr};
   mutable size_t *doneCounter_ {nullptr};
@@ -130,7 +130,7 @@ class BaseTask {
     return (T*) this;
   }
  public:
-  BaseTask(std::atomic<size_t> *taskCount, size_t *doneCount,
+  BasePoolBenchTask(std::atomic<size_t> *taskCount, size_t *doneCount,
       bool *doneFlag)
     : taskCounter_(taskCount),
       doneCounter_(doneCount),
@@ -149,10 +149,12 @@ class BaseTask {
   }
 };
 
-class ScoreTask: public BaseTask<ScoreTask> {
+class ScoreTask: public BasePoolBenchTask<ScoreTask> {
  public:
-  ScoreTask(std::atomic<size_t>* x, size_t* y, bool* z): BaseTask<ScoreTask>(x, y, z){}
+  ScoreTask(std::atomic<size_t>* x, size_t* y, bool* z): BasePoolBenchTask<ScoreTask>(x, y, z){}
 };
+
+
 
 
 void benchScoreThreadpool() {
@@ -164,17 +166,18 @@ void benchScoreThreadpool() {
     size_t doneCounter {0};
     bool finishedCycle {false};
     for (size_t i = 0; i < kNumTasks; i++) {
-      ScoreTask scoreTask {&workCounter, &doneCounter, &finishedCycle};
-      auto submitResult = pool->trySubmit(Task::createFromEventThread(
+      ScoreTask benchTask {&workCounter, &doneCounter, &finishedCycle};
+      auto task = CallbackTask::createFromEventThread(
         ctx.get(),
-        [scoreTask]() {
-          scoreTask.doWork();
+        [benchTask]() {
+          benchTask.doWork();
         },
-        [scoreTask](Try<Unit> result) {
+        [benchTask](Try<Unit> result) {
           result.throwIfFailed();
-          scoreTask.doFinished();
+          benchTask.doFinished();
         }
-      ));
+      );
+      auto submitResult = pool->trySubmit(std::move(task));
       CHECK(!submitResult.hasException()) << "exception: " << submitResult.exception().what();
     }
     while (!finishedCycle) {
@@ -186,11 +189,11 @@ void benchScoreThreadpool() {
 }
 
 
-class WangleTask: public BaseTask<WangleTask> {
+class WangleTask: public BasePoolBenchTask<WangleTask> {
  protected:
   mutable folly::EventBase* evBase_ {nullptr};
  public:
-  WangleTask(std::atomic<size_t>* x, size_t* y, bool* z): BaseTask<WangleTask>(x, y, z){}
+  WangleTask(std::atomic<size_t>* x, size_t* y, bool* z): BasePoolBenchTask<WangleTask>(x, y, z){}
 
   void setBase(folly::EventBase *base) {
     evBase_ = base;

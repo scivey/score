@@ -20,19 +20,53 @@ namespace score { namespace async { namespace tpool {
 
 class ThreadPoolWorker {
  public:
-  using queue_t = queues::MPMCQueue<Task>;
+  using queue_t = queues::MPMCQueue<std::unique_ptr<TaskBase>>;
 
  protected:
   queue_t *workQueue_ {nullptr};
   std::unique_ptr<std::thread> thread_ {nullptr};
   std::atomic<bool> running_ {false};
 
+  Try<Unit> runTask(std::unique_ptr<TaskBase> task) {
+    Try<Unit> taskOutcome;
+    try {
+      task->run();
+      taskOutcome = util::makeTrySuccess<Unit>();
+    } catch (const std::exception& ex) {
+      taskOutcome = util::makeTryFailure<Unit, TaskThrewException>(ex.what());
+    }
+    auto senderContext = task->getSenderContext();
+    auto wrappedTask = makeMoveWrapper(std::move(task));
+    auto wrappedOutcome = makeMoveWrapper(std::move(taskOutcome));
+    EventContext::ControlMessage message {
+      [wrappedTask, wrappedOutcome]() {
+        MoveWrapper<Try<Unit>> movedOutcome = wrappedOutcome;
+        Try<Unit> unwrappedOutcome = movedOutcome.move();
+        MoveWrapper<std::unique_ptr<TaskBase>> movedTask = wrappedTask;
+        std::unique_ptr<TaskBase> unwrappedTask = movedTask.move();
+        if (unwrappedOutcome.hasException()) {
+          unwrappedTask->onError(std::move(unwrappedOutcome.exception()));
+        } else {
+          unwrappedTask->onSuccess();
+        }
+      }
+    };
+    auto sendResult = senderContext->threadsafeTrySendControlMessage(
+      std::move(message)
+    );
+    if (sendResult.hasException()) {
+      return util::makeTryFailure<Unit, CouldntSendResult>(
+        sendResult.exception().what()
+      );
+    }
+    return util::makeTrySuccess<Unit>();
+  }
   void threadFunc() {
-    Task task;
+    std::unique_ptr<TaskBase> task;
     while (running_.load()) {
       if (workQueue_->try_dequeue(task)) {
-        if (task.good()) {
-          task.run().throwIfFailed();
+        if (task->valid()) {
+          runTask(std::move(task)).throwIfFailed();
         } else {
           LOG(INFO) << "received invalid task.";
         }

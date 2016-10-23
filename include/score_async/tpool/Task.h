@@ -16,78 +16,70 @@
 
 namespace score { namespace async { namespace tpool {
 
-class Task {
+class TaskBase {
  public:
-  SCORE_DECLARE_EXCEPTION(TaskError, ThreadPoolError);
-  SCORE_DECLARE_EXCEPTION(InvalidTask, TaskError);
-  SCORE_DECLARE_EXCEPTION(TaskThrewException, TaskError);
-  SCORE_DECLARE_EXCEPTION(CouldntSendResult, TaskError);
-
-  using work_cb_t = func::Function<void>;
-  using done_cb_t = func::Function<void, Try<Unit>>;
   using ctx_t = EventContext;
   using sender_id_t = std::thread::id;
  protected:
-  ctx_t *senderCtx_ {nullptr};
+  ctx_t *senderContext_ {nullptr};
   sender_id_t senderId_ {0};
-  work_cb_t work_;
-  done_cb_t onFinished_;
-
  public:
-  Task(){}
-  Task(EventContext* senderCtx, sender_id_t senderId,
-        work_cb_t&& work, done_cb_t&& onFinished)
-    : senderCtx_(senderCtx),
-      senderId_(senderId),
-      work_(std::forward<work_cb_t>(work)),
-      onFinished_(std::forward<done_cb_t>(onFinished)) {}
-
-  bool good() const {
-    return !!work_ && !!onFinished_ && !!senderCtx_ && (senderId_ > std::thread::id{0});
+  bool hasGoodContext() const {
+    return !!senderContext_ && senderId_ > sender_id_t{0};
   }
-  Try<Unit> run() {
-    if (!good()) {
-      return util::makeTryFailure<Unit, InvalidTask>(
-        "Task is in invalid state."
-      );
-    }
-    Try<Unit> outcome;
-    try {
-      work_();
-      outcome = util::makeTrySuccess<Unit>();
-    } catch (const std::exception& ex) {
-      outcome = util::makeTryFailure<Unit, TaskThrewException>(ex.what());
-    }
-    auto onFinishedWrapper = score::makeMoveWrapper(std::move(onFinished_));
-    auto outcomeWrapper = score::makeMoveWrapper(std::move(outcome));
-    auto sendResult = senderCtx_->threadsafeTrySendControlMessage(
-      EventContext::ControlMessage {
-        [onFinishedWrapper, outcomeWrapper]() {
-          MoveWrapper<Try<Unit>> movedOutcome = outcomeWrapper;
-          Try<Unit> unwrappedOutcome = movedOutcome.move();
-          MoveWrapper<done_cb_t> movedOnFinished = onFinishedWrapper;
-          done_cb_t unwrappedOnFinished = movedOnFinished.move();
-          unwrappedOnFinished(std::move(unwrappedOutcome));
-        }
-      }
-    );
-    if (sendResult.hasException()) {
-      return util::makeTryFailure<Unit, CouldntSendResult>(
-        sendResult.exception().what()
-      );
-    }
-    return util::makeTrySuccess<Unit>();
+  bool valid() const {
+    return hasGoodContext() && good();
   }
-  static Task createFromEventThread(EventContext *ctx,
-      work_cb_t&& work, done_cb_t&& onFinished) {
-    return Task {
-      ctx,
-      std::this_thread::get_id(),
-      std::forward<work_cb_t>(work),
-      std::forward<done_cb_t>(onFinished)
-    };
+  void setSenderContext(ctx_t *ctx) {
+    senderContext_ = ctx;
   }
+  void setSenderId(sender_id_t id) {
+    senderId_ = id;
+  }
+  sender_id_t getSenderId() {
+    return senderId_;
+  }
+  ctx_t* getSenderContext() {
+    return senderContext_;
+  }
+  virtual bool good() const = 0;
+  virtual void run() = 0;
+  virtual void onSuccess() noexcept = 0;
+  virtual void onError(score::ExceptionWrapper&& ex) noexcept = 0;
+  virtual ~TaskBase() = default;
 };
 
+class CallbackTask: public TaskBase {
+ public:
+  using work_cb_t = func::Function<void>;
+  using done_cb_t = func::Function<void, Try<Unit>>;
+ protected:
+  work_cb_t work_;
+  done_cb_t onFinished_;
+ public:
+  CallbackTask(work_cb_t&& workCb, done_cb_t&& doneCb)
+    : work_(std::forward<work_cb_t>(workCb)), onFinished_(std::forward<done_cb_t>(doneCb)){}
+  bool good() const override {
+    return !!work_ && !!onFinished_;
+  }
+  void run() override {
+    work_();
+  }
+  void onSuccess() noexcept override {
+    onFinished_(util::makeTrySuccess<Unit>());
+  }
+  void onError(score::ExceptionWrapper&& ex) noexcept override {
+    onFinished_(score::Try<Unit> {std::forward<score::ExceptionWrapper>(ex)});
+  }
+  static std::unique_ptr<CallbackTask> createFromEventThread(EventContext *ctx,
+      work_cb_t&& work, done_cb_t&& onFinished) {
+    auto task = util::makeUnique<CallbackTask>(
+      std::forward<work_cb_t>(work), std::forward<done_cb_t>(onFinished)
+    );
+    task->setSenderContext(ctx);
+    task->setSenderId(std::this_thread::get_id());
+    return task;
+  }
+};
 
 }}} // score::async::tpool
