@@ -2,6 +2,8 @@
 
 #include "score/posix/FileDescriptor.h"
 #include "score/exceptions/ScoreError.h"
+#include "score/exceptions/PosixError.h"
+
 #include "score/macros.h"
 #include "score/Try.h"
 #include "score/Unit.h"
@@ -16,19 +18,20 @@ class EventFD {
   posix::FileDescriptor fd_;
   EventFD(posix::FileDescriptor&&);
  public:
-  SCORE_DECLARE_EXCEPTION(EventFDError, score::exceptions::ScoreError);
+  SCORE_DECLARE_EXCEPTION(EventFDError, score::exceptions::PosixError);
+  SCORE_DECLARE_EXCEPTION(CouldntCreate, EventFDError);
   SCORE_DECLARE_EXCEPTION(Invalid, EventFDError);
-  SCORE_DECLARE_EXCEPTION(NotReady, EventFDError);
   SCORE_DECLARE_EXCEPTION(IOError, EventFDError);
   SCORE_DECLARE_EXCEPTION(ReadError, IOError);
+  SCORE_DECLARE_EXCEPTION(NotReady, ReadError);
   SCORE_DECLARE_EXCEPTION(WriteError, IOError);
-  static EventFD create();
-  using fd_try_t = decltype(std::declval<posix::FileDescriptor>().get());
-  fd_try_t getFd();
+
+  static score::Try<EventFD> create();
+  Try<int> getFDNum();
   Try<int64_t> read();
   Try<Unit> write(int64_t num);
   bool good() const;
-  operator bool() const;
+  explicit operator bool() const;
 };
 
 

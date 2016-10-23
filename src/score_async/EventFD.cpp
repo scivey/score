@@ -5,44 +5,60 @@
 
 using score::posix::FileDescriptor;
 using score::util::makeTryFailure;
+using score::util::makeTryFailureFromErrno;
 using score::util::makeTrySuccess;
 using score::util::doWithValue;
 
 namespace score { namespace async {
 
-using fd_try_t = typename EventFD::fd_try_t;
-
 EventFD::EventFD(FileDescriptor&& fd)
   : fd_(std::forward<FileDescriptor>(fd)){}
 
-EventFD EventFD::create() {
+Try<EventFD> EventFD::create() {
   int fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-  CHECK(fd > 0);
-  return EventFD(FileDescriptor::takeOwnership(fd));
+  if (fd <= 0) {
+    return makeTryFailureFromErrno<EventFD, CouldntCreate>(
+      errno, "Couldn't create EventFD"
+    );
+  }
+  return makeTrySuccess<EventFD>(EventFD{FileDescriptor::takeOwnership(fd)});
 }
 
-fd_try_t EventFD::getFd() {
-  return fd_.get();
+Try<int> EventFD::getFDNum() {
+  auto result = fd_.get();
+  if (result.hasException<FileDescriptor::Invalid>()) {
+    return makeTryFailure<int, EventFD::Invalid>(
+      "Invalid EventFD: wrapping '{}'", result.exception().what()
+    );
+  }
+  return result;
 }
+
+static const std::string kEventFDNotReadyMsg {"EventFD not ready"};
 
 Try<int64_t> EventFD::read() {
-  return doWithValue(getFd(), [](int fd) {
+  return doWithValue(getFDNum(), [](int fd) {
     int64_t buff;
+    errno = 0;
     ssize_t nr = ::read(fd, (void*) &buff, sizeof(buff));
     if (nr < 0) {
       if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        return makeTryFailure<int64_t, NotReady>(
-          "[{}] NotReady", errno
+        return makeTryFailureFromErrno<int64_t, NotReady>(
+          errno, kEventFDNotReadyMsg
         );
       } else {
-        return makeTryFailure<int64_t, ReadError>(
-          "ReadError: [{}] '{}'", errno, strerror(errno)
+        return makeTryFailureFromErrno<int64_t, ReadError>(
+          errno, "EventFD read failed"
         );
       }
     } else if (nr == 0) {
-      return makeTryFailure<int64_t, NotReady>(
-        "[{}] NotReady", errno
-      );
+      if (errno == 0) {
+        return makeTryFailure<int64_t, NotReady>(kEventFDNotReadyMsg);
+      } else {
+        return makeTryFailureFromErrno<int64_t, NotReady>(
+          errno, kEventFDNotReadyMsg
+        );
+      }
     }
     DCHECK(nr == 8);
     return makeTrySuccess<int64_t>(buff);
@@ -50,8 +66,7 @@ Try<int64_t> EventFD::read() {
 }
 
 Try<Unit> EventFD::write(int64_t num) {
-  auto fd = getFd();
-  return doWithValue(getFd(), [num](int fd) {
+  return doWithValue(getFDNum(), [num](int fd) {
     int64_t buff = num;
     ssize_t nr = ::write(fd, (void*) &buff, sizeof(buff));
     if (nr < 0) {

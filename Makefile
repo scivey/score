@@ -51,8 +51,14 @@ client-integration: cm deps
 	cd build && make run_client_integration_tests -j8
 	./build/run_client_integration_tests
 
+misc-integration: cm deps
+	cd build && make run_misc_integration_tests -j8
+	./build/run_misc_integration_tests
+
 clean:
 	rm -rf build
+
+integration: misc-integration client-integration
 
 deps:
 	bash scripts/deps.sh

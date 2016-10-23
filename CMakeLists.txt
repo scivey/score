@@ -42,13 +42,18 @@ set(COMMON_LIBS
     icuuc
     icudata
     glog
-    curl
     event
     ${CRYPTO_LIBS}
     dl
     pthread
     gcc_s
     atomic
+)
+
+set(EXTRA_LIBS
+    curl
+    hiredis
+    memcached
 )
 
 set(SCORE_ROOT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -137,7 +142,8 @@ add_executable(run_core_tests
 add_dependencies(run_core_tests score_core)
 target_link_libraries(run_core_tests
     gmock
-    ${ALL_LIBS}
+    score_core
+    ${COMMON_LIBS}
 )
 
 
@@ -183,7 +189,12 @@ add_executable(run_html_tests
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_html_tests score_html)
-target_link_libraries(run_html_tests gmock score_html ${ALL_LIBS})
+target_link_libraries(run_html_tests
+    gmock
+    score_html
+    score_core
+    ${COMMON_LIBS}
+)
 
 
 
@@ -217,7 +228,7 @@ set(SCORE_NLP_SRC
 
 add_library(score_nlp ${SCORE_NLP_SRC})
 add_dependencies(score_nlp score_core)
-target_link_libraries(score_nlp ${COMMON_LIBS} score_core)
+target_link_libraries(score_nlp score_core ${COMMON_LIBS})
 
 
 FILE(GLOB SCORE_NLP_TEST_SRC
@@ -230,7 +241,12 @@ add_executable(run_nlp_tests
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_nlp_tests score_nlp)
-target_link_libraries(run_nlp_tests gmock ${COMMON_LIBS} score_core score_nlp)
+target_link_libraries(run_nlp_tests
+    gmock
+    score_nlp
+    score_core
+    ${COMMON_LIBS}
+)
 
 
 
@@ -245,7 +261,12 @@ FILE(GLOB SCORE_EXTRACT_SRC
 )
 add_library(score_extract ${SCORE_EXTRACT_SRC})
 add_dependencies(score_extract score_core score_nlp score_html)
-target_link_libraries(score_extract score_nlp score_html score_core ${COMMON_LIBS})
+target_link_libraries(score_extract
+    score_nlp
+    score_html
+    score_core
+    ${COMMON_LIBS}
+)
 
 FILE(GLOB SCORE_EXTRACT_TEST_SRC
     ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
@@ -261,8 +282,9 @@ add_dependencies(run_extract_tests score_extract)
 target_link_libraries(run_extract_tests
     gmock
     score_extract
-    score_core
+    score_html
     score_nlp
+    score_core
     ${COMMON_LIBS}
 )
 
@@ -276,8 +298,8 @@ FILE(GLOB SCORE_ASYNC_SRC
 
 )
 add_library(score_async ${SCORE_ASYNC_SRC})
-add_dependencies(score_async score)
-target_link_libraries(score_async ${COMMON_LIBS} score_core)
+add_dependencies(score_async score_core)
+target_link_libraries(score_async score_core ${COMMON_LIBS})
 
 FILE(GLOB SCORE_ASYNC_TEST_SRC
     ${SCORE_ASYNC_SRC_DIR}/test/*.cpp
@@ -287,12 +309,12 @@ add_executable(run_async_tests
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
-add_dependencies(run_async_tests score_async)
+add_dependencies(run_async_tests score_async score_core)
 target_link_libraries(run_async_tests
     gmock
-    ${COMMON_LIBS}
     score_async
     score_core
+    ${COMMON_LIBS}
 )
 
 
@@ -305,7 +327,12 @@ FILE(GLOB SCORE_CURL_SRC
 
 add_library(score_curl ${SCORE_CURL_SRC})
 add_dependencies(score_curl score_async score_core)
-target_link_libraries(score_curl score_async score_core)
+target_link_libraries(score_curl
+    score_async
+    score_core
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)
 
 FILE(GLOB SCORE_CURL_TEST_SRC
     ${SCORE_CURL_SRC_DIR}/test/*.cpp
@@ -318,10 +345,11 @@ add_executable(run_curl_tests
 add_dependencies(run_curl_tests score_curl)
 target_link_libraries(run_curl_tests
     gmock
-    ${COMMON_LIBS}
-    score_async
     score_curl
+    score_async
     score_core
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
 )
 
 
@@ -345,7 +373,14 @@ FILE(GLOB SCORE_REDIS_SRC
 
 add_library(score_redis ${SCORE_REDIS_SRC})
 add_dependencies(score_redis score_async score_core)
-target_link_libraries(score_redis score_async score_core)
+target_link_libraries(score_redis
+    score_async
+    score_core
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)
+
+
 
 
 
@@ -358,8 +393,12 @@ FILE(GLOB SCORE_MEMCACHED_SRC
 add_library(score_memcached ${SCORE_MEMCACHED_SRC})
 add_dependencies(score_memcached score_async score_core)
 
-set(SCORE_MEMCACHED_LIBS score_async score_core ${COMMON_LIBS} memcached)
-target_link_libraries(score_memcached ${SCORE_MEMCACHED_LIBS})
+target_link_libraries(score_memcached
+    score_async
+    score_core
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)
 
 
 file(GLOB SCORE_MEMCACHED_TEST_SRC
@@ -370,7 +409,16 @@ add_executable(run_memcached_tests
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_memcached_tests score_memcached)
-target_link_libraries(run_memcached_tests gmock score_memcached ${SCORE_MEMCACHED_LIBS})
+target_link_libraries(run_memcached_tests
+    gmock
+    score_memcached
+    score_async
+    score_core
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)
+
+
 
 
 set(ALL_SCORE_LIBS
@@ -396,23 +444,42 @@ add_executable(run_client_integration_tests
 
 add_dependencies(run_client_integration_tests ${ALL_SCORE_LIBS})
 target_link_libraries(run_client_integration_tests
-    ${ALL_SCORE_LIBS}
     gmock
-    hiredis
-    memcached
+    ${ALL_SCORE_LIBS}
     ${COMMON_LIBS}
+    ${EXTRA_LIBS}
 )
+
+
+
+
+
+
+FILE(GLOB SCORE_MISC_INTEGRATION_TEST_SRC
+    ${SCORE_ASYNC_SRC_DIR}/test_integration/*.cpp
+)
+add_executable(run_misc_integration_tests
+    ${SCORE_MISC_INTEGRATION_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+add_dependencies(run_misc_integration_tests ${ALL_SCORE_LIBS})
+target_link_libraries(run_misc_integration_tests
+    gmock
+    ${ALL_SCORE_LIBS}
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
+)
+
+
+
+
 
 add_executable(runner
     ${SCORE_ROOT_SRC_DIR}/main.cpp
 )
-add_dependencies(runner score_core score_async score_redis score_memcached)
+add_dependencies(runner ${ALL_SCORE_LIBS})
 target_link_libraries(runner
-    ${ALL_LIBS}
-    score_async
-    score_core
-    score_redis
-    score_memcached
-    hiredis
-    memcached
+    ${ALL_SCORE_LIBS}
+    ${COMMON_LIBS}
+    ${EXTRA_LIBS}
 )
