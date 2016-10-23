@@ -20,7 +20,14 @@ class EventDataChannel {
  protected:
   std::thread::id senderID_ {0};
   queue_ptr_t queue_ {nullptr};
+  std::atomic<bool> receiverAcked_ {false};
  public:
+  void markReceiverAcked(bool isListening) {
+    receiverAcked_.store(isListening);
+  }
+  bool hasReceiverAcked() const {
+    return receiverAcked_.load();
+  }
   EventDataChannel(std::thread::id tid, queue_ptr_t queuePtr)
     : senderID_(tid), queue_(queuePtr) {}
   queue_t* getQueue() {

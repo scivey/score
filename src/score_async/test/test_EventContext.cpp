@@ -3,9 +3,11 @@
 #include <atomic>
 #include <chrono>
 #include "score_async/EventContext.h"
+#include "score_async/queues/EventDataChannel.h"
 
 using namespace score;
 using namespace score::async;
+using score::async::queues::EventDataChannel;
 namespace util = score::util;
 using namespace std;
 using ControlMessage = EventContext::ControlMessage;
@@ -57,4 +59,58 @@ TEST(TestEventContext, TestControlMessages) {
   }
   EXPECT_EQ(kNumThreads, seen.size());
   EXPECT_EQ(0, seen.count(baseId));
+}
+
+class DataChannelProducer {
+ public:
+  using channel_t = EventDataChannel;
+  using channel_ptr_t = std::shared_ptr<channel_t>;
+ protected:
+  channel_ptr_t channel_ {nullptr};
+ public:
+  DataChannelProducer(channel_ptr_t chan): channel_(chan){}
+  static DataChannelProducer* createNew() {
+    return new DataChannelProducer{
+      channel_t::createSharedAsSender()
+    };
+  }
+  channel_ptr_t getChannel() {
+    return channel_;
+  }
+  void waitForConsumer() {
+    while (!channel_->hasReceiverAcked()) {
+      ;
+    }
+  }
+};
+
+TEST(TestEventContext, TestRegisterDataChannel) {
+  auto evCtx = util::createShared<EventContext>();
+  std::atomic<bool> done {false};
+  std::thread::id evLoopTid = this_thread::get_id();
+  std::shared_ptr<DataChannelProducer> producerPtr {nullptr};
+  thread prodThread([&producerPtr, evCtx, &done, evLoopTid]() {
+    auto prod = util::createShared<DataChannelProducer>();
+    producerPtr = prod;
+    evCtx->threadsafeRegisterDataChannel(prod->getChannel());
+    prod->waitForConsumer();
+    std::atomic<bool> messageHandled {false};
+    auto producerTid = this_thread::get_id();
+    prod->getChannel()->getQueue()->trySend(EventDataChannel::Message{
+      [&messageHandled, evLoopTid, producerTid]() {
+        EXPECT_EQ(evLoopTid, this_thread::get_id());
+        EXPECT_NE(producerTid, this_thread::get_id());
+        messageHandled.store(true);
+      }
+    }).throwIfFailed();
+    while (!messageHandled.load()) {
+      ;
+    }
+    done.store(true);
+  });
+  while (!done.load()) {
+    evCtx->getBase()->runOnce();
+  }
+  prodThread.join();
+  EXPECT_TRUE(done.load());
 }

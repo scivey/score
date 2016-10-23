@@ -52,6 +52,7 @@ void EventContext::bindDataChannel(std::shared_ptr<EventDataChannel> channel) {
     }
   });
   chanHandle.readEvent->add();
+  channel->markReceiverAcked(true);
   dataChannels_.insert(std::make_pair(
     channel->getSenderID(), std::move(chanHandle)
   ));
