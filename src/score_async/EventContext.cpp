@@ -40,7 +40,7 @@ void EventContext::bindControlChannel() {
   controlEvent_->setReadHandler([this]() {
     ControlMessage message;
     for (;;) {
-      auto readResult = controlChannel_->unlockedRead(message);
+      auto readResult = controlChannel_->tryRead(message);
       readResult.throwIfFailed();
       if (!readResult.value()) {
         break;

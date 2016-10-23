@@ -33,6 +33,7 @@ class EventContext {
   using control_channel_t = queues::MPSCEventChannel<ControlMessage>;
   using control_channel_ptr_t = std::unique_ptr<control_channel_t>;
 
+
  protected:
   base_ptr_t base_ {nullptr};
   wheel_ptr_t wheel_ {nullptr};

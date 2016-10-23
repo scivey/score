@@ -1,6 +1,5 @@
 #pragma once
 #include <mutex>
-#include "score/locks/SpinLock.h"
 #include "score/exceptions/ScoreError.h"
 #include "score_async/EventFD.h"
 #include "score_async/queues/SPSCQueue.h"
@@ -10,41 +9,37 @@ namespace score { namespace async { namespace queues {
 
 
 template<typename T>
-class MPSCEventChannel {
+class SPSCEventChannel {
  public:
   using queue_t = SPSCQueue<T>;
   using queue_ptr_t = std::unique_ptr<queue_t>;
-  using lock_t = score::locks::SpinLock;
  protected:
   EventFD eventFD_;
   queue_ptr_t queue_ {nullptr};
-  lock_t lock_;
 
  public:
-  MPSCEventChannel(EventFD&& efd, queue_ptr_t&& spQueue, lock_t&& lock)
-    : eventFD_(std::move(efd)), queue_(std::move(spQueue)), lock_(std::move(lock)){}
+  SPSCEventChannel(EventFD&& efd, queue_ptr_t&& spQueue)
+    : eventFD_(std::move(efd)), queue_(std::move(spQueue)) {}
 
   bool good() const {
-    return !!eventFD_ && !!queue_ && !!lock_;
+    return !!eventFD_ && !!queue_;
   }
   explicit operator bool() const {
     return good();
   }
-  static MPSCEventChannel create() {
-    return MPSCEventChannel(
+  static SPSCEventChannel create() {
+    return SPSCEventChannel(
       EventFD::create().value(),
-      util::makeUnique<queue_t>(size_t {10000}),
-      lock_t::create().value()
+      util::makeUnique<queue_t>(size_t {10000})
     );
   }
 
-  static MPSCEventChannel* createNew() {
-    return new MPSCEventChannel{create()};
+  static SPSCEventChannel* createNew() {
+    return new SPSCEventChannel{create()};
   }
 
-  score::Try<Unit> tryLockAndSend(T&& msg) {
+  score::Try<Unit> trySend(T&& msg) {
     DCHECK(good());
-    std::lock_guard<lock_t> guard {lock_};
     if (queue_->try_enqueue(std::forward<T>(msg))) {
       auto writeRes = eventFD_.write(1);
       if (writeRes.hasException()) {
