@@ -423,6 +423,13 @@ void LLRedisClient::mSet(string_pair_init_list&& msetList, cb_t&& cb) {
   mSet(std::move(toMset), std::forward<cb_t>(cb));
 }
 
+void LLRedisClient::mSetNX(string_pair_init_list&& msetList, cb_t&& cb) {
+  std::vector<std::pair<arg_str_t, arg_str_t>> toMset{
+    std::forward<string_pair_init_list>(msetList)
+  };
+  mSetNX(std::move(toMset), std::forward<cb_t>(cb));
+}
+
 void LLRedisClient::multi(cb_t&& cb) {
   command0("MULTI", std::forward<cb_t>(cb));
 }
@@ -481,7 +488,17 @@ void LLRedisClient::rPopLPush(arg_str_ref src, arg_str_ref dest, cb_t&& cb) {
   command2("RPOPLPUSH %s %s", src, dest, std::forward<cb_t>(cb));
 }
 
-// RPUSH
+void LLRedisClient::rPush(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
+  command2("RPUSH %s %s", key, val, std::forward<cb_t>(cb));
+}
+
+void LLRedisClient::rPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb) {
+  std::vector<arg_str_t> toPush{
+    std::forward<string_init_list>(vals)
+  };
+  rPush(key, std::move(toPush), std::forward<cb_t>(cb));
+}
+
 
 void LLRedisClient::rPushX(arg_str_ref key, arg_str_ref val, cb_t&& cb) {
   command2("RPUSHX %s %s", key, val, std::forward<cb_t>(cb));

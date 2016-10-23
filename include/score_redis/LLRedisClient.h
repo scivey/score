@@ -175,16 +175,26 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
 
   void lPush(arg_str_ref key, arg_str_ref val, cb_t&& cb);
 
+
+ protected:
+
   // sfinae here is to only match containers of strings
   template<typename TCollection,
     typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
-  void lPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+  void listPushImpl(arg_str_ref cmd, arg_str_ref key, const TCollection& collection, cb_t&& cb) {
     std::ostringstream oss;
-    oss << "LPUSH " << key;
+    oss << cmd << " " << key;
     for (const auto& item: collection) {
       oss << " " << item;
     }
     return command0(oss.str(), std::forward<cb_t>(cb));
+  }
+
+ public:
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void lPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+    listPushImpl("LPUSH", key, collection, std::forward<cb_t>(cb));
   }
 
   void lPush(arg_str_ref key, string_init_list&& vals, cb_t&& cb);
@@ -210,10 +220,11 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
 
   // missing: MIGRATE, MONITOR, MOVE
 
+ protected:
   template<typename TCollection>
-  void mSet(const TCollection &args, cb_t&& cb) {
+  void msetImpl(arg_str_ref cmdName, const TCollection& args, cb_t&& cb) {
     std::ostringstream oss;
-    oss << "MSET";
+    oss << cmdName;
     for (const auto &keyVal: args) {
       oss << " " << keyVal.first << " " << keyVal.second;
     }
@@ -221,9 +232,22 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
     return command0(oss.str(), std::forward<cb_t>(cb));
   }
 
+ public:
+
+  template<typename TCollection>
+  void mSet(const TCollection &args, cb_t&& cb) {
+    msetImpl("MSET", args, std::forward<cb_t>(cb));
+  }
+
   void mSet(string_pair_init_list&& msetList, cb_t&&);
 
-  // missing: MSETNX
+  template<typename TCollection>
+  void mSetNX(const TCollection &args, cb_t&& cb) {
+    msetImpl("MSETNX", args, std::forward<cb_t>(cb));
+  }
+
+  void mSetNX(string_pair_init_list&& msetList, cb_t&&);
+
   void multi(cb_t&&);
 
   void persist(arg_str_ref, cb_t&&);
@@ -249,7 +273,15 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void rPop(arg_str_ref key, cb_t&&);
   void rPopLPush(arg_str_ref source, arg_str_ref dest, cb_t&&);
 
-  // missing: RPUSH
+  template<typename TCollection,
+    typename = decltype(std::declval<typename TCollection::value_type>().c_str())>
+  void rPush(arg_str_ref key, const TCollection& collection, cb_t&& cb) {
+    listPushImpl("RPUSH", key, collection, std::forward<cb_t>(cb));
+  }
+
+  void rPush(arg_str_ref key, string_init_list&& vals, cb_t&&);
+  void rPush(arg_str_ref key, arg_str_ref val, cb_t&&);
+
   void rPushX(arg_str_ref key, arg_str_ref value, cb_t&&);
   // missing: SADD
   void save(cb_t&&);
