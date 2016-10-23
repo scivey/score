@@ -116,13 +116,13 @@ class Function {
   }
 
   template<typename ...U>
-  output_type call(U&&... args) {
+  output_type call(U&&... args) const {
     DCHECK(good());
     return func_.value()(std::forward<U>(args)...);
   }
 
   template<typename ...U>
-  output_type operator()(U&&... args) {
+  output_type operator()(U&&... args) const {
     return call(std::forward<U>(args)...);
   }
 };

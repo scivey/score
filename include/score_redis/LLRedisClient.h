@@ -75,10 +75,19 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
 
   void command0(cmd_str_ref cmd, cb_t&&);
   void command1(cmd_str_ref cmd, arg_str_ref arg, cb_t&&);
+  void command1(cmd_str_ref cmd, redis_signed_t, cb_t&&);
+
   void command2(cmd_str_ref cmd, arg_str_ref arg1,
       arg_str_ref arg2, cb_t&&);
   void command2(cmd_str_ref cmd, arg_str_ref arg1,
       redis_signed_t arg2, cb_t&&);
+  void command2(cmd_str_ref cmd, arg_str_ref arg1,
+      redis_float_t arg2, cb_t&&);
+
+  void command3(cmd_str_ref, arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
+  void command3(cmd_str_ref, arg_str_ref, redis_signed_t, redis_signed_t, cb_t&&);
+  void command3(cmd_str_ref, arg_str_ref, redis_signed_t, arg_str_ref, cb_t&&);
+  void command3(cmd_str_ref, arg_str_ref, arg_str_ref, redis_signed_t, cb_t&&);
 
  public:
 
@@ -94,10 +103,12 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void decr(arg_str_ref, cb_t&&);
   void decrBy(arg_str_ref, redis_signed_t, cb_t&&);
   void del(arg_str_ref, cb_t&&);
+  void exec(cb_t&&);
   void echo(arg_str_ref, cb_t&&);
   void exists(arg_str_ref, cb_t&&);
   void expire(arg_str_ref, redis_signed_t, cb_t&&);
   void expireAt(arg_str_ref, redis_signed_t, cb_t&&);
+
   void flushAll(cb_t&&);
   void flushDB(cb_t&&);
   void get(arg_str_ref, cb_t&&);
@@ -107,38 +118,41 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
 
   // missing: GEO commands
   // missing: HDEL
-  // void hExists(arg_str_ref, arg_str_ref, cb_t&&);
-  // void hGet(arg_str_ref, arg_str_ref, cb_t&&);
-  // void hGetAll(arg_str_ref, cb_t&&);
-  // void hIncrBy(arg_str_ref, arg_str_ref, redis_signed_t, cb_t&&);
-  // void hIncrByFloat(arg_str_ref, arg_str_ref, redis_float_t, cb_t&&);
-  // void hKeys(arg_str_ref, cb_t&&);
+  void hExists(arg_str_ref, arg_str_ref, cb_t&&);
+  void hGet(arg_str_ref, arg_str_ref, cb_t&&);
+  void hGetAll(arg_str_ref, cb_t&&);
+  void hIncrBy(arg_str_ref, arg_str_ref, redis_signed_t, cb_t&&);
+  void hIncrByFloat(arg_str_ref, arg_str_ref, redis_float_t, cb_t&&);
+  void hKeys(arg_str_ref, cb_t&&);
   // missing:
   //  HMGET
   //  HMSET
-  // void hSet(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
-  // void hSetNX(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
-  // void hStrLen(arg_str_ref, arg_str_ref, cb_t&&);
-  // void hVals(arg_str_ref, cb_t&&);
+  void hSet(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
+  void hSetNX(arg_str_ref, arg_str_ref, arg_str_ref, cb_t&&);
+  void hStrLen(arg_str_ref, arg_str_ref, cb_t&&);
+  void hVals(arg_str_ref, cb_t&&);
 
   void incr(arg_str_ref key, cb_t&&);
   void incrBy(arg_str_ref key, redis_signed_t, cb_t&&);
-  // void incrByFloat(arg_str_ref key, redis_float_t, cb_t&&);
+  void incrByFloat(arg_str_ref key, redis_float_t, cb_t&&);
   void info(cb_t&&);
   void keys(arg_str_ref pattern, cb_t&&);
-  // void lastSave(cb_t&&);
 
-  // void lIndex(arg_str_ref, redis_signed_t, cb_t&&);
+  // void lastSave(cb_t&&);
+  void lIndex(arg_str_ref, redis_signed_t, cb_t&&);
 
   // missing: LINSERT
 
   void lLen(arg_str_ref ref, cb_t&&);
-  // void lPop(arg_str_ref ref, cb_t&&);
-  // void lPushX(arg_str_ref, arg_str_ref, cb_t&&);
-  // void lRange(arg_str_ref, redis_signed_t, redis_signed_t, cb_t&&);
-  // void lRem(arg_str_ref key, redis_signed_t count, arg_str_ref value, cb_t&&);
-  // void lSet(arg_str_ref key, redis_signed_t idx, arg_str_ref value, cb_t&&);
-  // void lTrim(arg_str_ref key, redis_signed_t start, redis_signed_t stop, cb_t&&);
+  void lPop(arg_str_ref ref, cb_t&&);
+
+  // missing: LPUSH
+
+  void lPushX(arg_str_ref, arg_str_ref, cb_t&&);
+  void lRange(arg_str_ref, redis_signed_t, redis_signed_t, cb_t&&);
+  void lRem(arg_str_ref key, redis_signed_t count, arg_str_ref value, cb_t&&);
+  void lSet(arg_str_ref key, redis_signed_t idx, arg_str_ref value, cb_t&&);
+  void lTrim(arg_str_ref key, redis_signed_t start, redis_signed_t stop, cb_t&&);
 
   template<typename TCollection>
   void mGet(const TCollection &args, cb_t&& cb) {
@@ -171,40 +185,41 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void mSet(mset_init_list&& msetList, cb_t&&);
 
   // missing: MSETNX
-  // missing: MULTI
-  // void persist(arg_str_ref, cb_t&&);
-  // void pExpire(arg_str_ref, redis_signed_t, cb_t&&);
-  // void pExpireAt(arg_str_ref, redis_signed_t, cb_t&&);
+  void multi(cb_t&&);
+
+  void persist(arg_str_ref, cb_t&&);
+  void pExpire(arg_str_ref, redis_signed_t, cb_t&&);
+  void pExpireAt(arg_str_ref, redis_signed_t, cb_t&&);
 
   // missing: PFADD, PFCOUNT, PFMERGE
 
-  // void ping(arg_str_ref, cb_t&&);
-  // void pSetEx(arg_str_ref, redis_signed_t msec, cb_t&&);
+  void ping(arg_str_ref, cb_t&&);
+  void pSetEx(arg_str_ref, redis_signed_t msec, cb_t&&);
 
   // missing: PSUBSCRIBE, PUBSUB
 
-  // void pTTL(arg_str_ref, cb_t&&);
+  void pTTL(arg_str_ref, cb_t&&);
   void publish(arg_str_ref channel, arg_str_ref msg, cb_t&&);
   // missing: PUNSUBSCRIBE, QUIT
 
-  // void randomKey(cb_t&&);
-  // void rename(arg_str_ref key, arg_str_ref newKey, cb_t&&);
-  // void renameNX(arg_str_ref key, arg_str_ref newKey, cb_t&&);
+  void randomKey(cb_t&&);
+  void rename(arg_str_ref key, arg_str_ref newKey, cb_t&&);
+  void renameNX(arg_str_ref key, arg_str_ref newKey, cb_t&&);
   // missing: RESTORE, ROLE
 
-  // void rPop(arg_str_ref key, cb_t&&);
-  // void rPopLPush(arg_str_ref source, arg_str_ref dest, cb_t&&);
+  void rPop(arg_str_ref key, cb_t&&);
+  void rPopLPush(arg_str_ref source, arg_str_ref dest, cb_t&&);
 
   // missing: RPUSH
-  // void rPushX(arg_str_ref key, arg_str_ref value, cb_t&&);
+  void rPushX(arg_str_ref key, arg_str_ref value, cb_t&&);
   // missing: SADD
-  // void save(cb_t&&);
-  // void sCard(arg_str_ref, cb_t&&);
+  void save(cb_t&&);
+  void sCard(arg_str_ref, cb_t&&);
 
   // missing: SCRIPT_* commands
 
   // missing: SDIFF, SDIFFSTORE
-  // void select(redis_signed_t dbNum, cb_t&&);
+  void select(redis_signed_t dbNum, cb_t&&);
 
 
   // SET has some options missing
@@ -212,7 +227,7 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
   void set(arg_str_ref, redis_signed_t, cb_t&&);
 
   void setBit(arg_str_ref key, redis_signed_t offset, bool value, cb_t&&);
-  // void setEx(arg_str_ref key, redis_signed_t secs, arg_str_ref value, cb_t&&);
+  void setEx(arg_str_ref key, redis_signed_t secs, arg_str_ref value, cb_t&&);
 
   void setNX(arg_str_ref, arg_str_ref, cb_t&&);
   void setNX(arg_str_ref, redis_signed_t, cb_t&&);
@@ -246,7 +261,6 @@ class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
 
 
   subscription_try_t subscribe(arg_str_ref, subscription_handler_ptr_t);
-
 
 
  protected:
