@@ -8,6 +8,8 @@
 
 namespace score { namespace async {
 
+using queues::EventDataChannel;
+
 using control_channel_t = typename EventContext::control_channel_t;
 using base_t = typename EventContext::base_t;
 using wheel_t = typename EventContext::wheel_t;
@@ -29,6 +31,30 @@ wheel_t* EventContext::getWheel() {
 
 sig_registry_t* EventContext::getSignalRegistry() {
   return sigRegistry_.get();
+}
+
+void EventContext::bindDataChannel(std::shared_ptr<EventDataChannel> channel) {
+  EventDataChannelHandle chanHandle;
+  chanHandle.channel = channel;
+  chanHandle.readEvent.reset(CallbackEvent::createNewEvent(
+    base_.get(), channel->getQueue()->getFDNum().value(), EV_READ
+  ));
+  chanHandle.readEvent->setReadHandler([this, channel]() {
+    EventDataChannel::Message message;
+    for (;;) {
+      auto readResult = channel->getQueue()->tryRead(message);
+      readResult.throwIfFailed();
+      if (!readResult.value()) {
+        break;
+      }
+      DCHECK(!!message.work);
+      message.work();
+    }
+  });
+  chanHandle.readEvent->add();
+  dataChannels_.insert(std::make_pair(
+    channel->getSenderID(), std::move(chanHandle)
+  ));
 }
 
 void EventContext::bindControlChannel() {
@@ -80,6 +106,13 @@ void EventContext::runSoon(work_cb_t&& work) {
 
 Try<Unit> EventContext::threadsafeTrySendControlMessage(ControlMessage&& message) {
   return controlChannel_->tryLockAndSend(std::forward<ControlMessage>(message));
+}
+
+Try<Unit> EventContext::threadsafeRegisterDataChannel(
+    std::shared_ptr<EventDataChannel> dataChannel) {
+  return controlChannel_->tryLockAndSend(ControlMessage{[dataChannel, this]() {
+    this->bindDataChannel(dataChannel);
+  }});
 }
 
 

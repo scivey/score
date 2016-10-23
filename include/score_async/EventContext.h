@@ -7,6 +7,7 @@
 #include "score_async/wheel/HTimerWheel.h"
 #include "score_async/SignalHandlerRegistry.h"
 #include "score_async/queues/MPSCEventChannel.h"
+#include "score_async/queues/EventDataChannel.h"
 #include "score_async/CallbackEvent.h"
 
 
@@ -24,6 +25,7 @@ class EventContext {
   using sig_registry_t = SignalHandlerRegistry;
   using sig_registry_ptr_t = std::unique_ptr<SignalHandlerRegistry>;
   using work_cb_t = func::Function<void>;
+  using EventDataChannel = queues::EventDataChannel;
 
   struct ControlMessage {
     work_cb_t work;
@@ -33,6 +35,10 @@ class EventContext {
   using control_channel_t = queues::MPSCEventChannel<ControlMessage>;
   using control_channel_ptr_t = std::unique_ptr<control_channel_t>;
 
+  struct EventDataChannelHandle {
+    std::unique_ptr<CallbackEvent> readEvent {nullptr};
+    std::shared_ptr<EventDataChannel> channel {nullptr};
+  };
 
  protected:
   base_ptr_t base_ {nullptr};
@@ -40,8 +46,11 @@ class EventContext {
   sig_registry_ptr_t sigRegistry_ {nullptr};
   control_channel_ptr_t controlChannel_ {nullptr};
   std::unique_ptr<CallbackEvent> controlEvent_ {nullptr};
+  using data_channel_map_t = std::unordered_map<std::thread::id, EventDataChannelHandle>;
+  data_channel_map_t dataChannels_;
   EventContext();
   void bindControlChannel();
+  void bindDataChannel(std::shared_ptr<EventDataChannel>);
  public:
   base_t* getBase();
   wheel_t* getWheel();
@@ -49,6 +58,7 @@ class EventContext {
   static EventContext* createNew();
   void runSoon(work_cb_t&& func);
   Try<Unit> threadsafeTrySendControlMessage(ControlMessage&& msg);
+  Try<Unit> threadsafeRegisterDataChannel(std::shared_ptr<EventDataChannel>);
 };
 
 }} // score::async
