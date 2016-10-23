@@ -483,3 +483,26 @@ target_link_libraries(runner
     ${COMMON_LIBS}
     ${EXTRA_LIBS}
 )
+
+
+
+
+add_executable(unit_test_dummy ${SCORE_ROOT_SRC_DIR}/run_dummy.cpp)
+add_dependencies(unit_test_dummy
+    run_async_tests
+    run_core_tests
+    run_curl_tests
+    run_extract_tests
+    run_html_tests
+    run_nlp_tests
+    run_memcached_tests
+)
+
+target_link_libraries(unit_test_dummy glog)
+
+add_executable(integration_test_dummy ${SCORE_ROOT_SRC_DIR}/run_dummy.cpp)
+add_dependencies(integration_test_dummy
+    run_client_integration_tests
+    run_misc_integration_tests
+)
+target_link_libraries(integration_test_dummy glog)

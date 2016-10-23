@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 #include "score_async/EventContext.h"
+#include "score_async/wheel/HTimerWheel.h"
+
 #include "score_curl/EventCurler.h"
 #include "score_curl/Easy.h"
 #include "score_curl/Multi.h"

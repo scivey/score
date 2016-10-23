@@ -15,50 +15,27 @@ run: create-runner
 bench: create-bencher
 	./build/bencher
 
-
-TEST_RUNNERS=run_core_tests \
-	  run_async_tests \
-	  run_curl_tests \
-	  run_extract_tests \
-	  run_html_tests \
-	  run_nlp_tests \
-	  run_memcached_tests
-
 build-tests: cm deps
-	cd build && make $(TEST_RUNNERS) -j8
+	cd build && make unit_test_dummy -j8
 
-test-core: build-tests
+test: build-tests
+	./build/run_async_tests
 	./build/run_core_tests
-
-test-nlp: build-tests
+	./build/run_curl_tests
+	./build/run_extract_tests
+	./build/run_html_tests
+	./build/run_memcached_tests
 	./build/run_nlp_tests
 
-test-extract: build-tests
-	./build/run_extract_tests
+build-integration: cm deps
+	cd build && make integration_test_dummy -j8
 
-test-curl: build-tests
-	./build/run_curl_tests
-
-test-async: build-tests
-	./build/run_async_tests
-
-test-html: build-tests
-	./build/run_html_tests
-
-test: test-nlp test-core test-extract test-curl test-async test-html
-
-client-integration: cm deps
-	cd build && make run_client_integration_tests -j8
+integration: build-integration
 	./build/run_client_integration_tests
-
-misc-integration: cm deps
-	cd build && make run_misc_integration_tests -j8
 	./build/run_misc_integration_tests
 
 clean:
 	rm -rf build
-
-integration: misc-integration client-integration
 
 deps:
 	bash scripts/deps.sh
