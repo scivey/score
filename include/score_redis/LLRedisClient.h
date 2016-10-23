@@ -24,7 +24,7 @@ namespace hiredis_adapter {
 class LibeventRedisContext;
 } // hiredis_adapter
 
-class LLRedisClient  {
+class LLRedisClient: public std::enable_shared_from_this<LLRedisClient> {
  public:
 
   // using response_t = typename LLRedisRequestContext::response_t;
@@ -46,9 +46,9 @@ class LLRedisClient  {
   using redis_signed_t = int64_t;
   using arg_str_list = std::vector<arg_str_t>;
   using mset_list = std::vector<std::pair<arg_str_t, arg_str_t>>;
-  // using subscription_t = RedisSubscription;
-  // using subscription_try_t = score::Try<std::shared_ptr<subscription_t>>;
-  // using subscription_handler_ptr_t = subscription_t::handler_ptr_t;
+  using subscription_t = LLRedisSubscription;
+  using subscription_try_t = score::Try<std::shared_ptr<subscription_t>>;
+  using subscription_handler_ptr_t = subscription_t::handler_ptr_t;
   using event_ctx_t = score::async::EventContext;
 
   struct RequestContext {
@@ -64,7 +64,7 @@ class LLRedisClient  {
   connect_promise_t connectPromise_;
   disconnect_promise_t disconnectPromise_;
 
-  // std::weak_ptr<subscription_t> currentSubscription_;
+  std::weak_ptr<subscription_t> currentSubscription_;
 
   // not really for public use.
   LLRedisClient(event_ctx_t *ctx, io::SocketAddr&& serverAddr);
@@ -120,6 +120,7 @@ class LLRedisClient  {
 
   using mget_init_list = std::initializer_list<arg_str_t>;
 
+  void publish(arg_str_ref channel, arg_str_ref msg, cb_t&&);
   void mget(mget_init_list&& mgetList, cb_t&&);
   void exists(arg_str_ref);
   void del(arg_str_ref, cb_t&&);
@@ -135,7 +136,8 @@ class LLRedisClient  {
   void incr(arg_str_ref key, cb_t&&);
   void incrby(arg_str_ref key, redis_signed_t, cb_t&&);
   void llen(arg_str_ref key, cb_t&&);
-  // subscription_try_t subscribe(subscription_handler_ptr_t, arg_str_ref);
+
+  subscription_try_t subscribe(arg_str_ref, subscription_handler_ptr_t);
 
  protected:
   // event handler methods called from the static handlers (because C)

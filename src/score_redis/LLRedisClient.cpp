@@ -143,6 +143,10 @@ void LLRedisClient::get(arg_str_ref key, cb_t&& cb) {
   command1("GET %s", key, std::forward<cb_t>(cb));
 }
 
+void LLRedisClient::publish(arg_str_ref channel, arg_str_ref message, cb_t&& cb) {
+  command2("PUBLISH %s %s", channel, message, std::forward<cb_t>(cb));
+}
+
 // void LLRedisClient::del(arg_str_ref key, cb_t&& cb) {
 //   return command1("DEL %s", key, std::forward<cb_t>(cb));
 // }
@@ -219,25 +223,25 @@ void LLRedisClient::strlen(arg_str_ref key, cb_t&& cb) {
   command1("STRLEN %s", key, std::forward<cb_t>(cb));
 }
 
-// using subscription_try_t = LLRedisClient::subscription_try_t;
-// using subscription_handler_ptr_t = LLRedisClient::subscription_handler_ptr_t;
+using subscription_try_t = LLRedisClient::subscription_try_t;
+using subscription_handler_ptr_t = LLRedisClient::subscription_handler_ptr_t;
 
-// subscription_try_t LLRedisClient::subscribe(subscription_handler_ptr_t handler,
-//     arg_str_ref channel) {
-//   void *userData = nullptr;
-//   auto subscription = RedisSubscription::createShared(
-//     shared_from_this(),
-//     std::forward<subscription_handler_ptr_t>(handler)
-//   );
-//   currentSubscription_ = subscription;
-//   redisAsyncCommand(
-//     redisContext_,
-//     &LLRedisClient::hiredisSubscriptionCallback,
-//     userData,
-//     "SUBSCRIBE %s", channel.c_str()
-//   );
-//   return subscription_try_t { subscription };
-// }
+subscription_try_t LLRedisClient::subscribe(arg_str_ref channel,
+    subscription_handler_ptr_t handler) {
+  void *userData = nullptr;
+  auto subscription = LLRedisSubscription::createShared(
+    this->shared_from_this(),
+    std::forward<subscription_handler_ptr_t>(handler)
+  );
+  currentSubscription_ = subscription;
+  redisAsyncCommand(
+    redisContext_,
+    &LLRedisClient::hiredisSubscriptionCallback,
+    userData,
+    "SUBSCRIBE %s", channel.c_str()
+  );
+  return subscription_try_t { subscription };
+}
 
 void LLRedisClient::hiredisConnectCallback(const redisAsyncContext *ac, int status) {
   auto clientPtr = detail::getClientFromContext(ac);
@@ -279,11 +283,10 @@ void LLRedisClient::handleDisconnected(int status) {
 }
 
 void LLRedisClient::handleSubscriptionEvent(RedisDynamicResponse&& response) {
-  CHECK(false) << "not implemented";
-  // auto subscriptionPtr = currentSubscription_.lock();
-  // if (subscriptionPtr) {
-  //   subscriptionPtr->dispatchMessage(std::move(response));
-  // }
+  auto subscriptionPtr = currentSubscription_.lock();
+  if (subscriptionPtr) {
+    subscriptionPtr->dispatchMessage(std::move(response));
+  }
 }
 
 void LLRedisClient::maybeCleanupContext() {

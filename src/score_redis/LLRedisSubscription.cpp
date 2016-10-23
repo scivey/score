@@ -11,7 +11,9 @@ using message_t = typename LLRedisSubscription::message_t;
 
 LLRedisSubscription::LLRedisSubscription(client_ptr_t client,
     handler_ptr_t handler)
-  : client_(client), handler_(std::forward<handler_ptr_t>(handler)) {}
+  : client_(client), handler_(std::forward<handler_ptr_t>(handler)) {
+  updateHandlerParent();
+}
 
 LLRedisSubscription::LLRedisSubscription(LLRedisSubscription &&other)
     : client_(std::move(other.client_)), handler_(std::move(other.handler_)) {

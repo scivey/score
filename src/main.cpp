@@ -9,6 +9,7 @@
 #include "score/demangle.h"
 #include "score/Unit.h"
 #include "score_redis/LLRedisClient.h"
+#include "score_redis/LLRedisSubscription.h"
 #include "score/io/SocketAddr.h"
 #include "score_memcached/SyncMCClient.h"
 #include "score_memcached/MemcachedConfig.h"
@@ -67,10 +68,44 @@ void runMemcached() {
   }
 }
 
+class SubHandler: public LLRedisSubscription::EventHandler {
+ public:
+  void onMessage(RedisDynamicResponse&& message) override {
+    LOG(INFO) << "onMessage! : " << message.pprint();
+  }
+  void onStarted() override {
+    LOG(INFO) << "started";
+  }
+  void onStopped() override {
+    LOG(INFO) << "stopped";
+  }
+};
+
+void runSubscription() {
+  auto ctx = score::util::createShared<EventContext>();
+  auto client = score::util::createShared<LLRedisClient>(
+    ctx.get(), SocketAddr{"127.0.0.1", 6379}
+  );
+  using conn_result = typename LLRedisClient::connect_result_t;
+  using res_t = typename LLRedisClient::response_t;
+  std::shared_ptr<LLRedisSubscription> subPtr {nullptr};
+  client->connect().then([client, &subPtr](conn_result result) {
+    result.throwIfFailed();
+    auto subscription = client->subscribe("some-channel",
+      std::make_shared<SubHandler>()
+    );
+    subscription.throwIfFailed();
+    subPtr = subscription.value();
+  });
+  for (;;) {
+    ctx->getBase()->runForever();
+  }
+}
+
 int main() {
   google::InstallFailureSignalHandler();
   LOG(INFO) << "start";
-  runRedis();
+  runSubscription();
   // runMemcached();
   LOG(INFO) << "end";
 }

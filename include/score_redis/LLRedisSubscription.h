@@ -24,7 +24,7 @@ class LLRedisSubscription: public std::enable_shared_from_this<LLRedisSubscripti
   #undef X
   using message_t = RedisDynamicResponse;
 
-  class EventHandler {
+  class EventHandler: public std::enable_shared_from_this<EventHandler> {
    public:
     using parent_t = LLRedisSubscription;
     friend class LLRedisSubscription;
@@ -42,7 +42,7 @@ class LLRedisSubscription: public std::enable_shared_from_this<LLRedisSubscripti
 
   friend class LLRedisClient;
 
-  using handler_ptr_t = std::unique_ptr<EventHandler>;
+  using handler_ptr_t = std::shared_ptr<EventHandler>;
   using client_ptr_t = std::shared_ptr<LLRedisClient>;
  protected:
   client_ptr_t client_;
