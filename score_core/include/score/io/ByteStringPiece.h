@@ -116,8 +116,6 @@ class ByteStringPiece {
     return start_;
   }
 
-  // template<typename TString,
-  //   typename = decltype(std::declval<TString>().append(std::declval<const char>(), std::declval<size_type>()))>
   template<typename TString>
   void appendTo(TString &aStr) {
     aStr.append(data(), size());
@@ -126,7 +124,6 @@ class ByteStringPiece {
   std::string copyToStdString() const {
     return std::string(data(), size());
   }
-
 
   // Does "this" start with "x"
   bool starts_with(const ByteStringPiece& x) const {

@@ -1,5 +1,4 @@
 #pragma once
-#include "score/html/vendored/gumbo-parser/gumbo.h"
 #include <functional>
 #include <string>
 #include <sstream>
@@ -7,18 +6,19 @@
 #include "score/html/Tag.h"
 #include "score/io/string_utils.h"
 
+struct GumboInternalNode;
 
 namespace score { namespace html {
 
 class Node {
  protected:
-  const GumboNode *node_ {nullptr};
+  const GumboInternalNode *node_ {nullptr};
  public:
   using GumboVectorWrapper = detail::GumboVectorWrapper;
-  Node(const GumboNode*);
+  Node(const GumboInternalNode*);
   Node(const Node &other);
   Node();
-  const GumboNode* getGumboNode() const;
+  const GumboInternalNode* getGumboNode() const;
   bool good() const;
   operator bool() const;
   size_t childCount() const;
@@ -34,9 +34,7 @@ class Node {
   bool hasParent() const;
   Node parent() const;
   bool refEquals(const Node &other) const;
-  bool refEquals(const GumboNode *other) const;
- protected:
-  GumboAttribute* getGumboAttribute(const std::string &attrName) const;
+  bool refEquals(const GumboInternalNode *other) const;
  public:
   bool hasAttr(const std::string &attrName) const;
   bool getAttr(const std::string &attrName, std::string& result) const;

@@ -8,6 +8,20 @@ using namespace std;
 
 namespace score { namespace html {
 
+
+
+namespace {
+GumboAttribute* getGumboAttributeFromNode(const GumboNode *node, const string& attrName) {
+  GumboAttribute *attr = nullptr;
+  if (!node) {
+    return attr;
+  }
+  attr = gumbo_get_attribute(&node->v.element.attributes, attrName.c_str());
+  return attr;
+}
+}
+
+
 using detail::GumboVectorWrapper;
 using NodeVec = Node::NodeVector;
 using NodeIter = Node::NodeVector::Iterator;
@@ -238,21 +252,18 @@ bool Node::walkSiblings(Node::escape_visitor mainFn) const {
   return true;
 }
 
-GumboAttribute* Node::getGumboAttribute(const string &attrName) const {
-  GumboAttribute *attr = nullptr;
-  if (!good()) {
-    return attr;
-  }
-  attr = gumbo_get_attribute(&node_->v.element.attributes, attrName.c_str());
-  return attr;
-}
-
 bool Node::hasAttr(const string &attrName) const {
-  return !!getGumboAttribute(attrName);
+  if (!good()) {
+    return false;
+  }
+  return getGumboAttributeFromNode(node_, attrName) != nullptr;
 }
 
 bool Node::getAttr(const string &attrName, string &result) const {
-  auto attr = getGumboAttribute(attrName);
+  if (!good()) {
+    return false;
+  }
+  auto attr = getGumboAttributeFromNode(node_, attrName);
   if (!attr) {
     return false;
   }
