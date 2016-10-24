@@ -15,6 +15,7 @@
 
 #include "./ostream.h"
 
+namespace score { namespace vendored {
 namespace fmt {
 namespace internal {
 
@@ -554,5 +555,6 @@ inline int fprintf(std::ostream &os, CStringRef format_str, ArgList args) {
 }
 FMT_VARIADIC(int, fprintf, std::ostream &, CStringRef)
 }  // namespace fmt
+}} // score::vendored
 
 #endif  // FMT_PRINTF_H_

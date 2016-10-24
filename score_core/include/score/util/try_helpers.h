@@ -4,8 +4,8 @@
 #include "score/Try.h"
 #include "score/ExceptionWrapper.h"
 #include "score/exceptions/PosixError.h"
-#include <folly/Demangle.h>
-#include <folly/Format.h>
+#include "score/format.h"
+#include "score/demangle.h"
 #include <type_traits>
 
 
@@ -42,7 +42,7 @@ template<typename TValue, typename TErr1, typename TErr2,
   typename = typename std::enable_if<!std::is_same<TErr1, TErr2>::value, TErr2>::type>
 score::Try<TValue> makeTryFailure(TValue, const TErr2& otherErr) {
   return makeTryFailure<TValue, TErr1>(
-    folly::sformat("{}: '{}'", folly::demangle(typeid(TErr2)), otherErr.what())
+    score::sformat("{}: '{}'", score::demangle(typeid(TErr2)), otherErr.what())
   );
 }
 

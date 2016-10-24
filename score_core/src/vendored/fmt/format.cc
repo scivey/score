@@ -51,7 +51,7 @@
 # endif
 #endif
 
-using fmt::internal::Arg;
+using score::vendored::fmt::internal::Arg;
 
 #if FMT_EXCEPTIONS
 # define FMT_TRY try
@@ -72,13 +72,14 @@ using fmt::internal::Arg;
 
 // Dummy implementations of strerror_r and strerror_s called if corresponding
 // system functions are not available.
-static inline fmt::internal::Null<> strerror_r(int, char *, ...) {
-  return fmt::internal::Null<>();
+static inline score::vendored::fmt::internal::Null<> strerror_r(int, char *, ...) {
+  return score::vendored::fmt::internal::Null<>();
 }
-static inline fmt::internal::Null<> strerror_s(char *, std::size_t, ...) {
-  return fmt::internal::Null<>();
+static inline score::vendored::fmt::internal::Null<> strerror_s(char *, std::size_t, ...) {
+  return score::vendored::fmt::internal::Null<>();
 }
 
+namespace score { namespace vendored {
 namespace fmt {
 
 FMT_FUNC internal::RuntimeError::~RuntimeError() throw() {}
@@ -550,6 +551,7 @@ template int internal::CharTraits<wchar_t>::format_float(
 #endif  // FMT_HEADER_ONLY
 
 }  // namespace fmt
+}} // score::vendored
 
 #ifdef _MSC_VER
 # pragma warning(pop)

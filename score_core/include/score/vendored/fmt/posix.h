@@ -64,6 +64,7 @@
 
 #define FMT_RETRY(result, expression) FMT_RETRY_VAL(result, expression, -1)
 
+namespace score { namespace vendored {
 namespace fmt {
 
 // An error code.
@@ -355,6 +356,7 @@ class Locale {
 };
 #endif  // FMT_LOCALE
 }  // namespace fmt
+}} // score::vendored
 
 #if !FMT_USE_RVALUE_REFERENCES
 namespace std {

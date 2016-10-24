@@ -1,9 +1,9 @@
 #pragma once
-#include "score/exceptions/ScoreError.h"
 #include <string>
-#include <folly/Format.h>
-#include <score/ExceptionWrapper.h>
 #include <errno.h>
+#include "score/format.h"
+#include "score/exceptions/ScoreError.h"
+#include "score/ExceptionWrapper.h"
 
 namespace score { namespace exceptions {
 
@@ -25,7 +25,7 @@ TError wrapperFromErrno(int err, const std::string& msg = "") {
 
 
 #define SCORE_THROW_POSIX_ERROR(callExpr) \
-    throw evs::exceptions::PosixError(folly::sformat( \
+    throw evs::exceptions::PosixError(score::format( \
       "PosixError: [{}] '{}' from call '{}'", \
       errno, strerror(errno), #callExpr \
     ))

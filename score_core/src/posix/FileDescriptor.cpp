@@ -1,6 +1,5 @@
 #include "score/posix/FileDescriptor.h"
 #include "score/util/try_helpers.h"
-#include <folly/Format.h>
 #include <glog/logging.h>
 
 namespace score { namespace posix {

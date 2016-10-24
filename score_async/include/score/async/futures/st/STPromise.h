@@ -2,7 +2,7 @@
 
 #include <string>
 #include <glog/logging.h>
-#include <folly/Format.h>
+#include "score/format.h"
 #include "score/mem/st_shared_ptr.h"
 #include "score/async/futures/st/traits.h"
 #include "score/async/futures/st/STSharedState.h"
@@ -62,9 +62,8 @@ class STPromise {
 
   template<typename TError, typename T1, typename... Types>
   void setException(const std::string& fmt, const T1& arg1, Types&& ...args) {
-    auto msg = folly::sformat(fmt, arg1, std::forward<Types>(args)...);
-    auto asString = folly::to<std::string>(msg);
-    setException(score::makeExceptionWrapper<TError>(asString));
+    auto msg = score::sformat(fmt, arg1, std::forward<Types>(args)...);
+    setException(score::makeExceptionWrapper<TError>(msg));
   }
 
 };

@@ -1,9 +1,10 @@
 #include "score/redis/RedisDynamicResponse.h"
+#include <map>
+#include <glog/logging.h>
+#include <hiredis/hiredis.h>
 #include "score/redis/RedisError.h"
 #include "score/ExceptionWrapper.h"
-
-#include <folly/Format.h>
-#include <hiredis/hiredis.h>
+#include "score/format.h"
 
 using namespace std;
 using score::Try;
@@ -161,7 +162,7 @@ RedisDynamicResponse::ResponseType responseTypeOfIntExcept(int typeCode) {
     case REDIS_REPLY_NIL:
       return RedisDynamicResponse::ResponseType::NIL;
     default:
-      throw RedisProtocolError(folly::sformat(
+      throw RedisProtocolError(score::sformat(
         "Unrecognized response type: {}", typeCode
       ));
   }

@@ -2,7 +2,7 @@
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>
 #include <glog/logging.h>
-#include <folly/ExceptionWrapper.h>
+#include "score/ExceptionWrapper.h"
 #include "score/redis/RedisError.h"
 #include "score/redis/hiredis_adapter/hiredis_adapter.h"
 #include "score/redis/hiredis_adapter/LibeventRedisContext.h"

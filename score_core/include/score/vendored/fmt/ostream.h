@@ -13,6 +13,8 @@
 #include "./format.h"
 #include <ostream>
 
+namespace score { namespace vendored {
+
 namespace fmt {
 
 namespace internal {
@@ -98,6 +100,7 @@ void format_arg(BasicFormatter<Char, ArgFormatter> &f,
 FMT_API void print(std::ostream &os, CStringRef format_str, ArgList args);
 FMT_VARIADIC(void, print, std::ostream &, CStringRef)
 }  // namespace fmt
+}} // score::vendored
 
 #ifdef FMT_HEADER_ONLY
 # include "ostream.cc"

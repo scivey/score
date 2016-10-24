@@ -9,6 +9,7 @@
 
 #include "score/vendored/fmt/ostream.h"
 
+namespace score { namespace vendored {
 namespace fmt {
 
 namespace internal {
@@ -33,3 +34,6 @@ FMT_FUNC void print(std::ostream &os, CStringRef format_str, ArgList args) {
   internal::write(os, w);
 }
 }  // namespace fmt
+}} // score::vendored
+
+

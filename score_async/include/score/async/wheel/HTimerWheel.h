@@ -120,7 +120,7 @@ class HTimerWheel {
     }
     template<typename ...Types>
     void say(const char *fmt, Types&&... args) {
-      auto subMessage = folly::sformat(fmt, std::forward<Types>(args)...);
+      auto subMessage = score::sformat(fmt, std::forward<Types>(args)...);
       SCORE_INFO("Bucket[{}/{}]: '{}'", getResolution(), getNumSlots(), subMessage);
     }
     Slot& getSlotAt(size_t idx) {
@@ -241,7 +241,7 @@ class HTimerWheel {
       }
     }
     if (!added) {
-      throw std::runtime_error(folly::sformat(
+      throw std::runtime_error(score::sformat(
         "entry offset out of range: {}", offset.count()
       ));
     }

@@ -4,9 +4,9 @@
 
 #include "score/encodings/HeapBufferHandle.h"
 #include "score/macros.h"
+#include "score/Optional.h"
 #include <sstream>
 #include <string>
-#include <folly/Optional.h>
 namespace score { namespace encodings {
 
 class IConverter {

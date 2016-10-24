@@ -19,6 +19,7 @@
 # pragma warning(disable: 4996)  // "deprecated" functions
 #endif
 
+namespace score { namespace vendored {
 namespace fmt {
 template <typename ArgFormatter>
 void format_arg(BasicFormatter<char, ArgFormatter> &f,
@@ -135,6 +136,7 @@ inline std::tm gmtime(std::time_t time) {
   return std::tm();
 }
 } //namespace fmt
+}} // score::vendored
 
 #ifdef _MSC_VER
 # pragma warning(pop)

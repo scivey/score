@@ -1,6 +1,5 @@
 #pragma once
 #include <errno.h>
-#include <folly/Format.h>
 
 #include "score/vendored/folly/Likely.h"
 #include "score/macros/assertions.h"

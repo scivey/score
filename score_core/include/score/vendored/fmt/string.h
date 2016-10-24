@@ -12,6 +12,8 @@
 
 #include "./format.h"
 
+namespace score { namespace vendored {
+
 namespace fmt {
 
 namespace internal {
@@ -115,5 +117,6 @@ std::string to_string(const T &value) {
   return w.str();
 }
 }
+}} // score::vendored
 
 #endif  // FMT_STRING_H_

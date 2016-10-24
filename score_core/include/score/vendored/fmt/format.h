@@ -255,6 +255,7 @@ typedef __int64          intmax_t;
 #if FMT_MSC_VER && !defined(FMT_BUILTIN_CLZLL)
 # include <intrin.h>  // _BitScanReverse, _BitScanReverse64
 
+namespace score { namespace vendored {
 namespace fmt {
 namespace internal {
 # pragma intrinsic(_BitScanReverse)
@@ -298,8 +299,10 @@ inline uint32_t clzll(uint64_t x) {
 # define FMT_BUILTIN_CLZLL(n) fmt::internal::clzll(n)
 }
 }
+}} // score::vendored
 #endif
 
+namespace score { namespace vendored {
 namespace fmt {
 namespace internal {
 struct DummyInt {
@@ -323,6 +326,7 @@ template <typename T>
 inline T const_check(T value) { return value; }
 }
 }  // namespace fmt
+}} // score::vendored
 
 namespace std {
 // Standard permits specialization of std::numeric_limits. This specialization
@@ -330,13 +334,13 @@ namespace std {
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=48891
 // and the same for isnan and signbit.
 template <>
-class numeric_limits<fmt::internal::DummyInt> :
+class numeric_limits<score::vendored::fmt::internal::DummyInt> :
     public std::numeric_limits<int> {
  public:
   // Portable version of isinf.
   template <typename T>
   static bool isinfinity(T x) {
-    using namespace fmt::internal;
+    using namespace score::vendored::fmt::internal;
     // The resolution "priority" is:
     // isinf macro > std::isinf > ::isinf > fmt::internal::isinf
     if (const_check(sizeof(isinf(x)) == sizeof(bool) ||
@@ -349,7 +353,7 @@ class numeric_limits<fmt::internal::DummyInt> :
   // Portable version of isnan.
   template <typename T>
   static bool isnotanumber(T x) {
-    using namespace fmt::internal;
+    using namespace score::vendored::fmt::internal;
     if (const_check(sizeof(isnan(x)) == sizeof(bool) ||
                     sizeof(isnan(x)) == sizeof(int))) {
       return isnan(x) != 0;
@@ -359,7 +363,7 @@ class numeric_limits<fmt::internal::DummyInt> :
 
   // Portable version of signbit.
   static bool isnegative(double x) {
-    using namespace fmt::internal;
+    using namespace score::vendored::fmt::internal;
     if (const_check(sizeof(signbit(x)) == sizeof(int)))
       return signbit(x) != 0;
     if (x < 0) return true;
@@ -372,6 +376,7 @@ class numeric_limits<fmt::internal::DummyInt> :
 };
 }  // namespace std
 
+namespace score { namespace vendored {
 namespace fmt {
 
 // Fix the warning about long long on older versions of GCC
@@ -3370,6 +3375,7 @@ void arg(StringRef, const internal::NamedArg<Char>&) FMT_DELETED_OR_UNDEFINED;
 template <typename Char>
 void arg(WStringRef, const internal::NamedArg<Char>&) FMT_DELETED_OR_UNDEFINED;
 }
+}} // score::vendored
 
 #if FMT_GCC_VERSION
 // Use the system_header pragma to suppress warnings about variadic macros
@@ -3496,6 +3502,8 @@ void arg(WStringRef, const internal::NamedArg<Char>&) FMT_DELETED_OR_UNDEFINED;
 #define FMT_CAPTURE(...) FMT_FOR_EACH(FMT_CAPTURE_ARG_, __VA_ARGS__)
 
 #define FMT_CAPTURE_W(...) FMT_FOR_EACH(FMT_CAPTURE_ARG_W_, __VA_ARGS__)
+
+namespace score { namespace vendored {
 
 namespace fmt {
 FMT_VARIADIC(std::string, format, CStringRef)
@@ -3784,8 +3792,10 @@ void BasicFormatter<Char, AF>::format(BasicCStringRef<Char> format_str) {
   write(writer_, start, s);
 }
 }  // namespace fmt
+}} // score::vendored
 
 #if FMT_USE_USER_DEFINED_LITERALS
+namespace score { namespace vendored {
 namespace fmt {
 namespace internal {
 
@@ -3846,6 +3856,7 @@ operator"" _a(const wchar_t *s, std::size_t) { return {s}; }
 
 } // inline namespace literals
 } // namespace fmt
+}} // score::vendored
 #endif // FMT_USE_USER_DEFINED_LITERALS
 
 // Restore warnings.

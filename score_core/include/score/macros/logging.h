@@ -1,6 +1,6 @@
 #pragma once
 
 #include <glog/logging.h>
-#include <folly/Format.h>
+#include "score/format.h"
 
-#define SCORE_INFO(...) LOG(INFO) << folly::format(__VA_ARGS__)
+#define SCORE_INFO(...) LOG(INFO) << score::format(__VA_ARGS__)
