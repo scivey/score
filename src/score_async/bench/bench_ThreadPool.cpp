@@ -116,7 +116,7 @@ BenchResult runBenched(const string& name, bench_func_t&& benchFunc, size_t nIte
 }
 
 static const size_t kNumTasks = 1000;
-static const size_t kNumThreads = 32;
+static const size_t kNumThreads = 8;
 static const size_t kIterations = 500;
 
 
