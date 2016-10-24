@@ -13,11 +13,13 @@ add_library(score_async ${SCORE_ASYNC_SRC})
 add_dependencies(score_async score_core)
 target_link_libraries(score_async score_core ${SCORE_COMMON_EXTERNAL_LIBS})
 
-FILE(GLOB SCORE_ASYNC_TEST_SRC
-    ${SCORE_ASYNC_SRC_DIR}/test/*.cpp
+FILE(GLOB SCORE_ASYNC_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
+
 add_executable(run_async_tests
-    ${SCORE_ASYNC_TEST_SRC}
+    ${SCORE_ASYNC_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 

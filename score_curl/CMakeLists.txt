@@ -19,11 +19,12 @@ target_link_libraries(score_curl
     ${SCORE_EXTRA_EXTERNAL_LIBS}
 )
 
-FILE(GLOB SCORE_CURL_TEST_SRC
-    ${SCORE_CURL_SRC_DIR}/test/*.cpp
+FILE(GLOB SCORE_CURL_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 add_executable(run_curl_tests
-    ${SCORE_CURL_TEST_SRC}
+    ${SCORE_CURL_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
@@ -36,5 +37,3 @@ target_link_libraries(run_curl_tests
     ${SCORE_COMMON_EXTERNAL_LIBS}
     ${SCORE_EXTRA_EXTERNAL_LIBS}
 )
-
-

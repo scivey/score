@@ -19,12 +19,12 @@ target_link_libraries(score_extract
     ${SCORE_COMMON_EXTERNAL_LIBS}
 )
 
-FILE(GLOB SCORE_EXTRACT_TEST_SRC
-    ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
-    ${SCORE_EXTRACT_SRC_DIR}/test/**/*.cpp
+FILE(GLOB SCORE_EXTRACT_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 add_executable(run_extract_tests
-    ${SCORE_EXTRACT_TEST_SRC}
+    ${SCORE_EXTRACT_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_extract_tests score_extract)

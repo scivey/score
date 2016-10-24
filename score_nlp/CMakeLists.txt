@@ -31,13 +31,13 @@ add_dependencies(score_nlp score_core)
 target_link_libraries(score_nlp score_core ${SCORE_COMMON_EXTERNAL_LIBS})
 
 
-FILE(GLOB SCORE_NLP_TEST_SRC
-    ${SCORE_NLP_SRC_DIR}/test/*.cpp
-    ${SCORE_NLP_SRC_DIR}/test/**/*.cpp
+FILE(GLOB SCORE_NLP_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 
 add_executable(run_nlp_tests
-    ${SCORE_NLP_TEST_SRC}
+    ${SCORE_NLP_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_nlp_tests score_nlp)

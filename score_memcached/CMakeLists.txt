@@ -22,11 +22,12 @@ target_link_libraries(score_memcached
 )
 
 
-file(GLOB SCORE_MEMCACHED_TEST_SRC
-    ${SCORE_MEMCACHED_SRC_DIR}/test/*.cpp
+file(GLOB SCORE_MEMCACHED_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 add_executable(run_memcached_tests
-    ${SCORE_MEMCACHED_TEST_SRC}
+    ${SCORE_MEMCACHED_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_memcached_tests score_memcached)

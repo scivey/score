@@ -35,11 +35,12 @@ target_link_libraries(score_html score_core ${SCORE_COMMON_EXTERNAL_LIBS})
 
 
 
-FILE(GLOB SCORE_HTML_TEST_SRC
-    ${SCORE_HTML_SRC_DIR}/test/*.cpp
+FILE(GLOB SCORE_HTML_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 add_executable(run_html_tests
-    ${SCORE_HTML_TEST_SRC}
+    ${SCORE_HTML_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_html_tests score_html)

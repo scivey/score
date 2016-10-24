@@ -63,14 +63,12 @@ target_link_libraries(score_core ${SCORE_COMMON_EXTERNAL_LIBS})
 
 
 
-set(CORE_TEST_DIR ${SCORE_CORE_SRC_DIR}/test)
-FILE(GLOB CORE_TEST_SRC
-    ${CORE_TEST_DIR}/*.cpp
-    ${CORE_TEST_DIR}/**/*.cpp
-    ${CORE_TEST_DIR}/vendored/folly/*.cpp
+FILE(GLOB CORE_UNIT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 add_executable(run_core_tests
-    ${CORE_TEST_SRC}
+    ${CORE_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 add_dependencies(run_core_tests score_core)
