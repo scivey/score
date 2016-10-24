@@ -67,12 +67,12 @@ FILE(GLOB CORE_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
-add_executable(run_core_tests
+add_executable(run_core_unit_tests
     ${CORE_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
-add_dependencies(run_core_tests score_core)
-target_link_libraries(run_core_tests
+add_dependencies(run_core_unit_tests score_core)
+target_link_libraries(run_core_unit_tests
     gmock
     score_core
     ${SCORE_COMMON_EXTERNAL_LIBS}

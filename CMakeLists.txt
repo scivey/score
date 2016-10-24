@@ -79,16 +79,6 @@ link_directories(
     ${SCORE_EXTERNAL_LINK_DIRS}
 )
 
-add_subdirectory(${SCORE_ASYNC_DIR})
-add_subdirectory(${SCORE_BENCH_DIR})
-add_subdirectory(${SCORE_CORE_DIR})
-add_subdirectory(${SCORE_CURL_DIR})
-add_subdirectory(${SCORE_EXTRACT_DIR})
-add_subdirectory(${SCORE_HTML_DIR})
-add_subdirectory(${SCORE_MEMCACHED_DIR})
-add_subdirectory(${SCORE_NLP_DIR})
-add_subdirectory(${SCORE_REDIS_DIR})
-
 set(ALL_SCORE_LIBS
     score_core
     score_memcached
@@ -101,39 +91,51 @@ set(ALL_SCORE_LIBS
     score_curl
 )
 
-FILE(GLOB SCORE_CLIENT_INTEGRATION_TEST_SRC
-    ${SCORE_MEMCACHED_DIR}/src/test_integration/*.cpp
-    ${SCORE_REDIS_DIR}/src/test_integration/*.cpp
-)
-
-add_executable(run_client_integration_tests
-    ${SCORE_CLIENT_INTEGRATION_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
-)
-
-add_dependencies(run_client_integration_tests ${ALL_SCORE_LIBS})
-target_link_libraries(run_client_integration_tests
-    gmock
-    ${ALL_SCORE_LIBS}
-    ${SCORE_ALL_EXTERNAL_LIBS}
-)
+add_subdirectory(${SCORE_ASYNC_DIR})
+add_subdirectory(${SCORE_BENCH_DIR})
+add_subdirectory(${SCORE_CORE_DIR})
+add_subdirectory(${SCORE_CURL_DIR})
+add_subdirectory(${SCORE_EXTRACT_DIR})
+add_subdirectory(${SCORE_HTML_DIR})
+add_subdirectory(${SCORE_MEMCACHED_DIR})
+add_subdirectory(${SCORE_NLP_DIR})
+add_subdirectory(${SCORE_REDIS_DIR})
 
 
 
+# FILE(GLOB SCORE_CLIENT_INTEGRATION_TEST_SRC
+#     ${SCORE_MEMCACHED_DIR}/src/test_integration/*.cpp
+#     ${SCORE_REDIS_DIR}/src/test_integration/*.cpp
+# )
 
-FILE(GLOB SCORE_MISC_INTEGRATION_TEST_SRC
-    ${SCORE_ASYNC_DIR}/src/test_integration/*.cpp
-)
-add_executable(run_misc_integration_tests
-    ${SCORE_MISC_INTEGRATION_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
-)
-add_dependencies(run_misc_integration_tests ${ALL_SCORE_LIBS})
-target_link_libraries(run_misc_integration_tests
-    gmock
-    ${ALL_SCORE_LIBS}
-    ${SCORE_ALL_EXTERNAL_LIBS}
-)
+# add_executable(run_client_integration_tests
+#     ${SCORE_CLIENT_INTEGRATION_TEST_SRC}
+#     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+# )
+
+# add_dependencies(run_client_integration_tests ${ALL_SCORE_LIBS})
+# target_link_libraries(run_client_integration_tests
+#     gmock
+#     ${ALL_SCORE_LIBS}
+#     ${SCORE_ALL_EXTERNAL_LIBS}
+# )
+
+
+
+
+# FILE(GLOB SCORE_MISC_INTEGRATION_TEST_SRC
+#     ${SCORE_ASYNC_DIR}/src/test_integration/*.cpp
+# )
+# add_executable(run_misc_integration_tests
+#     ${SCORE_MISC_INTEGRATION_TEST_SRC}
+#     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+# )
+# add_dependencies(run_misc_integration_tests ${ALL_SCORE_LIBS})
+# target_link_libraries(run_misc_integration_tests
+#     gmock
+#     ${ALL_SCORE_LIBS}
+#     ${SCORE_ALL_EXTERNAL_LIBS}
+# )
 
 
 

@@ -20,12 +20,12 @@ target_link_libraries(score_bench
 FILE(GLOB SCORE_BENCH_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
 )
-add_executable(run_bench_tests
+add_executable(run_bench_unit_tests
     ${SCORE_BENCH_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
-add_dependencies(run_bench_tests score_bench)
-target_link_libraries(run_bench_tests
+add_dependencies(run_bench_unit_tests score_bench)
+target_link_libraries(run_bench_unit_tests
     gmock
     score_bench
     score_core

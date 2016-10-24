@@ -1,4 +1,3 @@
-
 cm:
 	mkdir -p build
 	cd build && cmake ../
@@ -9,31 +8,20 @@ create-runner: cm
 run: create-runner
 	./build/runner
 
-build-tests: cm deps
-	cd build && make unit_test_dummy -j8
+build-everything: cm deps
+	cd build && make -j8
 
-test: build-tests
-	./build/run_async_tests
-	./build/run_core_tests
-	./build/run_curl_tests
-	./build/run_extract_tests
-	./build/run_html_tests
-	./build/run_memcached_tests
-	./build/run_nlp_tests
-	./build/run_bench_tests
+test: build-everything
+	./scripts/run_built_unit_tests.sh
 
-build-integration: cm deps
-	cd build && make integration_test_dummy -j8
-
-integration: build-integration
-	./build/run_client_integration_tests
-	./build/run_misc_integration_tests
+integration: build-everything
+	./scripts/run_built_integration_tests.sh
 
 clean:
 	rm -rf build
 
 deps:
-	bash scripts/deps.sh
+	./scripts/deps.sh
 
 .PHONY: clean run create-bencher create-runner deps test client-integration
 

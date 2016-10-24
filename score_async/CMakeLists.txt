@@ -18,15 +18,33 @@ FILE(GLOB SCORE_ASYNC_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 
-add_executable(run_async_tests
+add_executable(run_async_unit_tests
     ${SCORE_ASYNC_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
-add_dependencies(run_async_tests score_async score_core)
-target_link_libraries(run_async_tests
+add_dependencies(run_async_unit_tests score_async score_core)
+target_link_libraries(run_async_unit_tests
     gmock
     score_async
     score_core
     ${SCORE_COMMON_EXTERNAL_LIBS}
+)
+
+
+
+FILE(GLOB ASYNC_INTEGRATION_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_integration/*.cpp
+)
+
+add_executable(run_async_integration_tests
+    ${ASYNC_INTEGRATION_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+add_dependencies(run_async_integration_tests score_async)
+target_link_libraries(run_async_integration_tests
+    gmock
+    score_async
+    score_core
+    ${SCORE_ALL_EXTERNAL_LIBS}
 )

@@ -36,12 +36,12 @@ FILE(GLOB SCORE_NLP_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
 
-add_executable(run_nlp_tests
+add_executable(run_nlp_unit_tests
     ${SCORE_NLP_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
-add_dependencies(run_nlp_tests score_nlp)
-target_link_libraries(run_nlp_tests
+add_dependencies(run_nlp_unit_tests score_nlp)
+target_link_libraries(run_nlp_unit_tests
     gmock
     score_nlp
     score_core

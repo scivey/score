@@ -23,12 +23,12 @@ FILE(GLOB SCORE_EXTRACT_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
-add_executable(run_extract_tests
+add_executable(run_extract_unit_tests
     ${SCORE_EXTRACT_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
-add_dependencies(run_extract_tests score_extract)
-target_link_libraries(run_extract_tests
+add_dependencies(run_extract_unit_tests score_extract)
+target_link_libraries(run_extract_unit_tests
     gmock
     score_extract
     score_html

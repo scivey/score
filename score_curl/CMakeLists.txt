@@ -23,13 +23,13 @@ FILE(GLOB SCORE_CURL_UNIT_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_unit/**/*.cpp
 )
-add_executable(run_curl_tests
+add_executable(run_curl_unit_tests
     ${SCORE_CURL_UNIT_TEST_SRC}
     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
 )
 
-add_dependencies(run_curl_tests score_curl)
-target_link_libraries(run_curl_tests
+add_dependencies(run_curl_unit_tests score_curl)
+target_link_libraries(run_curl_unit_tests
     gmock
     score_curl
     score_async
