@@ -20,7 +20,7 @@
 #define BASE_PORT_H_
 
 #include <string.h>         // for memcpy()
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 
 namespace CLD2 {
 

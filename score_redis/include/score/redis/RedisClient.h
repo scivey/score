@@ -9,10 +9,10 @@
 #include "score/Optional.h"
 #include "score/io/SocketAddr.h"
 #include "score/func/Function.h"
-#include "score_async/EventContext.h"
-#include "score_async/futures/st/STPromise.h"
-#include "score_async/futures/st/STFuture.h"
-#include "score_redis/RedisDynamicResponse.h"
+#include "score/async/EventContext.h"
+#include "score/async/futures/st/STPromise.h"
+#include "score/async/futures/st/STFuture.h"
+#include "score/redis/RedisDynamicResponse.h"
 
 namespace score { namespace redis {
 

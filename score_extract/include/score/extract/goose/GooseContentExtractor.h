@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
-#include "score_html/HTMLDoc.h"
-#include "score_nlp/Language.h"
-#include "score_nlp/stemming/StemmerManager.h"
-#include "score_extract/goose/GooseOptions.h"
+#include "score/html/HTMLDoc.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/stemming/StemmerManager.h"
+#include "score/extract/goose/GooseOptions.h"
 
 namespace score { namespace extract { namespace goose {
 

@@ -24,8 +24,8 @@
 #ifndef UTIL_UTF8_UTF8ACCEPTINTERCHANGE_H__
 #define UTIL_UTF8_UTF8ACCEPTINTERCHANGE_H__
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

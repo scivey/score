@@ -3,8 +3,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "score_extract/goose/TextCleaner.h"
-#include "score_html/Node.h"
+#include "score/extract/goose/TextCleaner.h"
+#include "score/html/Node.h"
 
 using namespace std;
 using namespace score::html;

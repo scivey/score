@@ -21,9 +21,9 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_NEW_CLDUTIL_OFFLINE_H__
 #define I18N_ENCODINGS_CLD2_INTERNAL_NEW_CLDUTIL_OFFLINE_H__
 
-#include "score_nlp/vendored/cld2/internal/cldutil_shared.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/cldutil_shared.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
 
 namespace CLD2 {
 

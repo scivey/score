@@ -16,13 +16,13 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_hint_code.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_hint_code.h"
 
 #include <stdlib.h>     // for abs()
 #include <stdio.h>      // for sprintf()
 #include <string.h>     //
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
-#include "score_nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/port.h"
 
 using namespace std;
 

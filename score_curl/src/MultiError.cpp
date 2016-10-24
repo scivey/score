@@ -1,4 +1,4 @@
-#include "score_curl/MultiError.h"
+#include "score/curl/MultiError.h"
 
 #include <stdexcept>
 #include <sstream>

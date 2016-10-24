@@ -1,5 +1,5 @@
-#include "score_nlp/Language.h"
-#include "score_nlp/vendored/cld2/compact_lang_det.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/vendored/cld2/compact_lang_det.h"
 #include "score/macros.h"
 #include <string>
 #include <unordered_map>

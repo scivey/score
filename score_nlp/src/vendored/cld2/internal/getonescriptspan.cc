@@ -17,17 +17,17 @@
 //
 
 
-#include "score_nlp/vendored/cld2/internal/getonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/getonescriptspan.h"
 #include <string.h>
 
-#include "score_nlp/vendored/cld2/internal/fixunicodevalue.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
-#include "score_nlp/vendored/cld2/internal/port.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/fixunicodevalue.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
-#include "score_nlp/vendored/cld2/internal/utf8prop_lettermarkscriptnum.h"
-#include "score_nlp/vendored/cld2/internal/utf8repl_lettermarklower.h"
-#include "score_nlp/vendored/cld2/internal/utf8scannot_lettermarkspecial.h"
+#include "score/nlp/vendored/cld2/internal/utf8prop_lettermarkscriptnum.h"
+#include "score/nlp/vendored/cld2/internal/utf8repl_lettermarklower.h"
+#include "score/nlp/vendored/cld2/internal/utf8scannot_lettermarkspecial.h"
 
 
 namespace CLD2 {

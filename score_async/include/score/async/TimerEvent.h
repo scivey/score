@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glog/logging.h>
-#include "score_async/BaseEvent.h"
+#include "score/async/BaseEvent.h"
 #include "score/func/Function.h"
 
 namespace score { namespace async {

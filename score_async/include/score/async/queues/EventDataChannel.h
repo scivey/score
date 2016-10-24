@@ -1,7 +1,7 @@
 #pragma once
 #include <thread>
 #include <glog/logging.h>
-#include "score_async/queues/SPSCEventChannel.h"
+#include "score/async/queues/SPSCEventChannel.h"
 #include "score/func/Function.h"
 #include "score/util/misc.h"
 

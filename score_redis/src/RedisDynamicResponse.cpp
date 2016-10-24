@@ -1,5 +1,5 @@
-#include "score_redis/RedisDynamicResponse.h"
-#include "score_redis/RedisError.h"
+#include "score/redis/RedisDynamicResponse.h"
+#include "score/redis/RedisError.h"
 #include "score/ExceptionWrapper.h"
 
 #include <folly/Format.h>

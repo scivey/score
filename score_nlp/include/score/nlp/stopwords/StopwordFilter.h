@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
-#include "score_nlp/stopwords/MultiLanguageStopwordFilter.h"
-#include "score_nlp/Language.h"
+#include "score/nlp/stopwords/MultiLanguageStopwordFilter.h"
+#include "score/nlp/Language.h"
 
 namespace score { namespace nlp { namespace stopwords {
 

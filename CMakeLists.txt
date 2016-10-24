@@ -66,9 +66,13 @@ set(SCORE_MEMCACHED_DIR ${SCORE_ROOT_DIR}/score_memcached)
 set(SCORE_NLP_DIR ${SCORE_ROOT_DIR}/score_nlp)
 set(SCORE_REDIS_DIR ${SCORE_ROOT_DIR}/score_redis)
 
-include_directories(
+set(SCORE_BASE_INCLUDE_DIRS
     ${SCORE_CORE_DIR}/include
     ${SCORE_EXTERNAL_INCLUDE_DIRS}
+)
+
+include_directories(
+    ${SCORE_BASE_INCLUDE_DIRS}
 )
 
 link_directories(

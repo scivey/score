@@ -4,8 +4,8 @@
 #include <memory>
 #include <glog/logging.h>
 
-#include "score_async/EvBase.h"
-#include "score_async/SignalEvent.h"
+#include "score/async/EvBase.h"
+#include "score/async/SignalEvent.h"
 
 namespace score { namespace async {
 

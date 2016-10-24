@@ -17,7 +17,7 @@
 //
 // Declarations for HTML entities recognized by CLD2
 //
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"  // for CharIntPair
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"  // for CharIntPair
 
 namespace CLD2 {
 

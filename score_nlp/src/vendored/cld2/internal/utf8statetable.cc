@@ -24,15 +24,15 @@
 #pragma warning ( disable : 4309 )
 #endif
 
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 #include <stdint.h>                     // for uintptr_t
 #include <string.h>                     // for NULL, memcpy, memmove
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"        // for uint8, uint32, int8
-#include "score_nlp/vendored/cld2/internal/port.h"
-#include "score_nlp/vendored/cld2/internal/stringpiece.h"
-#include "score_nlp/vendored/cld2/internal/offsetmap.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"        // for uint8, uint32, int8
+#include "score/nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/stringpiece.h"
+#include "score/nlp/vendored/cld2/internal/offsetmap.h"
 
 
 namespace CLD2 {

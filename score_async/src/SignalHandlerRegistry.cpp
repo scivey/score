@@ -1,4 +1,4 @@
-#include "score_async/SignalHandlerRegistry.h"
+#include "score/async/SignalHandlerRegistry.h"
 #include <glog/logging.h>
 
 namespace score { namespace async {

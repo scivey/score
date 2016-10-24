@@ -1,5 +1,5 @@
 #pragma once
-#include "score_async/EventError.h"
+#include "score/async/EventError.h"
 #include "score/exceptions/ScoreError.h"
 
 namespace score { namespace async { namespace queues {

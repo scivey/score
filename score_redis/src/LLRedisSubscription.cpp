@@ -1,5 +1,5 @@
-#include "score_redis/LLRedisSubscription.h"
-#include "score_redis/LLRedisClient.h"
+#include "score/redis/LLRedisSubscription.h"
+#include "score/redis/LLRedisClient.h"
 
 using namespace std;
 

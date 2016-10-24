@@ -4,10 +4,10 @@
 #include <glog/logging.h>
 #include "score/mem/st_shared_ptr.h"
 #include "score/func/Function.h"
-#include "score_async/futures/st/traits.h"
-#include "score_async/futures/st/STSharedState.h"
-#include "score_async/futures/st/STFutureCore.h"
-#include "score_async/futures/st/STPromise.h"
+#include "score/async/futures/st/traits.h"
+#include "score/async/futures/st/STSharedState.h"
+#include "score/async/futures/st/STFutureCore.h"
+#include "score/async/futures/st/STPromise.h"
 
 namespace score { namespace async { namespace futures { namespace st {
 

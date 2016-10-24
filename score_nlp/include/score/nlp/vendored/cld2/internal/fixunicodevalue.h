@@ -23,8 +23,8 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_FIXUNICODEVALUE_H__
 #define I18N_ENCODINGS_CLD2_INTERNAL_FIXUNICODEVALUE_H__
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"        // for char32
-#include "score_nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"        // for char32
+#include "score/nlp/vendored/cld2/internal/port.h"
 
 namespace CLD2 {
 

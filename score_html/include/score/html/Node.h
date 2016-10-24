@@ -1,10 +1,10 @@
 #pragma once
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 #include <functional>
 #include <string>
 #include <sstream>
-#include "score_html/detail/GumboVectorWrapper.h"
-#include "score_html/Tag.h"
+#include "score/html/detail/GumboVectorWrapper.h"
+#include "score/html/Tag.h"
 #include "score/io/string_utils.h"
 
 

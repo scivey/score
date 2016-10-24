@@ -20,7 +20,7 @@
 #define I18N_ENCODINGS_CLD2_INTERNAL_TOTE_H_
 
 #include <stdio.h>
-#include "score_nlp/vendored/cld2/internal/integral_types.h"        // for uint8 etc
+#include "score/nlp/vendored/cld2/internal/integral_types.h"        // for uint8 etc
 
 namespace CLD2 {
 

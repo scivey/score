@@ -21,9 +21,9 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_NEW_CLDUTIL_H__
 #define I18N_ENCODINGS_CLD2_INTERNAL_NEW_CLDUTIL_H__
 
-#include "score_nlp/vendored/cld2/internal/cldutil_shared.h"
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
-#include "score_nlp/vendored/cld2/internal/tote.h"
+#include "score/nlp/vendored/cld2/internal/cldutil_shared.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/tote.h"
 
 namespace CLD2 {
 

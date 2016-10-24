@@ -27,8 +27,8 @@
 #ifndef UTF8REPL_LETTERMARKLOWER_H__
 #define UTF8REPL_LETTERMARKLOWER_H__
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

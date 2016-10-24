@@ -17,11 +17,11 @@
 #include "score/Unit.h"
 #include "score/util/misc.h"
 #include "score/func/Function.h"
-#include "score_async/tpool/ThreadPool.h"
-#include "score_async/tpool/CallbackTask.h"
-#include "score_async/EventContext.h"
-#include "score_bench/BenchResult.h"
-#include "score_bench/bench.h"
+#include "score/async/tpool/ThreadPool.h"
+#include "score/async/tpool/CallbackTask.h"
+#include "score/async/EventContext.h"
+#include "score/bench/BenchResult.h"
+#include "score/bench/bench.h"
 
 using namespace std;
 using score::Try;

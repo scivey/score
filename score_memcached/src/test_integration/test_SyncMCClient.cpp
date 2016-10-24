@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "score_memcached/SyncMCClient.h"
-#include "score_memcached/MemcachedConfig.h"
+#include "score/memcached/SyncMCClient.h"
+#include "score/memcached/MemcachedConfig.h"
 
 using namespace score::memcached;
 using namespace std;

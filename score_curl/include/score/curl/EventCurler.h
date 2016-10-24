@@ -2,9 +2,9 @@
 
 #include <memory>
 #include <string>
-#include "score_async/EventContext.h"
-#include "score_curl/Easy.h"
-#include "score_curl/Multi.h"
+#include "score/async/EventContext.h"
+#include "score/curl/Easy.h"
+#include "score/curl/Multi.h"
 #include "score/util/misc.h"
 
 namespace score { namespace curl {

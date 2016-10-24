@@ -2,8 +2,13 @@ set(SCORE_ASYNC_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 FILE(GLOB SCORE_ASYNC_SRC
     ${SCORE_ASYNC_SRC_DIR}/*.cpp
-
 )
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SCORE_BASE_INCLUDE_DIRS}
+)
+
 add_library(score_async ${SCORE_ASYNC_SRC})
 add_dependencies(score_async score_core)
 target_link_libraries(score_async score_core ${SCORE_COMMON_EXTERNAL_LIBS})

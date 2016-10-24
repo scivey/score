@@ -14,15 +14,15 @@
 //
 // Author: jdtang@google.com (Jonathan Tang)
 
-#include "score_html/vendored/gumbo-parser/string_buffer.h"
+#include "score/html/vendored/gumbo-parser/string_buffer.h"
 
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 
-#include "score_html/vendored/gumbo-parser/string_piece.h"
-#include "score_html/vendored/gumbo-parser/util.h"
+#include "score/html/vendored/gumbo-parser/string_piece.h"
+#include "score/html/vendored/gumbo-parser/util.h"
 
 struct GumboInternalParser;
 

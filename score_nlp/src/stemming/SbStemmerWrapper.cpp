@@ -1,6 +1,6 @@
-#include "score_nlp/stemming/SbStemmerWrapper.h"
-#include "score_nlp/Language.h"
-#include "score_nlp/vendored/libstemmer/libstemmer.h"
+#include "score/nlp/stemming/SbStemmerWrapper.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/vendored/libstemmer/libstemmer.h"
 #include <string>
 #include <cstring>
 

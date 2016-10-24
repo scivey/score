@@ -28,7 +28,7 @@
 
 #pragma GCC diagnostic ignored "-Wc++11-narrowing"
 
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

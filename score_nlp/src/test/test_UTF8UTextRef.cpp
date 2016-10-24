@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
-#include "score_nlp/UTF8UTextRef.h"
+#include "score/nlp/UTF8UTextRef.h"
 
 using namespace std;
 using score::nlp::UTF8UTextRef;

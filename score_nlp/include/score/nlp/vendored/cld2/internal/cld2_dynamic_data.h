@@ -15,10 +15,10 @@
 #ifndef CLD2_INTERNAL_CLD2_DYNAMIC_DATA_H_
 #define CLD2_INTERNAL_CLD2_DYNAMIC_DATA_H_
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
 
 /*
   There are two primary parts to a CLD2 dynamic data file:

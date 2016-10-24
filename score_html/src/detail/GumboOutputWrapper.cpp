@@ -1,4 +1,4 @@
-#include "score_html/detail/GumboOutputWrapper.h"
+#include "score/html/detail/GumboOutputWrapper.h"
 #include <string>
 
 using namespace std;

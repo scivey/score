@@ -1,5 +1,5 @@
-#include "score_extract/goose/util.h"
-#include "score_nlp/tokenize/TokenView.h"
+#include "score/extract/goose/util.h"
+#include "score/nlp/tokenize/TokenView.h"
 using namespace std;
 using namespace score::html;
 using score::nlp::tokenize::TokenView;

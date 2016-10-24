@@ -1,6 +1,6 @@
 #include <string>
-#include "score_nlp/stopwords/StopwordFilter.h"
-#include "score_nlp/Language.h"
+#include "score/nlp/stopwords/StopwordFilter.h"
+#include "score/nlp/Language.h"
 
 using namespace std;
 

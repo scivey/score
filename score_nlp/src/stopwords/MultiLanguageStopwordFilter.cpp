@@ -1,13 +1,13 @@
 #include <string>
 #include <set>
-#include "score_nlp/stopwords/MultiLanguageStopwordFilter.h"
-#include "score_nlp/Language.h"
-#include "score_nlp/stopwords/english_stopwords.h"
-#include "score_nlp/stopwords/french_stopwords.h"
-#include "score_nlp/stopwords/german_stopwords.h"
-#include "score_nlp/stopwords/italian_stopwords.h"
-#include "score_nlp/stopwords/russian_stopwords.h"
-#include "score_nlp/stopwords/spanish_stopwords.h"
+#include "score/nlp/stopwords/MultiLanguageStopwordFilter.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/stopwords/english_stopwords.h"
+#include "score/nlp/stopwords/french_stopwords.h"
+#include "score/nlp/stopwords/german_stopwords.h"
+#include "score/nlp/stopwords/italian_stopwords.h"
+#include "score/nlp/stopwords/russian_stopwords.h"
+#include "score/nlp/stopwords/spanish_stopwords.h"
 
 using namespace std;
 

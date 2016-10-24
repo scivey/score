@@ -17,7 +17,7 @@
 // Compile this in instead of debug.cc to remove code for debug output
 //
 
-#include "score_nlp/vendored/cld2/internal/debug.h"
+#include "score/nlp/vendored/cld2/internal/debug.h"
 #include <string>
 
 using namespace std;

@@ -1,7 +1,7 @@
-#include "score_redis/hiredis_adapter/hiredis_adapter.h"
-#include "score_redis/hiredis_adapter/LibeventRedisContext.h"
+#include "score/redis/hiredis_adapter/hiredis_adapter.h"
+#include "score/redis/hiredis_adapter/LibeventRedisContext.h"
 
-#include "score_redis/LLRedisClient.h"
+#include "score/redis/LLRedisClient.h"
 #include <event2/event.h>
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>

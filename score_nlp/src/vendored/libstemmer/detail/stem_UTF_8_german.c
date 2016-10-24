@@ -1,7 +1,7 @@
 
 /* This file was generated automatically by the Snowball to ANSI C compiler */
 
-#include "score_nlp/vendored/libstemmer/runtime/header.h"
+#include "score/nlp/vendored/libstemmer/runtime/header.h"
 
 #ifdef __cplusplus
 extern "C" {

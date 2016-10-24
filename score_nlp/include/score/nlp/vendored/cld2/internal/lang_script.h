@@ -25,9 +25,9 @@
 #ifndef I18N_ENCODINGS_CLD2_LANG_SCRIPT_H__
 #define I18N_ENCODINGS_CLD2_LANG_SCRIPT_H__
 
-#include "score_nlp/vendored/cld2/internal/generated_language.h"
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/generated_language.h"
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 
 
 // NOTE: The script numbers and language numbers here are not guaranteed to be

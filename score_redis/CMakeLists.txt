@@ -1,5 +1,10 @@
-
 set(SCORE_REDIS_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SCORE_ASYNC_DIR}/include
+    ${SCORE_BASE_INCLUDE_DIRS}
+)
 
 FILE(GLOB SCORE_REDIS_SRC
     ${SCORE_REDIS_SRC_DIR}/*.cpp

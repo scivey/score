@@ -1,4 +1,4 @@
-#include "score_extract/goose/GooseOptions.h"
+#include "score/extract/goose/GooseOptions.h"
 
 namespace score { namespace extract { namespace goose {
 

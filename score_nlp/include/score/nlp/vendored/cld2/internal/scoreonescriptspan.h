@@ -75,14 +75,14 @@
 
 #include <stdio.h>
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"           // for uint8 etc.
+#include "score/nlp/vendored/cld2/internal/integral_types.h"           // for uint8 etc.
 
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_impl.h"    // for ResultChunkVector
-#include "score_nlp/vendored/cld2/internal/getonescriptspan.h"
-#include "score_nlp/vendored/cld2/internal/langspan.h"
-#include "score_nlp/vendored/cld2/internal/tote.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"    // for ResultChunkVector
+#include "score/nlp/vendored/cld2/internal/getonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/langspan.h"
+#include "score/nlp/vendored/cld2/internal/tote.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 namespace score { namespace html { namespace detail {
 

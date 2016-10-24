@@ -21,8 +21,8 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_GENERATED_LANGUAGE_H__
 #define I18N_ENCODINGS_CLD2_INTERNAL_GENERATED_LANGUAGE_H__
 
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 
 namespace CLD2 {
 

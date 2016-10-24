@@ -26,12 +26,12 @@
 #include <sys/time.h>               // for gettimeofday
 #include <string>
 
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_impl.h"
-#include "score_nlp/vendored/cld2/internal/debug.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"
+#include "score/nlp/vendored/cld2/internal/debug.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

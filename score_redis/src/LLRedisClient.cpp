@@ -1,12 +1,12 @@
-#include "score_redis/LLRedisClient.h"
+#include "score/redis/LLRedisClient.h"
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>
 #include <glog/logging.h>
 #include <folly/ExceptionWrapper.h>
-#include "score_redis/RedisError.h"
-#include "score_redis/hiredis_adapter/hiredis_adapter.h"
-#include "score_redis/hiredis_adapter/LibeventRedisContext.h"
-#include "score_async/futures/st/helpers.h"
+#include "score/redis/RedisError.h"
+#include "score/redis/hiredis_adapter/hiredis_adapter.h"
+#include "score/redis/hiredis_adapter/LibeventRedisContext.h"
+#include "score/async/futures/st/helpers.h"
 
 using namespace std;
 namespace futures = score::async::futures;

@@ -13,8 +13,8 @@
 #include "score/Unit.h"
 #include "score/util/misc.h"
 #include "score/func/Function.h"
-#include "score_async/tpool/ThreadPool.h"
-#include "score_async/EventContext.h"
+#include "score/async/tpool/ThreadPool.h"
+#include "score/async/EventContext.h"
 
 using namespace std;
 using score::Try;

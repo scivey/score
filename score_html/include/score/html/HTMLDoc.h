@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
-#include "score_html/detail/GumboOutputWrapper.h"
-#include "score_html/Node.h"
+#include "score/html/detail/GumboOutputWrapper.h"
+#include "score/html/Node.h"
 
 namespace score { namespace html {
 

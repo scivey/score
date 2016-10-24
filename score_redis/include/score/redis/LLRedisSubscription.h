@@ -7,8 +7,8 @@
 #include <atomic>
 #include "score/macros/core.h"
 #include "score/Unit.h"
-#include "score_redis/RedisDynamicResponse.h"
-#include "score_redis/RedisError.h"
+#include "score/redis/RedisDynamicResponse.h"
+#include "score/redis/RedisError.h"
 #include "score/exceptions/ScoreError.h"
 
 namespace score { namespace redis {

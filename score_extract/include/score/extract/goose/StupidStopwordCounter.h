@@ -1,7 +1,7 @@
 #pragma once
-#include "score_nlp/stopwords/StopwordFilter.h"
-#include "score_nlp/stemming/Utf8Stemmer.h"
-#include "score_nlp/Language.h"
+#include "score/nlp/stopwords/StopwordFilter.h"
+#include "score/nlp/stemming/Utf8Stemmer.h"
+#include "score/nlp/Language.h"
 #include <string>
 #include <memory>
 

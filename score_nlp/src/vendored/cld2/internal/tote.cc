@@ -16,8 +16,8 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#include "score_nlp/vendored/cld2/internal/tote.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"    // For LanguageCode in Dump
+#include "score/nlp/vendored/cld2/internal/tote.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"    // For LanguageCode in Dump
 
 #include <stdio.h>
 #include <string.h>         // For memset

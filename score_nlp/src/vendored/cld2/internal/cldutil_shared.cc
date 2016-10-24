@@ -16,13 +16,13 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#include "score_nlp/vendored/cld2/internal/cldutil_shared.h"
+#include "score/nlp/vendored/cld2/internal/cldutil_shared.h"
 #include <string>
 
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/port.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

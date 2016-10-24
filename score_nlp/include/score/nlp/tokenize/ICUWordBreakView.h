@@ -3,8 +3,8 @@
 #include <memory>
 #include <unicode/brkiter.h>
 #include <unicode/utext.h>
-#include "score_nlp/Language.h"
-#include "score_nlp/UTF8UTextRef.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/UTF8UTextRef.h"
 
 namespace score { namespace nlp { namespace tokenize {
 

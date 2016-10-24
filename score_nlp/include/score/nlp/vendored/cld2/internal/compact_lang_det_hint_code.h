@@ -21,9 +21,9 @@
 
 
 #include <string>
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
-#include "score_nlp/vendored/cld2/encodings.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/encodings.h"
 
 namespace CLD2 {
 

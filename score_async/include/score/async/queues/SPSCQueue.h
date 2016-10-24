@@ -1,6 +1,6 @@
 #pragma once
 
-#include "score_async/vendored/readerwriterqueue/readerwriterqueue.h"
+#include "score/async/vendored/readerwriterqueue/readerwriterqueue.h"
 
 namespace score { namespace async { namespace queues {
 

@@ -5,10 +5,10 @@
 #include <vector>
 #include <chrono>
 #include "score/TimerSettings.h"
-#include "score_async/TimerEvent.h"
-#include "score_async/EvBase.h"
-#include "score_async/wheel/SimpleTimerWheel.h"
-#include "score_async/wheel/HTimerWheel.h"
+#include "score/async/TimerEvent.h"
+#include "score/async/EvBase.h"
+#include "score/async/wheel/SimpleTimerWheel.h"
+#include "score/async/wheel/HTimerWheel.h"
 #include "score/util/misc.h"
 #include "score/logging.h"
 

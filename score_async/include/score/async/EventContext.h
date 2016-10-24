@@ -4,11 +4,11 @@
 #include "score/Try.h"
 #include "score/func/Function.h"
 #include "score/util/misc.h"
-#include "score_async/wheel/HTimerWheel.h"
-#include "score_async/SignalHandlerRegistry.h"
-#include "score_async/queues/MPSCEventChannel.h"
-#include "score_async/queues/EventDataChannel.h"
-#include "score_async/CallbackEvent.h"
+#include "score/async/wheel/HTimerWheel.h"
+#include "score/async/SignalHandlerRegistry.h"
+#include "score/async/queues/MPSCEventChannel.h"
+#include "score/async/queues/EventDataChannel.h"
+#include "score/async/CallbackEvent.h"
 
 
 

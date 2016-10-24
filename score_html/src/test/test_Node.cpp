@@ -5,9 +5,9 @@
 #include <map>
 #include <iostream>
 #include <vector>
-#include "score_html/HTMLDoc.h"
+#include "score/html/HTMLDoc.h"
 #include "score/io/string_utils.h"
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 using namespace std;
 using namespace score::html;

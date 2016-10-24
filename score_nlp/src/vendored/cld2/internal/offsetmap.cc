@@ -17,7 +17,7 @@
 //
 //
 
-#include "score_nlp/vendored/cld2/internal/offsetmap.h"
+#include "score/nlp/vendored/cld2/internal/offsetmap.h"
 
 #include <string.h>                     // for strcmp
 #include <stdio.h>                      // for fprintf, stderr, fclose, etc

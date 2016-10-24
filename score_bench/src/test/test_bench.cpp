@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "score_bench/bench.h"
+#include "score/bench/bench.h"
 
 using namespace score;
 using namespace score::bench;

@@ -2,6 +2,14 @@ set(SCORE_EXTRACT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 FILE(GLOB SCORE_EXTRACT_SRC
     ${SCORE_EXTRACT_SRC_DIR}/goose/*.cpp
 )
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SCORE_HTML_DIR}/include
+    ${SCORE_NLP_DIR}/include
+    ${SCORE_BASE_INCLUDE_DIRS}
+)
+
 add_library(score_extract ${SCORE_EXTRACT_SRC})
 add_dependencies(score_extract score_core score_nlp score_html)
 target_link_libraries(score_extract

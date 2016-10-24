@@ -16,7 +16,7 @@
 // From input file /tmp/langdet_v25_12cjk_sort.utf8
 // See compact_lang_det.cc for usage
 //
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 
 namespace CLD2 {
 

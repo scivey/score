@@ -2,9 +2,9 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "score_html/HTMLDoc.h"
-#include "score_html/Node.h"
-#include "score_html/Tag.h"
+#include "score/html/HTMLDoc.h"
+#include "score/html/Node.h"
+#include "score/html/Tag.h"
 
 namespace score { namespace html {
 

@@ -20,7 +20,7 @@
 #define UTIL_UTF8_OFFSETMAP_H_
 
 #include <string>                       // for string
-#include "score_nlp/vendored/cld2/internal/integral_types.h"             // for uint32
+#include "score/nlp/vendored/cld2/internal/integral_types.h"             // for uint32
 
 // ***************************** OffsetMap **************************
 //

@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 #include "score/util/misc.h"
-#include "score_curl/EventCurler.h"
-#include "score_async/EventContext.h"
+#include "score/curl/EventCurler.h"
+#include "score/async/EventContext.h"
 
 using namespace std;
 using score::async::EventContext;

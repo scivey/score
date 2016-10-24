@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "score_nlp/Language.h"
+#include "score/nlp/Language.h"
 
 struct sb_stemmer;
 

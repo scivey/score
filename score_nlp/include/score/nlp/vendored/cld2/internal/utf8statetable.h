@@ -23,8 +23,8 @@
 #define UTIL_UTF8_UTF8STATETABLE_H_
 
 #include <string>
-#include "score_nlp/vendored/cld2/internal/integral_types.h"             // for uint8, uint32, uint16
-#include "score_nlp/vendored/cld2/internal/stringpiece.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"             // for uint8, uint32, uint16
+#include "score/nlp/vendored/cld2/internal/stringpiece.h"
 
 
 namespace CLD2 {

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "score_async/EventFD.h"
+#include "score/async/EventFD.h"
 
 using namespace score;
 using namespace score::async;

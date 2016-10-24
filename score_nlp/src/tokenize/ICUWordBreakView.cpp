@@ -1,4 +1,4 @@
-#include "score_nlp/tokenize/ICUWordBreakView.h"
+#include "score/nlp/tokenize/ICUWordBreakView.h"
 #include "score/macros.h"
 #include <unicode/locid.h>
 #include <unicode/brkiter.h>

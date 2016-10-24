@@ -1,4 +1,4 @@
-#include "score_bench/BenchResult.h"
+#include "score/bench/BenchResult.h"
 
 using namespace std;
 

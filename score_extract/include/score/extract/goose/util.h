@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "score_html/Node.h"
+#include "score/html/Node.h"
 
 namespace score { namespace extract { namespace goose {
 

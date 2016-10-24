@@ -18,8 +18,8 @@
 // Declarations for scripts recognized by CLD2
 //
 
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"
-#include "score_nlp/vendored/cld2/internal/generated_language.h"
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"
+#include "score/nlp/vendored/cld2/internal/generated_language.h"
 
 namespace CLD2 {
 

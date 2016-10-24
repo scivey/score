@@ -20,8 +20,8 @@
 #include <string.h>
 #include <string>
 
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_impl.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
 
 using namespace std;
 using namespace CLD2;

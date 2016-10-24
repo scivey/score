@@ -8,22 +8,22 @@
  * russian, spanish, swedish, turkish
  */
 
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_danish.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_dutch.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_english.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_finnish.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_french.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_german.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_hungarian.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_italian.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_norwegian.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_porter.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_portuguese.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_romanian.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_russian.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_spanish.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_swedish.h"
-#include "score_nlp/vendored/libstemmer/detail/stem_UTF_8_turkish.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_danish.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_dutch.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_english.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_finnish.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_french.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_german.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_hungarian.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_italian.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_norwegian.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_porter.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_portuguese.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_romanian.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_russian.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_spanish.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_swedish.h"
+#include "score/nlp/vendored/libstemmer/detail/stem_UTF_8_turkish.h"
 
 typedef enum {
   ENC_UNKNOWN=0,

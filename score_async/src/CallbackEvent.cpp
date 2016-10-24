@@ -1,4 +1,4 @@
-#include "score_async/CallbackEvent.h"
+#include "score/async/CallbackEvent.h"
 #include <glog/logging.h>
 
 namespace score { namespace async {

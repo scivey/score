@@ -1,6 +1,6 @@
 #include <string>
-#include "score_nlp/stemming/Utf8Stemmer.h"
-#include "score_nlp/Language.h"
+#include "score/nlp/stemming/Utf8Stemmer.h"
+#include "score/nlp/Language.h"
 
 using namespace std;
 

@@ -20,8 +20,8 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_LANGSPAN_H_
 #define I18N_ENCODINGS_CLD2_INTERNAL_LANGSPAN_H_
 
-#include "score_nlp/vendored/cld2/internal/generated_language.h"
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"
+#include "score/nlp/vendored/cld2/internal/generated_language.h"
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"
 
 namespace CLD2 {
 

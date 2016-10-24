@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <unicode/brkiter.h>
-#include "score_nlp/tokenize/ICUWordBreakView.h"
+#include "score/nlp/tokenize/ICUWordBreakView.h"
 
 using namespace std;
 using score::nlp::tokenize::ICUWordBreakView;

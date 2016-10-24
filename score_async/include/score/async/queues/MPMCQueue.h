@@ -1,6 +1,6 @@
 #pragma once
 
-#include "score_async/vendored/concurrentqueue/blockingconcurrentqueue.h"
+#include "score/async/vendored/concurrentqueue/blockingconcurrentqueue.h"
 
 namespace score { namespace async { namespace queues {
 

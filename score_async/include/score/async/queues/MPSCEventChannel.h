@@ -2,9 +2,9 @@
 #include <mutex>
 #include "score/locks/SpinLock.h"
 #include "score/exceptions/ScoreError.h"
-#include "score_async/EventFD.h"
-#include "score_async/queues/SPSCQueue.h"
-#include "score_async/queues/QueueError.h"
+#include "score/async/EventFD.h"
+#include "score/async/queues/SPSCQueue.h"
+#include "score/async/queues/QueueError.h"
 
 namespace score { namespace async { namespace queues {
 

@@ -17,7 +17,7 @@
 #ifndef GUMBO_ATTRIBUTE_H_
 #define GUMBO_ATTRIBUTE_H_
 
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 #ifdef __cplusplus
 extern "C" {

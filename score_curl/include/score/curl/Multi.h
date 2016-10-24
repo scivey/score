@@ -9,9 +9,9 @@
 #include "score/util/try_helpers.h"
 #include "score/Try.h"
 #include "score/Unit.h"
-#include "score_curl/Easy.h"
-#include "score_curl/MultiHandle.h"
-#include "score_curl/MultiError.h"
+#include "score/curl/Easy.h"
+#include "score/curl/MultiHandle.h"
+#include "score/curl/MultiError.h"
 
 namespace score { namespace curl {
 

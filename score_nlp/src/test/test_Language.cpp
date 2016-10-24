@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
-#include "score_nlp/Language.h"
+#include "score/nlp/Language.h"
 
 using namespace score::nlp;
 using namespace std;

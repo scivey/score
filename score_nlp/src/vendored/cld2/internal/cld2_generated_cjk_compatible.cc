@@ -15,7 +15,7 @@
 //
 // CJK compatible CLD2 scoring lookup table
 //
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 
 namespace CLD2 {
 

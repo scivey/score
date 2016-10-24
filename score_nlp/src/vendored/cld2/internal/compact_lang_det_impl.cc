@@ -23,22 +23,22 @@
 #include <string>
 #include <vector>
 
-#include "score_nlp/vendored/cld2/internal/cldutil.h"
-#include "score_nlp/vendored/cld2/internal/debug.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
-#include "score_nlp/vendored/cld2/internal/utf8acceptinterchange.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cldutil.h"
+#include "score/nlp/vendored/cld2/internal/debug.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/utf8acceptinterchange.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 #ifdef CLD2_DYNAMIC_MODE
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
 #endif
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_impl.h"
-#include "score_nlp/vendored/cld2/internal/compact_lang_det_hint_code.h"
-#include "score_nlp/vendored/cld2/internal/getonescriptspan.h"
-#include "score_nlp/vendored/cld2/internal/tote.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"
+#include "score/nlp/vendored/cld2/internal/compact_lang_det_hint_code.h"
+#include "score/nlp/vendored/cld2/internal/getonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/tote.h"
 
 
 namespace CLD2 {

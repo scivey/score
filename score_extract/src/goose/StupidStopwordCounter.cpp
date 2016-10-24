@@ -1,7 +1,7 @@
-#include "score_extract/goose/StupidStopwordCounter.h"
-#include "score_nlp/stopwords/StopwordFilter.h"
-#include "score_nlp/tokenize/TokenView.h"
-#include "score_nlp/Language.h"
+#include "score/extract/goose/StupidStopwordCounter.h"
+#include "score/nlp/stopwords/StopwordFilter.h"
+#include "score/nlp/tokenize/TokenView.h"
+#include "score/nlp/Language.h"
 #include <string>
 
 using namespace std;

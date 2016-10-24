@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "score_nlp/stopwords/english_stopwords.h"
+#include "score/nlp/stopwords/english_stopwords.h"
 
 using namespace std;
 

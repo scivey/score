@@ -16,13 +16,13 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#include "score_nlp/vendored/cld2/internal/debug.h"
+#include "score/nlp/vendored/cld2/internal/debug.h"
 #include <stdio.h>
 #include <string>
 
-#include "score_nlp/vendored/cld2/internal/cldutil.h"
-#include "score_nlp/vendored/cld2/internal/getonescriptspan.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/cldutil.h"
+#include "score/nlp/vendored/cld2/internal/getonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
 
 using namespace std;
 

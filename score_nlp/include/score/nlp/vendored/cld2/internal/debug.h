@@ -22,7 +22,7 @@
 #define I18N_ENCODINGS_CLD2_INTERNAL_DEBUG_H_
 
 #include <string>
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
 
 namespace CLD2 {
 

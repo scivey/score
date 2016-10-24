@@ -8,8 +8,8 @@
 #include "score/util/try_helpers.h"
 #include "score/Try.h"
 #include "score/Unit.h"
-#include "score_curl/EasyHandle.h"
-#include "score_curl/Easy.h"
+#include "score/curl/EasyHandle.h"
+#include "score/curl/Easy.h"
 
 namespace score { namespace curl {
 

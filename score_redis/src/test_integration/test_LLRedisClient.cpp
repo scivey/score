@@ -3,9 +3,9 @@
 #include "score/Try.h"
 #include "score/Unit.h"
 #include "score/func/Function.h"
-#include "score_redis/LLRedisClient.h"
-#include "score_redis/RedisDynamicResponse.h"
-#include "score_async/EventContext.h"
+#include "score/redis/LLRedisClient.h"
+#include "score/redis/RedisDynamicResponse.h"
+#include "score/async/EventContext.h"
 #include "score/util/misc.h"
 
 using score::Try;

@@ -1,5 +1,5 @@
-#include "score_memcached/MemcachedConfig.h"
-#include "score_memcached/MemcachedError.h"
+#include "score/memcached/MemcachedConfig.h"
+#include "score/memcached/MemcachedError.h"
 #include "score/ExceptionWrapper.h"
 #include "score/Try.h"
 #include "score/util/try_helpers.h"

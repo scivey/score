@@ -1,6 +1,6 @@
-#include "score_html/vendored/gumbo-parser/gumbo.h"
-#include "score_html/detail/GumboVectorWrapper.h"
-#include "score_html/Node.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/detail/GumboVectorWrapper.h"
+#include "score/html/Node.h"
 #include "score/util/misc.h"
 
 

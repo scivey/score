@@ -3,8 +3,8 @@
 #include <string>
 #include <glog/logging.h>
 #include "score/mem/st_shared_ptr.h"
-#include "score_async/futures/st/traits.h"
-#include "score_async/futures/st/STSharedState.h"
+#include "score/async/futures/st/traits.h"
+#include "score/async/futures/st/STSharedState.h"
 
 namespace score { namespace async { namespace futures { namespace st {
 

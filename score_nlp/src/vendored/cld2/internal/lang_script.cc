@@ -21,13 +21,13 @@
 // This file declares language and script numbers and names for CLD2
 //
 
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "score_nlp/vendored/cld2/internal/generated_language.h"
-#include "score_nlp/vendored/cld2/internal/generated_ulscript.h"
+#include "score/nlp/vendored/cld2/internal/generated_language.h"
+#include "score/nlp/vendored/cld2/internal/generated_ulscript.h"
 
 namespace CLD2 {
 

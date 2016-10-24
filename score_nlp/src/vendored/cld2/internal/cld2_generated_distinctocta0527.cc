@@ -32,7 +32,7 @@
 //
 // See compact_lang_det.cc for usage
 //
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 namespace CLD2 {
 
 static const uint32 kDistinctOcta0527BuildDate = 20130527;    // yyyymmdd

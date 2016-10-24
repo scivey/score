@@ -21,16 +21,16 @@
 #include <string.h>
 #include <strings.h>
 
-#include "score_html/vendored/gumbo-parser/attribute.h"
-#include "score_html/vendored/gumbo-parser/error.h"
-#include "score_html/vendored/gumbo-parser/gumbo.h"
-#include "score_html/vendored/gumbo-parser/insertion_mode.h"
-#include "score_html/vendored/gumbo-parser/parser.h"
-#include "score_html/vendored/gumbo-parser/tokenizer.h"
-#include "score_html/vendored/gumbo-parser/tokenizer_states.h"
-#include "score_html/vendored/gumbo-parser/utf8.h"
-#include "score_html/vendored/gumbo-parser/util.h"
-#include "score_html/vendored/gumbo-parser/vector.h"
+#include "score/html/vendored/gumbo-parser/attribute.h"
+#include "score/html/vendored/gumbo-parser/error.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/insertion_mode.h"
+#include "score/html/vendored/gumbo-parser/parser.h"
+#include "score/html/vendored/gumbo-parser/tokenizer.h"
+#include "score/html/vendored/gumbo-parser/tokenizer_states.h"
+#include "score/html/vendored/gumbo-parser/utf8.h"
+#include "score/html/vendored/gumbo-parser/util.h"
+#include "score/html/vendored/gumbo-parser/vector.h"
 
 #define AVOID_UNUSED_VARIABLE_WARNING(i) (void)(i)
 

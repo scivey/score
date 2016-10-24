@@ -16,8 +16,8 @@
 #define CLD2_INTERNAL_CLD2_DYNAMIC_DATA_LOADER_H_
 
 #include <stdint.h>
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
 
 namespace CLD2DynamicDataLoader {
 

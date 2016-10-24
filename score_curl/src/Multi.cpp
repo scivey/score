@@ -1,4 +1,4 @@
-#include "score_curl/Multi.h"
+#include "score/curl/Multi.h"
 
 namespace score { namespace curl {
 

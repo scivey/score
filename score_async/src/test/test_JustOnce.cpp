@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "score_async/JustOnce.h"
+#include "score/async/JustOnce.h"
 
 TEST(TestJustOnce, TestWorks) {
   int x = 0;

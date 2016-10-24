@@ -3,8 +3,8 @@
 #include <set>
 #include <vector>
 #include <memory>
-#include "score_html/Node.h"
-#include "score_html/Tag.h"
+#include "score/html/Node.h"
+#include "score/html/Tag.h"
 
 namespace score { namespace extract { namespace goose {
 

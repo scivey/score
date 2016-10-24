@@ -2,9 +2,9 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include "score_async/EventContext.h"
-#include "score_async/tpool/ThreadPool.h"
-#include "score_async/tpool/CallbackTask.h"
+#include "score/async/EventContext.h"
+#include "score/async/tpool/ThreadPool.h"
+#include "score/async/tpool/CallbackTask.h"
 
 using namespace score;
 using namespace score::async;

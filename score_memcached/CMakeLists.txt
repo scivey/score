@@ -4,6 +4,13 @@ FILE(GLOB SCORE_MEMCACHED_SRC
     ${SCORE_MEMCACHED_SRC_DIR}/*.cpp
 )
 
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SCORE_ASYNC_DIR}/include
+    ${SCORE_BASE_INCLUDE_DIRS}
+)
+
+
 add_library(score_memcached ${SCORE_MEMCACHED_SRC})
 add_dependencies(score_memcached score_async score_core)
 

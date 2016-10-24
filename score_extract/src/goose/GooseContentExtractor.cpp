@@ -1,11 +1,11 @@
-#include "score_extract/goose/GooseContentExtractor.h"
-#include "score_extract/goose/BaseContentExtractor.h"
-#include "score_extract/goose/BoostChecker.h"
-#include "score_extract/goose/NodeScorer.h"
-#include "score_extract/goose/StupidStopwordCounter.h"
-#include "score_extract/goose/TextCleaner.h"
-#include "score_extract/goose/TextNodeCollector.h"
-#include "score_extract/goose/util.h"
+#include "score/extract/goose/GooseContentExtractor.h"
+#include "score/extract/goose/BaseContentExtractor.h"
+#include "score/extract/goose/BoostChecker.h"
+#include "score/extract/goose/NodeScorer.h"
+#include "score/extract/goose/StupidStopwordCounter.h"
+#include "score/extract/goose/TextCleaner.h"
+#include "score/extract/goose/TextNodeCollector.h"
+#include "score/extract/goose/util.h"
 
 using score::nlp::Language;
 using namespace score::html;

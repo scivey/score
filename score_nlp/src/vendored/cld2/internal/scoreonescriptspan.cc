@@ -18,11 +18,11 @@
 //
 #pragma GCC diagnostic ignored "-Wc++11-narrowing"
 
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
 
-#include "score_nlp/vendored/cld2/internal/cldutil.h"
-#include "score_nlp/vendored/cld2/internal/debug.h"
-#include "score_nlp/vendored/cld2/internal/lang_script.h"
+#include "score/nlp/vendored/cld2/internal/cldutil.h"
+#include "score/nlp/vendored/cld2/internal/debug.h"
+#include "score/nlp/vendored/cld2/internal/lang_script.h"
 #include <stdint.h>
 
 #include <stdio.h>

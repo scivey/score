@@ -4,6 +4,12 @@ FILE(GLOB SCORE_CURL_SRC
     ${SCORE_CURL_SRC_DIR}/*.cpp
 )
 
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${SCORE_ASYNC_DIR}/include
+    ${SCORE_BASE_INCLUDE_DIRS}
+)
+
 add_library(score_curl ${SCORE_CURL_SRC})
 add_dependencies(score_curl score_async score_core)
 target_link_libraries(score_curl

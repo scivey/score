@@ -14,18 +14,18 @@
 //
 // Author: jdtang@google.com (Jonathan Tang)
 
-#include "score_html/vendored/gumbo-parser/utf8.h"
+#include "score/html/vendored/gumbo-parser/utf8.h"
 
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>  // For strncasecmp.
 
-#include "score_html/vendored/gumbo-parser/error.h"
-#include "score_html/vendored/gumbo-parser/gumbo.h"
-#include "score_html/vendored/gumbo-parser/parser.h"
-#include "score_html/vendored/gumbo-parser/util.h"
-#include "score_html/vendored/gumbo-parser/vector.h"
+#include "score/html/vendored/gumbo-parser/error.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/parser.h"
+#include "score/html/vendored/gumbo-parser/util.h"
+#include "score/html/vendored/gumbo-parser/vector.h"
 
 const int kUtf8ReplacementChar = 0xFFFD;
 

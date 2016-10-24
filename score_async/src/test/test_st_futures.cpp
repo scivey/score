@@ -1,6 +1,6 @@
-#include "score_async/futures/st/STFuture.h"
-#include "score_async/futures/st/STPromise.h"
-#include "score_async/futures/st/helpers.h"
+#include "score/async/futures/st/STFuture.h"
+#include "score/async/futures/st/STPromise.h"
+#include "score/async/futures/st/helpers.h"
 #include "score/mem/st_shared_ptr.h"
 
 #include <gtest/gtest.h>

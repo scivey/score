@@ -1,5 +1,5 @@
 #pragma once
-#include "score_bench/BenchResult.h"
+#include "score/bench/BenchResult.h"
 #include "score/func/Function.h"
 
 namespace score { namespace bench {

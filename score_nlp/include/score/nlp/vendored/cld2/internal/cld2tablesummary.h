@@ -20,7 +20,7 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_CLD2TABLESUMMARY_H_
 #define I18N_ENCODINGS_CLD2_INTERNAL_CLD2TABLESUMMARY_H_
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 
 namespace CLD2 {
 

@@ -4,7 +4,7 @@
 #include <curl/curl.h>
 #include <glog/logging.h>
 #include "score/macros.h"
-#include "score_curl/EasyHandle.h"
+#include "score/curl/EasyHandle.h"
 
 namespace score { namespace curl {
 

@@ -5,8 +5,8 @@
 #include <glog/logging.h>
 #include "score/Try.h"
 #include "score/Unit.h"
-#include "score_curl/Easy.h"
-#include "score_curl/MultiHandle.h"
+#include "score/curl/Easy.h"
+#include "score/curl/MultiHandle.h"
 
 namespace score { namespace curl {
 

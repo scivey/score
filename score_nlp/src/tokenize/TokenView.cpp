@@ -1,4 +1,4 @@
-#include "score_nlp/tokenize/TokenView.h"
+#include "score/nlp/tokenize/TokenView.h"
 // #include "util/misc.h"
 #include "score/unicode/support.h"
 #include <string>

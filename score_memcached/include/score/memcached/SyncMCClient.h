@@ -3,7 +3,7 @@
 #include "score/Unit.h"
 #include "score/Optional.h"
 #include "score/io/Scstring.h"
-#include "score_memcached/MemcachedConfig.h"
+#include "score/memcached/MemcachedConfig.h"
 
 struct memcached_st;
 

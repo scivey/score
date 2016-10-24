@@ -2,8 +2,8 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
-#include "score_async/EventContext.h"
-#include "score_async/queues/EventDataChannel.h"
+#include "score/async/EventContext.h"
+#include "score/async/queues/EventDataChannel.h"
 
 using namespace score;
 using namespace score::async;

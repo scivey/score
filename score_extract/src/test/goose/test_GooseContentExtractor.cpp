@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <string>
 #include "score/fs/fs.h"
-#include "score_nlp/Language.h"
-#include "score_extract/goose/GooseContentExtractor.h"
+#include "score/nlp/Language.h"
+#include "score/extract/goose/GooseContentExtractor.h"
 
 using namespace std;
 using namespace score::extract::goose;

@@ -1,5 +1,5 @@
 
-#include "score_curl/EasyError.h"
+#include "score/curl/EasyError.h"
 
 namespace score { namespace curl {
 

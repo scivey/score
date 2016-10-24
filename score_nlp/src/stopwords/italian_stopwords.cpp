@@ -1,6 +1,6 @@
 #include <string>
 #include <unordered_set>
-#include "score_nlp/stopwords/italian_stopwords.h"
+#include "score/nlp/stopwords/italian_stopwords.h"
 
 using namespace std;
 

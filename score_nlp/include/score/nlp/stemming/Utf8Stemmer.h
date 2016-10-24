@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
-#include "score_nlp/Language.h"
-#include "score_nlp/stemming/SbStemmerWrapper.h"
+#include "score/nlp/Language.h"
+#include "score/nlp/stemming/SbStemmerWrapper.h"
 
 namespace score { namespace nlp { namespace stemming {
 

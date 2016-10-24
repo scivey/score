@@ -1,7 +1,7 @@
-#include "score_bench/bench.h"
+#include "score/bench/bench.h"
 #include <chrono>
 #include <cmath>
-#include "score_bench/BenchResult.h"
+#include "score/bench/BenchResult.h"
 #include "score/func/Function.h"
 #include "score/Optional.h"
 #include "score/Unit.h"

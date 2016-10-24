@@ -1,5 +1,5 @@
 #pragma once
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 #include <string>
 #include <memory>
 

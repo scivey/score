@@ -17,13 +17,13 @@
 // Updated 2014.01 for dual table lookup
 //
 
-#include "score_nlp/vendored/cld2/internal/cldutil.h"
+#include "score/nlp/vendored/cld2/internal/cldutil.h"
 #include <string>
 
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/port.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/port.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 namespace CLD2 {
 

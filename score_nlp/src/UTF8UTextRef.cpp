@@ -1,4 +1,4 @@
-#include "score_nlp/UTF8UTextRef.h"
+#include "score/nlp/UTF8UTextRef.h"
 #include "score/macros.h"
 #include <unicode/utext.h>
 using namespace std;

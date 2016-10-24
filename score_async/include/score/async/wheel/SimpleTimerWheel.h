@@ -6,9 +6,9 @@
 #include "score/TimerSettings.h"
 #include "score/func/Function.h"
 #include "score/macros.h"
-#include "score_async/EvBase.h"
-#include "score_async/TimerEvent.h"
-#include "score_async/wheel/WheelBuffer.h"
+#include "score/async/EvBase.h"
+#include "score/async/TimerEvent.h"
+#include "score/async/wheel/WheelBuffer.h"
 
 namespace score { namespace async { namespace wheel {
 

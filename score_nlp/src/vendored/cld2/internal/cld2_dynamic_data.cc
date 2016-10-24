@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 #include <assert.h>
 #include <stdint.h>
 

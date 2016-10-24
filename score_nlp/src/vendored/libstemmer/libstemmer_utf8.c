@@ -1,9 +1,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "score_nlp/vendored/libstemmer/libstemmer.h"
-#include "score_nlp/vendored/libstemmer/runtime/api.h"
-#include "score_nlp/vendored/libstemmer/detail/modules_utf8.h"
+#include "score/nlp/vendored/libstemmer/libstemmer.h"
+#include "score/nlp/vendored/libstemmer/runtime/api.h"
+#include "score/nlp/vendored/libstemmer/detail/modules_utf8.h"
 
 struct sb_stemmer {
     struct SN_env * (*create)(void);

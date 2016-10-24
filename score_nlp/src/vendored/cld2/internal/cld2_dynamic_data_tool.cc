@@ -20,13 +20,13 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_extractor.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_extractor.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
 
 // We need these in order to set up a real data object to pass around.
 namespace CLD2 {

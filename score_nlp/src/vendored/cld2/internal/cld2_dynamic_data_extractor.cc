@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_extractor.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h" // for verifying the written data
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_extractor.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h" // for verifying the written data
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 
 using namespace std;
 namespace CLD2DynamicDataExtractor {

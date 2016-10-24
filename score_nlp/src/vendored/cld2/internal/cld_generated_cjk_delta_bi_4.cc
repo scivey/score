@@ -37,7 +37,7 @@
 //  i18n/encodings/cld2/prob_data/vetted_bigram_prob_20130614_sort.utf8
 //
 
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 namespace CLD2 {
 
 static const uint32 kCjkDeltaBiBuildDate = 20130614;    // yyyymmdd

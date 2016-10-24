@@ -16,8 +16,8 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
-#include "score_nlp/vendored/cld2/internal/cldutil_offline.h"
-#include "score_nlp/vendored/cld2/internal/tote.h"
+#include "score/nlp/vendored/cld2/internal/cldutil_offline.h"
+#include "score/nlp/vendored/cld2/internal/tote.h"
 #include <string>
 
 static const int kMinCJKUTF8CharBytes = 3;

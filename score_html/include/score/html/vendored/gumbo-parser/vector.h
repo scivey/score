@@ -17,7 +17,7 @@
 #ifndef GUMBO_VECTOR_H_
 #define GUMBO_VECTOR_H_
 
-#include "score_html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -16,8 +16,8 @@
 // Routine that maps a Unicode code point to an interchange-valid one
 //
 
-#include "score_nlp/vendored/cld2/internal/fixunicodevalue.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/fixunicodevalue.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
 
 namespace CLD2 {
 

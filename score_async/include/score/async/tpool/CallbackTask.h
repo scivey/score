@@ -6,9 +6,9 @@
 #include "score/util/misc.h"
 #include "score/MoveWrapper.h"
 #include "score/util/try_helpers.h"
-#include "score_async/queues/QueueError.h"
-#include "score_async/EventContext.h"
-#include "score_async/tpool/ThreadPoolError.h"
+#include "score/async/queues/QueueError.h"
+#include "score/async/EventContext.h"
+#include "score/async/tpool/ThreadPoolError.h"
 
 namespace score { namespace async { namespace tpool {
 

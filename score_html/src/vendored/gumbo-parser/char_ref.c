@@ -24,7 +24,7 @@
 // The generated source is also checked into source control so that most people
 // hacking on the parser do not need to install ragel.
 
-#include "score_html/vendored/gumbo-parser/char_ref.h"
+#include "score/html/vendored/gumbo-parser/char_ref.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -32,10 +32,10 @@
 #include <stdio.h>
 #include <string.h>  // Only for debug assertions at present.
 
-#include "score_html/vendored/gumbo-parser/error.h"
-#include "score_html/vendored/gumbo-parser/string_piece.h"
-#include "score_html/vendored/gumbo-parser/utf8.h"
-#include "score_html/vendored/gumbo-parser/util.h"
+#include "score/html/vendored/gumbo-parser/error.h"
+#include "score/html/vendored/gumbo-parser/string_piece.h"
+#include "score/html/vendored/gumbo-parser/utf8.h"
+#include "score/html/vendored/gumbo-parser/util.h"
 
 struct GumboInternalParser;
 

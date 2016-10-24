@@ -20,13 +20,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_compat.h" // for win32/posix compatibility
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data.h"
-#include "score_nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/cld2tablesummary.h"
-#include "score_nlp/vendored/cld2/internal/utf8statetable.h"
-#include "score_nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_compat.h" // for win32/posix compatibility
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data.h"
+#include "score/nlp/vendored/cld2/internal/cld2_dynamic_data_loader.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/internal/utf8statetable.h"
+#include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
 
 namespace CLD2DynamicDataLoader {
 static int DEBUG=0;

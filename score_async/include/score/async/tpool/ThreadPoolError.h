@@ -1,6 +1,6 @@
 #pragma once
 #include "score/exceptions/ScoreError.h"
-#include "score_async/EventError.h"
+#include "score/async/EventError.h"
 
 namespace score { namespace async { namespace tpool {
 

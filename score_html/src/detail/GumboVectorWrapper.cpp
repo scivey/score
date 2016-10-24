@@ -1,4 +1,4 @@
-#include "score_html/detail/GumboVectorWrapper.h"
+#include "score/html/detail/GumboVectorWrapper.h"
 #include <gumbo.h>
 
 namespace score { namespace html { namespace detail {

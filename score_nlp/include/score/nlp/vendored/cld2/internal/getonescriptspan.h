@@ -20,9 +20,9 @@
 #ifndef I18N_ENCODINGS_CLD2_INTERNAL_GETONESCRIPTSPAN_H_
 #define I18N_ENCODINGS_CLD2_INTERNAL_GETONESCRIPTSPAN_H_
 
-#include "score_nlp/vendored/cld2/internal/integral_types.h"
-#include "score_nlp/vendored/cld2/internal/langspan.h"
-#include "score_nlp/vendored/cld2/internal/offsetmap.h"
+#include "score/nlp/vendored/cld2/internal/integral_types.h"
+#include "score/nlp/vendored/cld2/internal/langspan.h"
+#include "score/nlp/vendored/cld2/internal/offsetmap.h"
 
 namespace CLD2 {
 

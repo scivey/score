@@ -1,6 +1,6 @@
 
 #include <stdlib.h> /* for calloc, free */
-#include "score_nlp/vendored/libstemmer/runtime/header.h"
+#include "score/nlp/vendored/libstemmer/runtime/header.h"
 
 extern struct SN_env * SN_create_env(int S_size, int I_size, int B_size)
 {

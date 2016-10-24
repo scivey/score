@@ -4,9 +4,9 @@
 #include <glog/logging.h>
 #include <folly/Format.h>
 #include "score/mem/st_shared_ptr.h"
-#include "score_async/futures/st/traits.h"
-#include "score_async/futures/st/STSharedState.h"
-#include "score_async/futures/st/STFutureCore.h"
+#include "score/async/futures/st/traits.h"
+#include "score/async/futures/st/STSharedState.h"
+#include "score/async/futures/st/STFutureCore.h"
 
 namespace score { namespace async { namespace futures { namespace st {
 
@@ -71,7 +71,7 @@ class STPromise {
 
 }}}} // score::async::futures::st
 
-#include "score_async/futures/st/STFuture.h"
+#include "score/async/futures/st/STFuture.h"
 
 namespace score { namespace async { namespace futures { namespace st {
 

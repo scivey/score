@@ -42,24 +42,24 @@
 // prevents parse error position from being messed up by possible mark/resets in
 // temporary buffer manipulation.
 
-#include "score_html/vendored/gumbo-parser/tokenizer.h"
+#include "score/html/vendored/gumbo-parser/tokenizer.h"
 
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "score_html/vendored/gumbo-parser/attribute.h"
-#include "score_html/vendored/gumbo-parser/char_ref.h"
-#include "score_html/vendored/gumbo-parser/error.h"
-#include "score_html/vendored/gumbo-parser/gumbo.h"
-#include "score_html/vendored/gumbo-parser/parser.h"
-#include "score_html/vendored/gumbo-parser/string_buffer.h"
-#include "score_html/vendored/gumbo-parser/string_piece.h"
-#include "score_html/vendored/gumbo-parser/token_type.h"
-#include "score_html/vendored/gumbo-parser/tokenizer_states.h"
-#include "score_html/vendored/gumbo-parser/utf8.h"
-#include "score_html/vendored/gumbo-parser/util.h"
-#include "score_html/vendored/gumbo-parser/vector.h"
+#include "score/html/vendored/gumbo-parser/attribute.h"
+#include "score/html/vendored/gumbo-parser/char_ref.h"
+#include "score/html/vendored/gumbo-parser/error.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
+#include "score/html/vendored/gumbo-parser/parser.h"
+#include "score/html/vendored/gumbo-parser/string_buffer.h"
+#include "score/html/vendored/gumbo-parser/string_piece.h"
+#include "score/html/vendored/gumbo-parser/token_type.h"
+#include "score/html/vendored/gumbo-parser/tokenizer_states.h"
+#include "score/html/vendored/gumbo-parser/utf8.h"
+#include "score/html/vendored/gumbo-parser/util.h"
+#include "score/html/vendored/gumbo-parser/vector.h"
 
 // Compared against _script_data_buffer to determine if we're in double-escaped
 // script mode.
