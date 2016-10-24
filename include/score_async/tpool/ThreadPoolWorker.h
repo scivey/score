@@ -20,7 +20,7 @@ namespace score { namespace async { namespace tpool {
 
 class ThreadPoolWorker {
  public:
-  using queue_t = queues::MPMCQueue<std::unique_ptr<TaskBase>>;
+  using queue_t = queues::MPMCQueue<std::unique_ptr<Task>>;
 
  protected:
   using EventDataChannel = queues::EventDataChannel;
@@ -49,7 +49,7 @@ class ThreadPoolWorker {
   }
 
 
-  Try<Unit> runTask(std::unique_ptr<TaskBase> task) {
+  Try<Unit> runTask(std::unique_ptr<Task> task) {
     Try<Unit> taskOutcome;
     try {
       task->run();
@@ -65,8 +65,8 @@ class ThreadPoolWorker {
       [wrappedTask, wrappedOutcome]() {
         MoveWrapper<Try<Unit>> movedOutcome = wrappedOutcome;
         Try<Unit> unwrappedOutcome = movedOutcome.move();
-        MoveWrapper<std::unique_ptr<TaskBase>> movedTask = wrappedTask;
-        std::unique_ptr<TaskBase> unwrappedTask = movedTask.move();
+        MoveWrapper<std::unique_ptr<Task>> movedTask = wrappedTask;
+        std::unique_ptr<Task> unwrappedTask = movedTask.move();
         if (unwrappedOutcome.hasException()) {
           unwrappedTask->onError(std::move(unwrappedOutcome.exception()));
         } else {
@@ -84,7 +84,7 @@ class ThreadPoolWorker {
     return util::makeTrySuccess<Unit>();
   }
   void threadFunc() {
-    std::unique_ptr<TaskBase> task;
+    std::unique_ptr<Task> task;
     const int64_t kWaitMicroseconds {100000}; // 100ms
     while (running_.load()) {
       if (workQueue_->wait_dequeue_timed(task, kWaitMicroseconds)) {

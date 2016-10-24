@@ -21,7 +21,7 @@ namespace score { namespace async { namespace tpool {
 
 class ThreadPool {
  public:
-  using queue_t = queues::MPMCQueue<std::unique_ptr<TaskBase>>;
+  using queue_t = queues::MPMCQueue<std::unique_ptr<Task>>;
  protected:
   size_t numThreads_ {0};
   std::unique_ptr<queue_t> workQueue_ {nullptr};
@@ -104,7 +104,7 @@ class ThreadPool {
     join();
     return util::makeTrySuccess<Unit>();
   }
-  Try<Unit> trySubmit(std::unique_ptr<TaskBase>&& task) {
+  Try<Unit> trySubmit(std::unique_ptr<Task>&& task) {
     if (!isRunning()) {
       return util::makeTryFailure<Unit, NotRunning>("Not running.");
     }
