@@ -119,7 +119,7 @@ bool gumbo_string_equals_ignore_case(
  * library.  Iteration can be done through inspecting the structure directly in
  * a for-loop.
  */
-typedef struct {
+typedef struct GumboVector_s {
   /** Data elements.  This points to a dynamically-allocated array of capacity
    * elements, each a void* to the element itself.
    */

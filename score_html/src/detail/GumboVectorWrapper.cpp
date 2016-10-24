@@ -1,5 +1,5 @@
 #include "score/html/detail/GumboVectorWrapper.h"
-#include <gumbo.h>
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 namespace score { namespace html { namespace detail {
 

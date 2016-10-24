@@ -1,19 +1,22 @@
 #pragma once
 
-#include "score/html/vendored/gumbo-parser/gumbo.h"
+#include <sys/types.h>
+
+struct GumboVector_s;
+struct GumboInternalNode;
 
 namespace score { namespace html { namespace detail {
 
 class GumboVectorWrapper {
  protected:
-  const GumboVector *gumboVec_ {nullptr};
+  const GumboVector_s *gumboVec_ {nullptr};
  public:
   GumboVectorWrapper();
-  GumboVectorWrapper(const GumboVector *);
+  GumboVectorWrapper(const GumboVector_s*);
   bool good() const;
   operator bool() const;
-  const GumboNode* at(size_t idx) const;
-  const GumboNode* operator[](size_t idx) const;
+  const GumboInternalNode* at(size_t idx) const;
+  const GumboInternalNode* operator[](size_t idx) const;
   size_t size() const;
 
   class Iterator {
@@ -24,8 +27,8 @@ class GumboVectorWrapper {
     bool operator!=(const Iterator&other) const;
     Iterator& operator++();
     Iterator operator++(int);
-    const GumboNode* operator*();
-    const GumboNode* operator->();
+    const GumboInternalNode* operator*();
+    const GumboInternalNode* operator->();
   };
   friend class Iterator;
 

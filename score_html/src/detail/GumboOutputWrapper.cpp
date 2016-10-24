@@ -1,4 +1,5 @@
 #include "score/html/detail/GumboOutputWrapper.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 #include <string>
 
 using namespace std;

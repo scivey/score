@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include "score/html/Tag.h"
+#include "score/html/vendored/gumbo-parser/gumbo.h"
 
 using namespace std;
 

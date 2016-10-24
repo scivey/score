@@ -159,6 +159,7 @@ enum class Tag {
   UNKNOWN
 };
 
+
 Tag tagOfGumboTag(GumboTag);
 GumboTag gumboTagOfTag(Tag);
 const std::string& stringOfTag(Tag);

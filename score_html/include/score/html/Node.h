@@ -50,7 +50,7 @@ class Node {
    public:
     NodeVector();
     NodeVector(GumboVectorWrapper wrapper);
-    NodeVector(const GumboVector *vec);
+    NodeVector(const GumboVector_s *vec);
     NodeVector(const NodeVector &vec);
 
     size_t size() const;

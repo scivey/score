@@ -1,25 +1,23 @@
 #pragma once
-#include "score/html/vendored/gumbo-parser/gumbo.h"
 #include <string>
 #include <memory>
+
+struct GumboInternalOutput;
 
 namespace score { namespace html { namespace detail {
 
 class GumboOutputWrapper {
  protected:
-  GumboOutput *output_;
-  GumboOutputWrapper(GumboOutput other) = delete;
-  GumboOutputWrapper(const GumboOutput &other) = delete;
-  void operator=(GumboOutput other) = delete;
-  void operator=(const GumboOutput &other) = delete;
+  GumboInternalOutput *output_;
+  GumboOutputWrapper(const GumboOutputWrapper&) = delete;
+  void operator=(const GumboOutputWrapper&) = delete;
  public:
-
   static GumboOutputWrapper create(const std::string&);
   static std::shared_ptr<GumboOutputWrapper> createShared(const std::string&);
   GumboOutputWrapper(GumboOutputWrapper &&other);
-  GumboOutputWrapper(GumboOutput *output);
-  GumboOutput* get() const;
-  GumboOutput* operator->() const;
+  GumboOutputWrapper(GumboInternalOutput *output);
+  GumboInternalOutput* get() const;
+  GumboInternalOutput* operator->() const;
   ~GumboOutputWrapper();
 };
 
