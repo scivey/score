@@ -4,9 +4,9 @@
 #include <type_traits>
 
 #include <gtest/gtest.h>
-#include <folly/Range.h>
 #include "score/vendored/http-parser/http_parser.h"
 #include "score/exceptions/exceptions.h"
+#include "score/io/ByteStringPiece.h"
 #include "score/url/URLComponent.h"
 #include "score/url/detail/HTTPParserURL.h"
 #include "score/Optional.h"
@@ -16,16 +16,16 @@
 #include "score/url/URLView.h"
 
 using namespace std;
-using folly::StringPiece;
 using score::Optional;
 using score::url::URLComponent;
 using score::url::httpParserEnumOfURLComponent;
 using score::url::detail::HTTPParserURL;
 using score::url::URLView;
 using score::util::doWithValue;
+using score::io::ByteStringPiece;
 
 
-std::string makeString(const Optional<StringPiece>& strPiece) {
+std::string makeString(const Optional<ByteStringPiece>& strPiece) {
   if (!strPiece.hasValue()) {
     return "";
   }

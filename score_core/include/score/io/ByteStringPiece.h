@@ -1,5 +1,8 @@
 #pragma once
 // adapted from re2::StringPiece
+// the detailed parts (find, compare, copy, etc)
+// are copied verbatim.
+
 #include <string>
 #include <iterator>
 #include <cstring>

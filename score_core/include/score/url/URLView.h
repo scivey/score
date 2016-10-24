@@ -1,7 +1,6 @@
 #pragma once
 
-#include <folly/Range.h>
-
+#include "score/io/ByteStringPiece.h"
 #include "score/Optional.h"
 #include "score/Try.h"
 #include "score/Unit.h"
@@ -18,10 +17,10 @@ namespace score { namespace url {
 
 class URLView {
  public:
-  using piece_t = score::Optional<folly::StringPiece>;
+  using piece_t = score::Optional<io::ByteStringPiece>;
  protected:
   using HTTPParserURL = score::url::detail::HTTPParserURL;
-  using StringPiece = folly::StringPiece;
+  using StringPiece = io::ByteStringPiece;
 
   HTTPParserURL parsed_;
   const char* buff_ {nullptr};
