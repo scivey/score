@@ -27,14 +27,6 @@ set(SCORE_EXTERNAL_LINK_DIRS
     /usr/local/lib
 )
 
-include_directories(
-    ${SCORE_EXTERNAL_INCLUDE_DIRS}
-)
-
-link_directories(
-    ${SCORE_EXTERNAL_LINK_DIRS}
-)
-
 set(SCORE_COMMON_EXTERNAL_LIBS
     folly
     wangle
@@ -65,23 +57,33 @@ set(SCORE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SCORE_ROOT_SRC_DIR ${SCORE_ROOT_DIR}/src)
 
 set(SCORE_ASYNC_DIR ${SCORE_ROOT_DIR}/score_async)
-add_subdirectory(SCORE_ASYNC_DIR)
 set(SCORE_BENCH_DIR ${SCORE_ROOT_DIR}/score_bench)
-add_subdirectory(SCORE_BENCH_DIR)
 set(SCORE_CORE_DIR ${SCORE_ROOT_DIR}/score_core)
-add_subdirectory(SCORE_CORE_DIR)
 set(SCORE_CURL_DIR ${SCORE_ROOT_DIR}/score_curl)
-add_subdirectory(SCORE_CURL_DIR)
 set(SCORE_EXTRACT_DIR ${SCORE_ROOT_DIR}/score_extract)
-add_subdirectory(SCORE_EXTRACT_DIR)
 set(SCORE_HTML_DIR ${SCORE_ROOT_DIR}/score_html)
-add_subdirectory(SCORE_HTML_DIR)
 set(SCORE_MEMCACHED_DIR ${SCORE_ROOT_DIR}/score_memcached)
-add_subdirectory(SCORE_MEMCACHED_DIR)
 set(SCORE_NLP_DIR ${SCORE_ROOT_DIR}/score_nlp)
-add_subdirectory(SCORE_NLP_DIR)
 set(SCORE_REDIS_DIR ${SCORE_ROOT_DIR}/score_redis)
-add_subdirectory(SCORE_REDIS_DIR)
+
+include_directories(
+    ${SCORE_CORE_DIR}/include
+    ${SCORE_EXTERNAL_INCLUDE_DIRS}
+)
+
+link_directories(
+    ${SCORE_EXTERNAL_LINK_DIRS}
+)
+
+add_subdirectory(${SCORE_ASYNC_DIR})
+add_subdirectory(${SCORE_BENCH_DIR})
+add_subdirectory(${SCORE_CORE_DIR})
+add_subdirectory(${SCORE_CURL_DIR})
+add_subdirectory(${SCORE_EXTRACT_DIR})
+add_subdirectory(${SCORE_HTML_DIR})
+add_subdirectory(${SCORE_MEMCACHED_DIR})
+add_subdirectory(${SCORE_NLP_DIR})
+add_subdirectory(${SCORE_REDIS_DIR})
 
 set(ALL_SCORE_LIBS
     score_core

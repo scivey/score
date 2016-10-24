@@ -1,6 +1,4 @@
-
-
-set(SCORE_EXTRACT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/score_extract)
+set(SCORE_EXTRACT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 FILE(GLOB SCORE_EXTRACT_SRC
     ${SCORE_EXTRACT_SRC_DIR}/goose/*.cpp
 )
@@ -12,7 +10,6 @@ target_link_libraries(score_extract
     score_core
     ${SCORE_COMMON_EXTERNAL_LIBS}
 )
-
 
 FILE(GLOB SCORE_EXTRACT_TEST_SRC
     ${SCORE_EXTRACT_SRC_DIR}/test/*.cpp
