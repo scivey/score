@@ -15,7 +15,6 @@ set(SCORE_EXTERNAL_INCLUDE_DIRS
     ${RE2}/build/include
     ${GTEST}/googletest/include
     ${GTEST}/googlemock/include
-    /usr/local/include
 )
 
 set(SCORE_EXTERNAL_LINK_DIRS
@@ -24,15 +23,11 @@ set(SCORE_EXTERNAL_LINK_DIRS
     ${BORINGSSL}/build/decrepit
     ${RE2}/build
     ${GTEST}/build/googlemock
-    /usr/local/lib
 )
 
 set(SCORE_COMMON_EXTERNAL_LIBS
-    folly
-    wangle
+    iberty
     re2
-    boost_system
-    boost_thread
     icuuc
     icudata
     glog
