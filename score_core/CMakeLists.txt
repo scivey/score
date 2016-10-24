@@ -23,10 +23,15 @@ FILE(GLOB VENDORED_FOLLY_SOURCES
     ${SCORE_CORE_SRC_DIR}/vendored/folly/**/*.cpp
 )
 
+FILE(GLOB VENDORED_FMT_SOURCES
+    ${SCORE_CORE_SRC_DIR}/vendored/fmt/*.cc
+)
+
 set(SCORE_CORE_VENDORED_SRC
     ${SMHASHER_SOURCES}
     ${CHARSETDETECT_SOURCES}
     ${VENDORED_FOLLY_SOURCES}
+    ${VENDORED_FMT_SOURCES}
     ${SCORE_CORE_SRC_DIR}/vendored/http-parser/http_parser.c
     ${SCORE_CORE_SRC_DIR}/vendored/pugixml/pugixml.cpp
     ${SCORE_CORE_SRC_DIR}/vendored/modp_b64/modp_b64.cc
