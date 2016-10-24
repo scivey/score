@@ -69,7 +69,7 @@ FILE(GLOB CORE_UNIT_TEST_SRC
 )
 add_executable(run_core_unit_tests
     ${CORE_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_core_unit_tests score_core)
 target_link_libraries(run_core_unit_tests

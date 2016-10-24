@@ -20,7 +20,7 @@ FILE(GLOB SCORE_ASYNC_UNIT_TEST_SRC
 
 add_executable(run_async_unit_tests
     ${SCORE_ASYNC_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 
 add_dependencies(run_async_unit_tests score_async score_core)
@@ -39,7 +39,7 @@ FILE(GLOB ASYNC_INTEGRATION_TEST_SRC
 
 add_executable(run_async_integration_tests
     ${ASYNC_INTEGRATION_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_async_integration_tests score_async)
 target_link_libraries(run_async_integration_tests

@@ -41,7 +41,7 @@ FILE(GLOB SCORE_HTML_UNIT_TEST_SRC
 )
 add_executable(run_html_unit_tests
     ${SCORE_HTML_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_html_unit_tests score_html)
 target_link_libraries(run_html_unit_tests

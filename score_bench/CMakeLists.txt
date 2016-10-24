@@ -22,7 +22,7 @@ FILE(GLOB SCORE_BENCH_UNIT_TEST_SRC
 )
 add_executable(run_bench_unit_tests
     ${SCORE_BENCH_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_bench_unit_tests score_bench)
 target_link_libraries(run_bench_unit_tests

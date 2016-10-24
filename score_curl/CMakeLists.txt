@@ -25,7 +25,7 @@ FILE(GLOB SCORE_CURL_UNIT_TEST_SRC
 )
 add_executable(run_curl_unit_tests
     ${SCORE_CURL_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 
 add_dependencies(run_curl_unit_tests score_curl)

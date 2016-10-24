@@ -25,7 +25,7 @@ FILE(GLOB SCORE_EXTRACT_UNIT_TEST_SRC
 )
 add_executable(run_extract_unit_tests
     ${SCORE_EXTRACT_UNIT_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_extract_unit_tests score_extract)
 target_link_libraries(run_extract_unit_tests

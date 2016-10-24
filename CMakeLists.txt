@@ -65,6 +65,8 @@ set(SCORE_HTML_DIR ${SCORE_ROOT_DIR}/score_html)
 set(SCORE_MEMCACHED_DIR ${SCORE_ROOT_DIR}/score_memcached)
 set(SCORE_NLP_DIR ${SCORE_ROOT_DIR}/score_nlp)
 set(SCORE_REDIS_DIR ${SCORE_ROOT_DIR}/score_redis)
+set(SCORE_TEST_SUPPORT_DIR ${SCORE_ROOT_DIR}/test_support)
+set(SCORE_TEST_RUNNER_FILE ${SCORE_TEST_SUPPORT_DIR}/src/run_tests.cpp)
 
 set(SCORE_BASE_INCLUDE_DIRS
     ${SCORE_CORE_DIR}/include
@@ -101,80 +103,17 @@ add_subdirectory(${SCORE_MEMCACHED_DIR})
 add_subdirectory(${SCORE_NLP_DIR})
 add_subdirectory(${SCORE_REDIS_DIR})
 
-
-
-# FILE(GLOB SCORE_CLIENT_INTEGRATION_TEST_SRC
-#     ${SCORE_MEMCACHED_DIR}/src/test_integration/*.cpp
-#     ${SCORE_REDIS_DIR}/src/test_integration/*.cpp
-# )
-
-# add_executable(run_client_integration_tests
-#     ${SCORE_CLIENT_INTEGRATION_TEST_SRC}
-#     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
-# )
-
-# add_dependencies(run_client_integration_tests ${ALL_SCORE_LIBS})
-# target_link_libraries(run_client_integration_tests
-#     gmock
-#     ${ALL_SCORE_LIBS}
-#     ${SCORE_ALL_EXTERNAL_LIBS}
-# )
-
-
-
-
-# FILE(GLOB SCORE_MISC_INTEGRATION_TEST_SRC
-#     ${SCORE_ASYNC_DIR}/src/test_integration/*.cpp
-# )
-# add_executable(run_misc_integration_tests
-#     ${SCORE_MISC_INTEGRATION_TEST_SRC}
-#     ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
-# )
-# add_dependencies(run_misc_integration_tests ${ALL_SCORE_LIBS})
-# target_link_libraries(run_misc_integration_tests
-#     gmock
-#     ${ALL_SCORE_LIBS}
-#     ${SCORE_ALL_EXTERNAL_LIBS}
-# )
-
-
-
-
-
-# add_executable(runner
-#     ${SCORE_ROOT_SRC_DIR}/main.cpp
-# )
-# add_dependencies(runner ${ALL_SCORE_LIBS})
-# target_link_libraries(runner
-#     ${ALL_SCORE_LIBS}
-#     ${COMMON_LIBS}
-#     ${EXTRA_LIBS}
-# )
-
-
-
-
-# add_executable(unit_test_dummy ${SCORE_ROOT_SRC_DIR}/run_dummy.cpp)
-# add_dependencies(unit_test_dummy
-#     run_async_tests
-#     run_core_tests
-#     run_curl_tests
-#     run_extract_tests
-#     run_html_tests
-#     run_nlp_tests
-#     run_memcached_tests
-#     run_bench_tests
-# )
-
-# target_link_libraries(unit_test_dummy glog)
-
-# add_executable(integration_test_dummy ${SCORE_ROOT_SRC_DIR}/run_dummy.cpp)
-# add_dependencies(integration_test_dummy
-#     run_client_integration_tests
-#     run_misc_integration_tests
-# )
-# target_link_libraries(integration_test_dummy glog)
-
+set(ALL_SCORE_INCLUDE_DIRS
+    ${SCORE_ASYNC_DIR}/include
+    ${SCORE_MEMCACHED_DIR}/include
+    ${SCORE_BENCH_DIR}/include
+    ${SCORE_CORE_DIR}/include
+    ${SCORE_REDIS_DIR}/include
+    ${SCORE_EXTRACT_DIR}/include
+    ${SCORE_HTML_DIR}/include
+    ${SCORE_NLP_DIR}/include
+    ${SCORE_CURL_DIR}/include
+)
 
 
 # add_executable(bench_async

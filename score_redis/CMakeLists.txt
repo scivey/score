@@ -26,7 +26,7 @@ FILE(GLOB REDIS_INTEGRATION_TEST_SRC
 
 add_executable(run_redis_integration_tests
     ${REDIS_INTEGRATION_TEST_SRC}
-    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+    ${SCORE_TEST_RUNNER_FILE}
 )
 add_dependencies(run_redis_integration_tests score_redis)
 target_link_libraries(run_redis_integration_tests
