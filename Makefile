@@ -20,6 +20,7 @@ test: build-tests
 	./build/run_html_tests
 	./build/run_memcached_tests
 	./build/run_nlp_tests
+	./build/run_bench_tests
 
 build-integration: cm deps
 	cd build && make integration_test_dummy -j8

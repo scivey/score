@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(score)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O2 -mcx16 -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0 -mcx16 -march=native")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(BORINGSSL ${EXTERNAL}/boringssl)
@@ -384,6 +384,42 @@ target_link_libraries(score_redis
 
 
 
+
+set(SCORE_BENCH_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_bench)
+
+FILE(GLOB SCORE_BENCH_SRC
+    ${SCORE_BENCH_SRC_DIR}/*.cpp
+)
+
+add_library(score_bench ${SCORE_BENCH_SRC})
+add_dependencies(score_bench score_core)
+
+target_link_libraries(score_bench
+    score_core
+    ${COMMON_LIBS}
+)
+
+FILE(GLOB SCORE_BENCH_TEST_SRC
+    ${SCORE_BENCH_SRC_DIR}/test/*.cpp
+)
+add_executable(run_bench_tests
+    ${SCORE_BENCH_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+add_dependencies(run_bench_tests score_bench)
+target_link_libraries(run_bench_tests
+    gmock
+    score_bench
+    score_core
+    ${COMMON_LIBS}
+)
+
+
+
+
+
+
+
 set(SCORE_MEMCACHED_SRC_DIR ${SCORE_ROOT_SRC_DIR}/score_memcached)
 
 FILE(GLOB SCORE_MEMCACHED_SRC
@@ -424,6 +460,7 @@ target_link_libraries(run_memcached_tests
 set(ALL_SCORE_LIBS
     score_core
     score_memcached
+    score_bench
     score_async
     score_redis
     score_extract
@@ -496,6 +533,7 @@ add_dependencies(unit_test_dummy
     run_html_tests
     run_nlp_tests
     run_memcached_tests
+    run_bench_tests
 )
 
 target_link_libraries(unit_test_dummy glog)
@@ -512,10 +550,11 @@ target_link_libraries(integration_test_dummy glog)
 add_executable(bench_async
     ${SCORE_ASYNC_SRC_DIR}/bench/bench_ThreadPool.cpp
 )
-add_dependencies(bench_async score_core score_async)
+add_dependencies(bench_async score_core score_async score_bench)
 target_link_libraries(bench_async
     score_core
     score_async
+    score_bench
     wangle
     folly
     ${COMMON_LIBS}

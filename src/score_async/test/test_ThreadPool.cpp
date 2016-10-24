@@ -4,6 +4,7 @@
 #include <chrono>
 #include "score_async/EventContext.h"
 #include "score_async/tpool/ThreadPool.h"
+#include "score_async/tpool/CallbackTask.h"
 
 using namespace score;
 using namespace score::async;
@@ -16,7 +17,7 @@ TEST(TestThreadPool, TestSanity1) {
   std::atomic<bool> workRan {false};
   std::atomic<bool> doneCallbackRan {false};
   auto pool = util::createShared<ThreadPool>(size_t{4});
-  auto task = Task::createFromEventThread(evCtx.get(),
+  auto task = CallbackTask::createFromEventThread(evCtx.get(),
     [&workRan]() mutable {
       workRan.store(true);
     },

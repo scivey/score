@@ -20,6 +20,8 @@
 #include "score_async/tpool/ThreadPool.h"
 #include "score_async/tpool/CallbackTask.h"
 #include "score_async/EventContext.h"
+#include "score_bench/BenchResult.h"
+#include "score_bench/bench.h"
 
 using namespace std;
 using score::Try;
@@ -28,93 +30,10 @@ using score::func::Function;
 namespace util = score::util;
 using namespace score::async::tpool;
 using namespace score::async;
+using score::bench::runBenched;
+using score::bench::BenchResult;
+using score::bench::bench_func_t;
 
-using bench_func_t = score::func::Function<void>;
-
-
-class BenchResult {
- protected:
-  std::string name_ {"Default"};
-  double mean_ {0.0};
-  double stdev_ {0.0};
-  double min_ {0.0};
-  double max_ {0.0};
- public:
-  BenchResult(){}
-  BenchResult(const std::string& name)
-    : name_(name) {}
-  BenchResult& setMean(double mean) {
-    mean_ = mean;
-    return *this;
-  }
-  BenchResult& setStdev(double stdev) {
-    stdev_ = stdev;
-    return *this;
-  }
-  BenchResult& setMin(double minVal) {
-    min_ = minVal;
-    return *this;
-  }
-  BenchResult& setMax(double maxVal) {
-    max_ = maxVal;
-    return *this;
-  }
-  BenchResult& setName(const std::string& name) {
-    name_ = name;
-    return *this;
-  }
-  double getMin() const {
-    return min_;
-  }
-  double getMax() const {
-    return max_;
-  }
-  double getMean() const {
-    return mean_;
-  }
-  double getStdev() const {
-    return stdev_;
-  }
-  const std::string& getName() const {
-    return name_;
-  }
-};
-
-std::ostream& operator<<(std::ostream& oss, const BenchResult& benched) {
-  oss << "\n\t[" << benched.getName() << "]" << endl;
-  oss << "\t\tmean:  " << benched.getMean() << endl
-      << "\t\tstdev: " << benched.getStdev() << endl
-      << "\t\tmin:   " << benched.getMin() << endl
-      << "\t\tmax:   " << benched.getMax() << endl
-      << endl;
-  return oss;
-}
-
-BenchResult runBenched(const string& name, bench_func_t&& benchFunc, size_t nIter) {
-  boost::accumulators::accumulator_set<
-    double,
-    boost::accumulators::features<
-      boost::accumulators::tag::mean,
-      boost::accumulators::tag::variance,
-      boost::accumulators::tag::max,
-      boost::accumulators::tag::min
-    >
-  > accum;
-  for (size_t i = 0; i < nIter; i++) {
-    auto start = chrono::high_resolution_clock::now();
-    benchFunc();
-    auto end = chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(
-      end - start
-    );
-    accum(elapsed.count());
-  }
-  return BenchResult(name)
-    .setMean(boost::accumulators::mean(accum))
-    .setStdev(sqrt(boost::accumulators::variance(accum)))
-    .setMin(boost::accumulators::min(accum))
-    .setMax(boost::accumulators::max(accum));
-}
 
 static const size_t kNumTasks = 1000;
 static const size_t kNumThreads = 8;
@@ -154,9 +73,6 @@ class ScoreTask: public BasePoolBenchTask<ScoreTask> {
  public:
   ScoreTask(std::atomic<size_t>* x, size_t* y, bool* z): BasePoolBenchTask<ScoreTask>(x, y, z){}
 };
-
-
-
 
 void benchScoreThreadpool() {
   auto ctx = util::createShared<EventContext>();
@@ -233,6 +149,5 @@ int main() {
   LOG(INFO) << "start";
   benchScoreThreadpool();
   benchWangleThreadpool();
-
   LOG(INFO) << "end";
 }
