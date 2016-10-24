@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(score)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O0 -mcx16 -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -Wall -g -O2 -mcx16 -march=native")
 
 set(EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR}/external)
 set(BORINGSSL ${EXTERNAL}/boringssl)
@@ -512,11 +512,22 @@ target_link_libraries(integration_test_dummy glog)
 add_executable(bench_async
     ${SCORE_ASYNC_SRC_DIR}/bench/bench_ThreadPool.cpp
 )
-add_dependencies(bench_async ${ALL_SCORE_LIBS})
+add_dependencies(bench_async score_core score_async)
 target_link_libraries(bench_async
-    ${ALL_SCORE_LIBS}
+    score_core
+    score_async
     wangle
     folly
     ${COMMON_LIBS}
-    ${EXTRA_LIBS}
 )
+
+add_executable(kgrind_threadpool
+    ${SCORE_ASYNC_SRC_DIR}/bench/kgrind_ThreadPool.cpp
+)
+add_dependencies(kgrind_threadpool score_core score_async)
+target_link_libraries(kgrind_threadpool
+    score_core
+    score_async
+    ${COMMON_LIBS}
+)
+

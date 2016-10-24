@@ -23,9 +23,31 @@ class ThreadPoolWorker {
   using queue_t = queues::MPMCQueue<std::unique_ptr<TaskBase>>;
 
  protected:
+  using EventDataChannel = queues::EventDataChannel;
+  using sender_id_t = std::thread::id;
+  using sender_channel_t = std::shared_ptr<EventDataChannel>;
+  using data_channel_map_t = std::unordered_map<sender_id_t, sender_channel_t>;
   queue_t *workQueue_ {nullptr};
   std::unique_ptr<std::thread> thread_ {nullptr};
   std::atomic<bool> running_ {false};
+  data_channel_map_t dataChannels_;
+
+  sender_channel_t& getDataChannel(sender_id_t senderId, EventContext *ctx) {
+    auto found = dataChannels_.find(senderId);
+    if (found != dataChannels_.end()) {
+      return found->second;
+    }
+    auto newChannel = EventDataChannel::createSharedAsSender();
+    ctx->threadsafeRegisterDataChannel(newChannel).throwIfFailed();
+    while (!newChannel->hasReceiverAcked()) {
+      ;
+    }
+    dataChannels_.insert(std::make_pair(senderId, newChannel));
+    found = dataChannels_.find(senderId);
+    DCHECK(found != dataChannels_.end());
+    return found->second;
+  }
+
 
   Try<Unit> runTask(std::unique_ptr<TaskBase> task) {
     Try<Unit> taskOutcome;
@@ -36,9 +58,10 @@ class ThreadPoolWorker {
       taskOutcome = util::makeTryFailure<Unit, TaskThrewException>(ex.what());
     }
     auto senderContext = task->getSenderContext();
+    auto senderId = task->getSenderId();
     auto wrappedTask = makeMoveWrapper(std::move(task));
     auto wrappedOutcome = makeMoveWrapper(std::move(taskOutcome));
-    EventContext::ControlMessage message {
+    EventDataChannel::Message message {
       [wrappedTask, wrappedOutcome]() {
         MoveWrapper<Try<Unit>> movedOutcome = wrappedOutcome;
         Try<Unit> unwrappedOutcome = movedOutcome.move();
@@ -51,9 +74,8 @@ class ThreadPoolWorker {
         }
       }
     };
-    auto sendResult = senderContext->threadsafeTrySendControlMessage(
-      std::move(message)
-    );
+    auto dataChannel = getDataChannel(senderId, senderContext);
+    auto sendResult = dataChannel->getQueue()->trySend(std::move(message));
     if (sendResult.hasException()) {
       return util::makeTryFailure<Unit, CouldntSendResult>(
         sendResult.exception().what()
@@ -63,8 +85,9 @@ class ThreadPoolWorker {
   }
   void threadFunc() {
     std::unique_ptr<TaskBase> task;
+    const int64_t kWaitMicroseconds {100000}; // 100ms
     while (running_.load()) {
-      if (workQueue_->try_dequeue(task)) {
+      if (workQueue_->wait_dequeue_timed(task, kWaitMicroseconds)) {
         if (task->valid()) {
           runTask(std::move(task)).throwIfFailed();
         } else {

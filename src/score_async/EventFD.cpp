@@ -43,9 +43,7 @@ Try<int64_t> EventFD::read() {
     ssize_t nr = ::read(fd, (void*) &buff, sizeof(buff));
     if (nr < 0) {
       if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        return makeTryFailureFromErrno<int64_t, NotReady>(
-          errno, kEventFDNotReadyMsg
-        );
+        return makeTryFailure<int64_t, NotReady>(kEventFDNotReadyMsg);
       } else {
         return makeTryFailureFromErrno<int64_t, ReadError>(
           errno, "EventFD read failed"

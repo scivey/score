@@ -31,11 +31,8 @@ extern "C" {
 #elif defined(__unix__)
 #include <semaphore.h>
 #endif
+namespace score { namespace async { namespace vendored { namespace moodycamel { namespace details {
 
-namespace moodycamel
-{
-namespace details
-{
   // Code in the mpmc_sema namespace below is an adaptation of Jeff Preshing's
   // portable + lightweight semaphore implementations, originally from
   // https://github.com/preshing/cpp11-on-multicore/blob/master/common/sema.h
@@ -421,7 +418,7 @@ template<typename T, typename Traits = ConcurrentQueueDefaultTraits>
 class BlockingConcurrentQueue
 {
 private:
-  typedef ::moodycamel::ConcurrentQueue<T, Traits> ConcurrentQueue;
+  typedef moodycamel::ConcurrentQueue<T, Traits> ConcurrentQueue;
   typedef details::mpmc_sema::LightweightSemaphore LightweightSemaphore;
 
 public:
@@ -978,4 +975,4 @@ inline void swap(BlockingConcurrentQueue<T, Traits>& a, BlockingConcurrentQueue<
   a.swap(b);
 }
 
-} // end namespace moodycamel
+}}}} // score::async::vendored::moodycamel

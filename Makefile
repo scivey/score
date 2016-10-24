@@ -39,3 +39,7 @@ deps:
 bench: cm deps
 	cd build && make bench_async -j8
 	./build/bench_async
+
+kgrind: cm deps
+	cd build && make kgrind_threadpool -j8
+	bash scripts/kgrind_threadpool.sh
