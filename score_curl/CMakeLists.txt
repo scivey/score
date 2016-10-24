@@ -1,0 +1,34 @@
+set(SCORE_CURL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+FILE(GLOB SCORE_CURL_SRC
+    ${SCORE_CURL_SRC_DIR}/*.cpp
+)
+
+add_library(score_curl ${SCORE_CURL_SRC})
+add_dependencies(score_curl score_async score_core)
+target_link_libraries(score_curl
+    score_async
+    score_core
+    ${SCORE_COMMON_EXTERNAL_LIBS}
+    ${SCORE_EXTRA_EXTERNAL_LIBS}
+)
+
+FILE(GLOB SCORE_CURL_TEST_SRC
+    ${SCORE_CURL_SRC_DIR}/test/*.cpp
+)
+add_executable(run_curl_tests
+    ${SCORE_CURL_TEST_SRC}
+    ${SCORE_ROOT_SRC_DIR}/run_tests.cpp
+)
+
+add_dependencies(run_curl_tests score_curl)
+target_link_libraries(run_curl_tests
+    gmock
+    score_curl
+    score_async
+    score_core
+    ${SCORE_COMMON_EXTERNAL_LIBS}
+    ${SCORE_EXTRA_EXTERNAL_LIBS}
+)
+
+
