@@ -4,7 +4,7 @@
 #include <string>
 #include <curl/curl.h>
 #include <glog/logging.h>
-#include <folly/Range.h>
+#include "score/io/ByteStringPiece.h"
 #include "score/util/try_helpers.h"
 #include "score/Try.h"
 #include "score/Unit.h"
@@ -54,7 +54,7 @@ Try<Unit> Easy::perform() {
 
 size_t Easy::onWrite(void *ptr, size_t sz, size_t nMembers) {
   if (sz && nMembers) {
-    folly::StringPiece piece {(char*) ptr, nMembers};
+    io::ByteStringPiece piece {(char*) ptr, nMembers};
     bodyBuffer_ << piece;
   }
   size_t total = sz * nMembers;

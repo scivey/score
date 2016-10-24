@@ -2,7 +2,6 @@
 #include <functional>
 #include <event2/event.h>
 #include <glog/logging.h>
-#include <folly/futures/Try.h>
 #include "score/util/try_helpers.h"
 #include "score/util/misc.h"
 #include "score/TimerSettings.h"

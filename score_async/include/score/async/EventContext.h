@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include "score/Unit.h"
 #include "score/Try.h"
 #include "score/func/Function.h"

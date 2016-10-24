@@ -238,23 +238,6 @@ namespace std { typedef ::max_align_t max_align_t; }
 # define SCORE_FOLLY_GLIBCXX_NAMESPACE_CXX11_END
 #endif
 
-// MSVC specific defines
-// mainly for posix compat
-#ifdef _MSC_VER
-#include <folly/portability/SysTypes.h>
-
-// compiler specific to compiler specific
-// nolint
-# define __PRETTY_FUNCTION__ __FUNCSIG__
-
-// Hide a GCC specific thing that breaks MSVC if left alone.
-# define __extension__
-
-// We have compiler support for the newest of the new, but
-// MSVC doesn't tell us that.
-#define __SSE4_2__ 1
-
-#endif
 
 // Debug
 namespace folly {

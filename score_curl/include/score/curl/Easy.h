@@ -5,7 +5,6 @@
 #include <string>
 #include <curl/curl.h>
 #include <glog/logging.h>
-#include <folly/Range.h>
 #include "score/util/try_helpers.h"
 #include "score/func/Function.h"
 #include "score/Try.h"
