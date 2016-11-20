@@ -21,7 +21,7 @@ struct TestMessage {
 };
 
 TEST(TestEventContext, TestControlMessages) {
-  auto evCtx = util::createShared<EventContext>();
+  auto evCtx = score::util::createShared<EventContext>();
   std::atomic<bool> done {false};
   std::vector<TestMessage> results;
   std::thread::id baseId = this_thread::get_id();
@@ -85,12 +85,12 @@ class DataChannelProducer {
 };
 
 TEST(TestEventContext, TestRegisterDataChannel) {
-  auto evCtx = util::createShared<EventContext>();
+  auto evCtx = score::util::createShared<EventContext>();
   std::atomic<bool> done {false};
   std::thread::id evLoopTid = this_thread::get_id();
   std::shared_ptr<DataChannelProducer> producerPtr {nullptr};
   thread prodThread([&producerPtr, evCtx, &done, evLoopTid]() {
-    auto prod = util::createShared<DataChannelProducer>();
+    auto prod = score::util::createShared<DataChannelProducer>();
     producerPtr = prod;
     evCtx->threadsafeRegisterDataChannel(prod->getChannel());
     prod->waitForConsumer();

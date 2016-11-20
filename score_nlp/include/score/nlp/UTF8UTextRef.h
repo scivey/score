@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "score/io/ByteStringPiece.h"
 
 struct UText;
 
@@ -40,12 +41,17 @@ class UTF8UTextRef {
 
   void assign(const char*, size_t);
 
+  UTF8UTextRef copyRef() const;
+
   template<typename TStr>
   void assign(const TStr &strRef) {
     assign(strRef.c_str(), strRef.size());
   }
 
   UText* getUText();
+  const char* data() const;
+
+  io::ByteStringPiece toByteStringPiece() const;
 
   ~UTF8UTextRef();
 };

@@ -3,25 +3,36 @@
 #include <memory>
 #include <unicode/brkiter.h>
 #include <unicode/utext.h>
+#include "score/macros.h"
 #include "score/nlp/Language.h"
 #include "score/nlp/UTF8UTextRef.h"
 
 namespace score { namespace nlp { namespace tokenize {
 
-class ICUWordBreakView {
+class ICUBreakView {
  protected:
   Language language_;
-  std::unique_ptr<icu_52::BreakIterator> breakIter_;
+  std::unique_ptr<icu::BreakIterator> breakIter_;
   bool atEnd_ {false};
   UTF8UTextRef textRef_;
 
-  ICUWordBreakView(Language lang, std::unique_ptr<icu_52::BreakIterator> breakIter);
+  ICUBreakView(Language lang, std::unique_ptr<icu::BreakIterator> breakIter);
   int32_t getNext();
 
  public:
   bool valid() const;
   bool hasText() const;
-  static ICUWordBreakView create(Language lang);
+  static ICUBreakView create(Language lang);
+
+  const UTF8UTextRef& getUTextRef() const {
+    return textRef_;
+  }
+
+  io::ByteStringPiece getByteStringPiece() const {
+    SDCHECK(valid());
+    return textRef_.toByteStringPiece();
+  }
+
 
   void setText(UTF8UTextRef &&textRef);
   void setText(const char*, size_t);
@@ -34,11 +45,12 @@ class ICUWordBreakView {
   void reset();
   class Iterator {
    protected:
-    ICUWordBreakView *parent_ {nullptr};
+    ICUBreakView *parent_ {nullptr};
     int32_t currentIndex_ {0};
    public:
-    Iterator(ICUWordBreakView *parent);
-    Iterator(ICUWordBreakView *parent, int32_t current);
+    using value_type = int32_t;
+    Iterator(ICUBreakView *parent);
+    Iterator(ICUBreakView *parent, int32_t current);
     bool operator!=(const Iterator &other) const;
     Iterator& operator++();
     Iterator operator++(int);

@@ -4,6 +4,8 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <algorithm>
+#include <cmath>
 #include "score/html/Node.h"
 
 namespace score { namespace extract { namespace goose {

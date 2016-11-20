@@ -8,6 +8,7 @@
 #include <cstring>
 #include <type_traits>
 #include <glog/logging.h>
+#include "score/io/Scstring.h"
 
 namespace score { namespace io {
 
@@ -42,6 +43,10 @@ class ByteStringPiece {
   ByteStringPiece(const TString& text, size_type length)
     : start_(text.c_str()), length_(length) {
     DCHECK(length_ <= text.size());
+  }
+
+  bool valid() const {
+    return (!!start_) && length_ > 0;
   }
 
   size_type size() const {
@@ -123,6 +128,10 @@ class ByteStringPiece {
 
   std::string copyToStdString() const {
     return std::string(data(), size());
+  }
+
+  io::Scstring copyToScString() const {
+    return io::Scstring {data(), size()};
   }
 
   // Does "this" start with "x"

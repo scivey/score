@@ -26,7 +26,7 @@
 //  multiplied by 16; offsets for 3-of-3 and 4-of-4 are
 //  relative +/-127 from previous state.
 
-#pragma GCC diagnostic ignored "-Wc++11-narrowing"
+#pragma GCC diagnostic ignored "-Wnarrowing"
 
 #include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 

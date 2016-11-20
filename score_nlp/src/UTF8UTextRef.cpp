@@ -87,4 +87,13 @@ UText* UTF8UTextRef::getUText() {
 }
 
 
+UTF8UTextRef UTF8UTextRef::copyRef() const {
+  return UTF8UTextRef::fromUTF8(buff_, buffLen_);
+}
+
+io::ByteStringPiece UTF8UTextRef::toByteStringPiece() const {
+  return io::ByteStringPiece {buff_, buffLen_};
+}
+
+
 }} // score::nlp

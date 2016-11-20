@@ -30,3 +30,4 @@ class ScoreError: public std::runtime_error {
       template<typename ...Types> \
       cls_name(Types&&... args): base_cls(std::forward<Types>(args)...) {} \
     };
+

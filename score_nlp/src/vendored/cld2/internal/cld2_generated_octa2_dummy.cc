@@ -16,7 +16,7 @@
 // Degenerate CLD2 scoring lookup table, for use as placeholder
 //
 #include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
-#pragma GCC diagnostic ignored "-Wc++11-narrowing"
+#pragma GCC diagnostic ignored "-Wnarrowing"
 
 namespace CLD2 {
 

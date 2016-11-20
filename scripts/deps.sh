@@ -23,12 +23,10 @@ function copy-re2-headers() {
     popd
 }
 
-LIBS="googletest boringssl re2"
+LIBS="googletest boringssl"
 
 for lib in ${LIBS}; do
     pushd ${EXT}/${lib}
     cmake-build
     popd
 done
-
-copy-re2-headers
