@@ -42,6 +42,8 @@
 // See compact_lang_det.cc for usage
 //
 #include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
+
 namespace CLD2 {
 
 static const uint32 kDeltaOctaChrome1015BuildDate = 20141016;    // yyyymmdd

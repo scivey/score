@@ -40,6 +40,7 @@
 //
 // See compact_lang_det.cc for usage
 //
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 #include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 namespace CLD2 {
 

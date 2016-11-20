@@ -29,6 +29,7 @@
 #include "score/nlp/vendored/cld2/internal/utf8repl_lettermarklower.h"
 #include "score/nlp/vendored/cld2/internal/utf8scannot_lettermarkspecial.h"
 
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 
 namespace CLD2 {
 

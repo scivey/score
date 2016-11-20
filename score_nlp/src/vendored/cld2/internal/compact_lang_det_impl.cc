@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 #include "score/nlp/vendored/cld2/internal/cldutil.h"
 #include "score/nlp/vendored/cld2/internal/debug.h"
 #include "score/nlp/vendored/cld2/internal/integral_types.h"

@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
-
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 #include "score/nlp/vendored/cld2/internal/debug.h"        // for uint8 etc
 #include "score/nlp/vendored/cld2/internal/integral_types.h"        // for uint8 etc
 #include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"

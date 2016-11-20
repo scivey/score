@@ -16,7 +16,7 @@ static const set<char> punctuation {
 };
 
 std::string trimWhitespace(const string& text) {
-  re2::StringPiece target {text.c_str(), text.size()};
+  re2::StringPiece target {text.c_str(), (int) text.size()};
   std::string result;
   if (RE2::PartialMatch(text, TRIM_WHITESPACE_REGEX, &result)) {
     return result;

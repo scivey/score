@@ -1,4 +1,4 @@
-cm:
+cm: deps
 	mkdir -p build
 	cd build && cmake ../
 
@@ -8,7 +8,7 @@ create-runner: cm
 run: create-runner
 	./build/runner
 
-build-everything: cm deps
+build-everything: cm
 	cd build && make -j8
 
 test: build-everything
@@ -21,9 +21,12 @@ clean:
 	rm -rf build
 
 deps:
-	./scripts/deps.sh
+	./scripts/deps.sh build
 
-.PHONY: clean run create-bencher create-runner deps test client-integration
+clean-deps:
+	./scripts/deps.sh clean
+
+.PHONY: clean run create-bencher create-runner deps test client-integration cm clean-deps
 
 bench: cm deps
 	cd build && make bench_async -j8

@@ -27,6 +27,7 @@
 #include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 #include "score/nlp/vendored/cld2/internal/utf8statetable.h"
 #include "score/nlp/vendored/cld2/internal/scoreonescriptspan.h"
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 
 // We need these in order to set up a real data object to pass around.
 namespace CLD2 {

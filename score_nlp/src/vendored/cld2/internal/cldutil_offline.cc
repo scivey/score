@@ -16,6 +16,7 @@
 // Author: dsites@google.com (Dick Sites)
 //
 
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 #include "score/nlp/vendored/cld2/internal/cldutil_offline.h"
 #include "score/nlp/vendored/cld2/internal/tote.h"
 #include <string>

@@ -26,6 +26,12 @@
 #include <sys/time.h>               // for gettimeofday
 #include <string>
 
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
+
+#ifdef __clang__
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
+
 #include "score/nlp/vendored/cld2/internal/cld2tablesummary.h"
 #include "score/nlp/vendored/cld2/internal/compact_lang_det_impl.h"
 #include "score/nlp/vendored/cld2/internal/debug.h"

@@ -17,6 +17,7 @@
 // Updated 2014.01 for dual table lookup
 //
 
+#include "score/nlp/vendored/cld2/score_cld2_ignores.h"
 #include "score/nlp/vendored/cld2/internal/cldutil.h"
 #include <string>
 

@@ -5,9 +5,11 @@
 [submodule "external/boringssl"]
 	path = external/boringssl
 	url = https://github.com/scivey/boringssl
+	commit = 9b885c5d0fe1a89b2063654dbdd0faf2a6c076fd
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = git@github.com:gabime/spdlog
+	commit = c69df8ae444fd097209bb6c2e8816ff34bdc0d2c
 [submodule "external/re2"]
 	path = external/re2
 	url = https://github.com/google/re2
