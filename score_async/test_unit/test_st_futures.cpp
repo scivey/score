@@ -38,6 +38,29 @@ TEST(Test_st_futures, TestSanity2) {
   EXPECT_EQ(expected, results);
 }
 
+TEST(Test_st_futures, TestUnwrap) {
+  auto prom = mem::make_st_shared<st::STPromise<int>>();
+  std::vector<int> results;
+  auto later = prom->getFuture();
+  later.then([&results](int x) {
+    results.push_back(x);
+    return x * 10;
+  }).then([&results](int x) {
+    results.push_back(x);
+    return st::makeReadySTFuture<int>(26);
+  }).then([&results](int x) {
+    results.push_back(x);
+  });
+  prom->setValue(31);
+  std::vector<int> expected {31, 310, 26};
+  EXPECT_EQ(expected, results);
+}
+
+
+
+
+
+
 
 
 

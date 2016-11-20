@@ -36,7 +36,9 @@ struct type_wrapper {
 
 
 template<typename T>
-struct isFuture: std::false_type {};
+struct isSTFuture: std::false_type {
+  using inner_type = typename Unit::Lift<T>::type;
+};
 
 
 }}}} // score::async::futures::st

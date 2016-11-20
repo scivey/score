@@ -9,7 +9,13 @@
 #include "score/async/futures/st/STFutureCore.h"
 #include "score/async/futures/st/STPromise.h"
 
+
 namespace score { namespace async { namespace futures { namespace st {
+
+template<typename T>
+struct isSTFuture<STFuture<T>>: std::true_type {
+  using inner_type = T;
+};
 
 
 template<typename T>
@@ -95,8 +101,16 @@ class STFuture {
     static const bool value = std::is_same<result_type, void>::value;
   };
 
+  template<typename U, typename X = T>
+  struct returns_future {
+    using result_type = typename resultOf<U, X>::type;
+    static const bool value = isSTFuture<result_type>::value;
+  };
+
+
   template<typename TCallable,
-    typename = typename std::enable_if<!returns_void<TCallable>::value, TCallable>::type
+    typename = typename std::enable_if<!returns_void<TCallable>::value, TCallable>::type,
+    typename = typename std::enable_if<!returns_future<TCallable>::value, TCallable>::type
   >
   STFuture<typename result_future_traits<TCallable>::type> then(TCallable&& func) {
     using result_t = typename result_future_traits<TCallable>::type;
@@ -119,6 +133,12 @@ class STFuture {
     return then_helper<Unit>::bindThen(this, std::move(func));
   }
 
+  template<typename F = T>
+  typename std::enable_if<
+    isSTFuture<F>::value,
+    STFuture<typename isSTFuture<T>::inner_type>>::type
+  unwrap();
+
   void orCatch(error_cb_t&& errCb) {
     CHECK(!!core_);
     core_->setErrorCallback(std::forward<error_cb_t>(errCb));
@@ -126,7 +146,18 @@ class STFuture {
 };
 
 
+
+
 template<typename T>
-struct isFuture<STFuture<T>>: std::true_type {};
+template<typename F>
+typename std::enable_if<
+    isSTFuture<F>::value,
+    STFuture<typename isSTFuture<T>::inner_type>>::type
+STFuture<T>::unwrap() {
+  return then([](STFuture<typename isSTFuture<T>::inner_type> innerFuture) {
+    return innerFuture;
+  });
+}
+
 
 }}}} // score::async::futures::st
