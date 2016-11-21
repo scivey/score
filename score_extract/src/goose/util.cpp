@@ -1,19 +1,23 @@
 #include "score/extract/goose/util.h"
-#include "score/nlp/tokenize/TokenView.h"
+#include "score/nlp/tokenize/ICUTokenView.h"
+#include "score/nlp/tokenize/predicates.h"
+
 using namespace std;
 using namespace score::html;
-using score::nlp::tokenize::TokenView;
+using score::nlp::Language;
+using score::nlp::tokenize::ICUTokenView;
+using score::nlp::tokenize::isWordToken;
 
 namespace score { namespace extract { namespace goose {
 
 size_t getTokenCount(const string &text) {
-  TokenView view(text);
+  auto tokenView = ICUTokenView::create(Language::EN);
+  tokenView.setText(text);
   size_t tokenCount = 0;
-  for (auto toke : view) {
-    if (toke.second <= toke.first) {
-      break;
+  for (auto toke : tokenView) {
+    if (isWordToken(toke)) {
+      tokenCount++;
     }
-    tokenCount++;
   }
   return tokenCount;
 }
