@@ -2,10 +2,6 @@
 
 score is a c++ library oriented towards web crawling and content extraction tasks in many languages.  The name is not an acronym, has no particular meaning, and can be formatted as `score`, `SCORE` or `Score` according to your own wishes and those of your loved ones.
 
-## Why does score exist?
-
-![](docs/media/spiderman.jpg?raw=true)
-
 ## Outline
 
 score is backed by a number of established C/C++ libraries.  Its general philosophy is to blatantly steal where possible, adapt and borrow where stealing is infeasible, and resort to custom code in all other cases.  To ease dependency management, it only links to system libraries when those libraries are both mature and commonly available through Linux package managers.  All other dependencies are vendored.

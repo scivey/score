@@ -16,12 +16,13 @@ FILE(GLOB SCORE_NLP_SRC
     ${SCORE_NLP_SRC_DIR}/stemming/*.cpp
     ${SCORE_NLP_SRC_DIR}/stopwords/*.cpp
     ${SCORE_NLP_SRC_DIR}/tokenize/*.cpp
+    ${SCORE_NLP_SRC_DIR}/*.cpp
 )
 
 set(SCORE_NLP_SRC
     ${SCORE_NLP_SRC}
-    ${SCORE_NLP_SRC_DIR}/Language.cpp
-    ${SCORE_NLP_SRC_DIR}/UTF8UTextRef.cpp
+    # ${SCORE_NLP_SRC_DIR}/Language.cpp
+    # ${SCORE_NLP_SRC_DIR}/UTF8UTextRef.cpp
     ${LIBSTEMMER_SOURCES}
     ${CLD2_SOURCES}
 )
