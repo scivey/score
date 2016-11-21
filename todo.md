@@ -2,8 +2,8 @@
 
 ### score_core
 #### general
-* need a StringPiece implementation
-* integrate `fmtlib` to replace calls to `folly::format`.
+* ~~need a StringPiece implementation~~
+* ~~integrate `fmtlib` to replace calls to `folly::format`.~~
 #### encoding detection + conversion
 * split this into a separate `score_encoding` library.
 * convert current `EncodingNormalizer` to a stream-based interface; move existing one-shot interface (handling single input buffer -> single output buffer) to a wrapper class.
@@ -35,7 +35,7 @@
 * switch most of the string matching parts here to use RE2
 
 ### score_nlp
-* Complete integration of score::nlp::Language with CLD2.  CLD2 wrapper should only return the score Language type.
+* ~~Complete integration of score::nlp::Language with CLD2.  CLD2 wrapper should only return the score Language type.~~
 * Need easier conversion between all of: language code (char*), English human-friendly language name, `score::nlp::Language` type.
 
 ### score_memcached

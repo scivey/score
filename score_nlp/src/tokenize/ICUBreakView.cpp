@@ -30,13 +30,6 @@ ICUBreakView::Iterator ICUBreakView::end() {
   return Iterator(this);
 }
 
-// void ICUBreakView::setText(UnicodeString *target) {
-//   SDCHECK(valid());
-//   target_ = target;
-//   atEnd_ = false;
-//   breakIter_->setText(*target_);
-// }
-
 int32_t ICUBreakView::getNext() {
   SDCHECK(valid());
   auto nxt = breakIter_->next();

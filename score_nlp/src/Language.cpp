@@ -1,5 +1,4 @@
 #include "score/nlp/Language.h"
-#include "score/nlp/vendored/cld2/compact_lang_det.h"
 #include "score/macros.h"
 #include <string>
 #include <unordered_map>
@@ -220,17 +219,5 @@ static const vector<Language> allLanguages {
 const vector<Language>& getAllLanguages() {
   return allLanguages;
 }
-
-const char* detectLanguageName(const string &text) {
-  bool isReliable {false};
-  bool isPlainText {false};
-  auto result = CLD2::DetectLanguage(
-    text.c_str(), text.size(),
-    isPlainText, &isReliable
-  );
-  SCHECK(isReliable);
-  return CLD2::LanguageName(result);
-}
-
 
 }} // score::nlp
