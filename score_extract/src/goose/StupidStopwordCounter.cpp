@@ -24,9 +24,6 @@ size_t StupidStopwordCounter::countStopwords(const string &text) {
   const char *beginning = text.c_str();
   size_t count = 0;
   for (auto toke: tokenView) {
-    if (!toke.valid()) {
-      break;
-    }
     if (nlp::tokenize::isWordToken(toke)) {
       currentToken = toke.copyToStdString();
     }

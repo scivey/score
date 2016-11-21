@@ -12,6 +12,11 @@ if IS_PY2:
 else:
     STR_TYPES = (unicode, bytes)
 
+if IS_PY2:
+    from cStringIO import StringIO
+else:
+    from io import StringIO
+
 
 def assert_texty(x):
     assert isinstance(x, STR_TYPES)
@@ -80,6 +85,7 @@ class GTestCase(object):
             case.failure = GTestFailure.from_element(children[0])
         return case
 
+
 class GTestSuiteStats(object):
     def __init__(self, n_failures, n_errors, duration):
         doeach(assert_numeric, n_failures, n_errors, duration)
@@ -94,6 +100,7 @@ class GTestSuiteStats(object):
             n_errors=int(attr_dict['errors']),
             duration=float(attr_dict['time'])
         )
+
 
 class GTestSuite(object):
     def __init__(self, name, stats, test_cases=None):
@@ -124,6 +131,12 @@ class GTestSuite(object):
 
     def total_test_count(self):
         return len(self.test_cases)
+
+    def iter_failed_tests(self):
+        for test_case in self.test_cases:
+            if test_case.failed():
+                yield test_case
+
 
 class GTestSuiteSet(object):
     def __init__(self, name, stats, test_suites=None):
@@ -163,6 +176,11 @@ class GTestSuiteSet(object):
     def total_test_count(self):
         return sum([suite.total_test_count() for suite in self.test_suites])
 
+    def iter_failed_tests(self):
+        for test_suite in self.test_suites:
+            for failed_test in test_suite.iter_failed_tests():
+                yield test_suite, failed_test
+
 
 GTEST_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="4" failures="2" disabled="0" errors="0" timestamp="2016-11-20T15:08:47" time="0.051" name="AllTests">
@@ -199,16 +217,145 @@ class TestParsing(unittest.TestCase):
         self.assertEqual(2, len(suites.test_suites))
 
 
-
-def _iter_suite_sets(xml_dir):
-    for fname in os.listdir(xml_dir):
-        fpath = os.path.join(xml_dir, fname)
-        with open(fpath) as f:
-            yield fname, GTestSuiteSet.parse(f.read())
-
-
 class FailedTests(RuntimeError):
     pass
+
+
+def splat(maybe_seq):
+    if len(maybe_seq) == 1 and isinstance(maybe_seq, (list, tuple)):
+        maybe_seq = maybe_seq[0]
+    return list(maybe_seq)
+
+
+class TermBuffer(object):
+    def __init__(self):
+        self._buffer = StringIO()
+
+    def write(self, msg, color=None):
+        to_write = [None, msg, None]
+        if color is not None:
+            to_write[0] = ansi_code_of_print_color(color)
+            to_write[-1] = ANSICode.ENDC
+        self._buffer.write(''.join(list(filter(None, to_write))))
+
+    def seek(self, *args, **kwargs):
+        self._buffer.seek(*args, **kwargs)
+
+    def read(self, *args, **kwargs):
+        return self._buffer.read(*args, **kwargs)
+
+    def __str__(self):
+        self.seek(0)
+        return self.read()
+
+
+
+class Table(object):
+    def __init__(self, *column_names):
+        self.column_names = splat(column_names)
+        for name in self.column_names:
+            assert_texty(name)
+        self.body_rows = []
+        self.summary_rows = []
+
+    def add_body_row(self, *values):
+        values = splat(values)
+        assert len(values) == len(self.column_names)
+        self.body_rows.append(values)
+
+    def add_summary_row(self, *values):
+        values = splat(values)
+        assert len(values) == len(self.column_names)
+        self.summary_rows.append(values)
+
+    def to_buffer(self):
+        max_lengths = list(map(len, self.column_names))
+        str_body_rows = []
+        str_summary_rows = []
+
+        def _stringify_cell(idx, cell_data):
+            if isinstance(cell_data, float):
+                cell_data = "%3.3f" % cell_data
+            if not isinstance(cell_data, STR_TYPES):
+                cell_data = str(cell_data)
+            if len(cell_data) > max_lengths[idx]:
+                max_lengths[idx] = len(cell_data)
+            return cell_data
+
+        def _stringify_row(row):
+            as_strs = []
+            for i, elem in enumerate(row):
+                as_strs.append(_stringify_cell(i, elem))
+            return as_strs
+
+        for row in self.body_rows:
+            str_body_rows.append(_stringify_row(row))
+
+        for row in self.summary_rows:
+            str_summary_rows.append(_stringify_row(row))
+
+        for i in range(len(max_lengths)):
+            max_lengths[i] += 3
+
+        divider_size = sum(max_lengths) + (len(self.column_names) * 2) + 2
+        buff = TermBuffer()
+
+        def _write_cell(idx, cell_data):
+            buff.write("| ")
+            n_pad = max_lengths[idx] - len(cell_data)
+            if n_pad:
+                cell_data += (" " * n_pad)
+            buff.write(cell_data)
+
+        def _write_row(row_data):
+            for idx, cell in enumerate(row_data):
+                _write_cell(idx, cell)
+            buff.write(" |\n")
+
+        def _write_divider():
+            buff.write("-" * divider_size)
+            buff.write("\n")
+
+
+        _write_divider()
+        _write_row(self.column_names)
+        _write_divider()
+        for row in str_body_rows:
+            _write_row(row)
+        _write_divider()
+        for row in str_summary_rows:
+            _write_row(row)
+        _write_divider()
+        buff.write("\n")
+        return buff
+
+
+
+class ANSICode(object):
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    LIGHT_GRAY = '\033[37m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class PrintColor(object):
+    RED = "RED"
+    BLUE = "BLUE"
+    GREEN = "GREEN"
+    LIGHT_GRAY = "LIGHT_GRAY"
+
+def ansi_code_of_print_color(color):
+    return {
+        PrintColor.RED: ANSICode.FAIL,
+        PrintColor.GREEN: ANSICode.OKGREEN,
+        PrintColor.BLUE: ANSICode.OKBLUE,
+        PrintColor.LIGHT_GRAY: ANSICode.LIGHT_GRAY
+    }[color]
 
 
 class Reporter(object):
@@ -217,18 +364,58 @@ class Reporter(object):
 
     def run(self):
         total = 0
-        failures = 0
-        for suite_name, suite_set in _iter_suite_sets(self.xml_dir):
-            msg = "%s: %s/%s"
+        total_failures = 0
+        total_duration = 0.0
+        table = Table("name", "success", "failure", "total", "duration")
+        suite_sets = []
+        for fname in os.listdir(self.xml_dir):
+            fpath = os.path.join(self.xml_dir, fname)
+            with open(fpath) as f:
+                suite_set = GTestSuiteSet.parse(f.read())
+            suite_sets.append((fname, suite_set))
+            suite_name = fname
             current_total = suite_set.total_test_count()
             success = current_total - suite_set.stats.n_failures
             total += current_total
-            failures += suite_set.stats.n_failures
-            print(msg % (suite_name, success, current_total))
-        print("")
-        print("OVERALL: %s/%s" % (total - failures, total))
-        if failures > 0:
-            raise FailedTests
+            total_failures += suite_set.stats.n_failures
+            total_duration += suite_set.stats.duration
+            table.add_body_row(suite_name,
+                success,
+                suite_set.stats.n_failures,
+                current_total,
+                suite_set.stats.duration
+            )
+
+        table.add_summary_row("OVERALL", total - total_failures, total_failures, total, total_duration)
+        buff = table.to_buffer()
+        buff.seek(0)
+        print(buff.read())
+        if total_failures > 0:
+            failed_names = []
+            for fname, suite_set in suite_sets:
+                fail_buff = TermBuffer()
+                for suite, test in suite_set.iter_failed_tests():
+                    test_name = "%s::%s::%s::%s" % (
+                        suite_set.name, suite.name, test.class_name, test.name
+                    )
+                    fail_buff.write("FAILED: %s\n" % test_name, color=PrintColor.RED)
+                    fail_buff.write("\t%s\n" % fname)
+                    fail_buff.write("\n")
+                    message = test.failure.message.split('\n')
+                    for line in message:
+                        fail_buff.write("\t%s\n" % line, color=PrintColor.LIGHT_GRAY)
+                    fail_buff.write("\n")
+                    failed_names.append(test_name)
+                fail_buff.seek(0)
+                print(fail_buff.read())
+            raise FailedTests("%s failing tests." % len(failed_names))
+        else:
+            buff = TermBuffer()
+            buff.write(
+                "\n\t[ SUCCESS: %s/%s ]\n" % (total, total),
+                color=PrintColor.GREEN
+            )
+            print(str(buff))
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
